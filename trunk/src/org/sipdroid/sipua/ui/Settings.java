@@ -359,37 +359,13 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 		getPreferenceScreen().findPreference(PREF_PTT_SERVER).setDefaultValue(
 				DEFAULT_PTT_SERVER);
 
-		reload();
+		
 		// <--
 	}
 
-	// For PTT -->
-	@Override
-	public void onResume() {
-		super.onResume();
-
-		if (Receiver.mContext == null)
-			Receiver.mContext = this;
-		addPreferencesFromResource(R.xml.preferences);
-		setDefaultValues();
-		Codecs.check();
-
-		CheckBoxPreference cb = (CheckBoxPreference) getPreferenceScreen()
-				.findPreference(PREF_PTT);
-		EditTextPreference et_Username = (EditTextPreference) getPreferenceScreen()
-				.findPreference(PREF_PTT_USERNAME);
-		EditTextPreference et_Server = (EditTextPreference) getPreferenceScreen()
-				.findPreference(PREF_PTT_SERVER);
-		et_Username.setEnabled(cb.isChecked());
-		et_Server.setEnabled(cb.isChecked());
-
-	}
-
-	// <---
-
 	void reload() {
 		setPreferenceScreen(null);
-		//addPreferencesFromResource(R.xml.preferences);		
+		addPreferencesFromResource(R.xml.preferences);		
 	}
 
 	private void setDefaultValues() {
