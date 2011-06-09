@@ -389,7 +389,7 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 
 	void reload() {
 		setPreferenceScreen(null);
-		addPreferencesFromResource(R.xml.preferences);		
+		//addPreferencesFromResource(R.xml.preferences);		
 	}
 
 	private void setDefaultValues() {
