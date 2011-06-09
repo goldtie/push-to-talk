@@ -254,10 +254,9 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 		
 	}
 	
-	
-	
 	public static void updateListContent(ArrayAdapter<String> adapter){
-		mChatContentList.setAdapter(adapter);
+		if(mChatContentList != null)
+			mChatContentList.setAdapter(adapter);
 	}
 
 	int speakermode;
@@ -283,6 +282,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 
 	@Override
 	public void onResume() {
+		super.onResume();
 		Log.d("HAO", "PTTCallScreen_onResume");
 		if (!Sipdroid.release)
 			Log.i("SipUA:", "on resume");
@@ -300,7 +300,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 			} catch (IOException e1) {
 				if (!Sipdroid.release)
 					e1.printStackTrace();
-				super.onResume();
+				//super.onResume();
 				finish();
 				return;
 			}
@@ -323,7 +323,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 		mRecordingTimeView.setText("");
 		mRecordingTimeView.setVisibility(View.VISIBLE);
 		mHandler.sendEmptyMessage(UPDATE_RECORD_TIME);
-		super.onResume();
+		
 	}
 
 	@Override

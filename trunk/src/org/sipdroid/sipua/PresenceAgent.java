@@ -367,6 +367,7 @@ public class PresenceAgent implements
 								gua.checkFireEvent[i] = true;
 								gua.changeUserStatus(i,Presence.FIREON_STATUS);
 								if (!Receiver.mSipdroidEngine.isFire()) {
+									Presence.mIsPttService = true;
 									String ptt = Settings.getPTT_Username(Receiver.mContext)+"@"+ Settings.getPTT_Server(Receiver.mContext);
 									Receiver.mSipdroidEngine.call(ptt, true);
 									Receiver.xmppEngine().startConversation("ptt@conference." + Settings.getXMPP_Service(Receiver.mContext), XMPPEngine.CONFERENCE);

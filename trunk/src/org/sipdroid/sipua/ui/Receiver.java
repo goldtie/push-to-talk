@@ -279,7 +279,7 @@ import org.zoolu.sip.provider.SipProvider;
 						wl.release();
 					Log.d("HAO", "UA_STATE_IDLE");
 					// HAO SUA
-					//if (!Presence.mIsPttService)
+					if (!Presence.mIsPttService)
 						mContext.startActivity(createIntent(InCallScreen.class));
 					
 					ccConn.log(ccCall.base);
