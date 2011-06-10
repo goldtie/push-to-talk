@@ -777,6 +777,7 @@ import org.zoolu.sip.provider.SipProvider;
 		    			engine(context).togglehold();
 	        } else
 	        if (intentAction.equals(ACTION_DOCK_EVENT)) {
+	        	Log.d("SIPDROID", "[Receiver] - onReceive - ACTION_DOCK_EVENT");
 	        	docked = intent.getIntExtra(EXTRA_DOCK_STATE, -1);
 	        	if (call_state == UserAgent.UA_STATE_INCALL)
 	        		engine(mContext).speaker(speakermode());
@@ -787,6 +788,7 @@ import org.zoolu.sip.provider.SipProvider;
 	        	RtpStreamSender.changed = true;
 	        } else
 		    if (intentAction.equals(Intent.ACTION_HEADSET_PLUG)) {
+		    	Log.d("SIPDROID", "[Receiver] - onReceive - ACTION_HEADSET_PLUG");
 		        headset = intent.getIntExtra("state", -1);
 	        	if (call_state == UserAgent.UA_STATE_INCALL)
 	        		engine(mContext).speaker(speakermode());

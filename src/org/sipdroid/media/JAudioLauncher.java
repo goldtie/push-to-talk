@@ -179,6 +179,7 @@ public class JAudioLauncher implements MediaLauncher
    
    public int speakerMedia(int mode)
    {
+	   android.util.Log.d("SIPDROID", "[JAudioLauncher] - speakerMedia - mode = " + Integer.toString(mode));
 	   if (receiver != null)
 		   return receiver.speaker(mode);
 	   return 0;

@@ -513,6 +513,7 @@ public class UserAgent extends CallListenerAdapter {
 	}
 
 	public int speakerMediaApplication(int mode) {
+		android.util.Log.d("SIPDROID", "[UserAgent] - speakerMediaApplication - mode = " + Integer.toString(mode));
 		int old;
 		
 		if (audio_app != null)

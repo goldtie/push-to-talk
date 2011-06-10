@@ -257,6 +257,7 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
 	
     Handler mHandler = new Handler() {
     	public void handleMessage(Message msg) {
+    		Log.d("SIPDROID", "[InCallScreen] - mHandler - handleMessage");
     		switch (msg.what) {
     		case MSG_ANSWER:
         		if (Receiver.call_state == UserAgent.UA_STATE_INCOMING_CALL)

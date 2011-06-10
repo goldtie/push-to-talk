@@ -264,7 +264,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 
 	@Override
 	public void onStart() {
-		Log.d("HAO", "PTTCallScreen_onStart");
+		Log.d("SIPDROID", "[PTTCallScreen] - onStart");
 		super.onStart();
 		// SUA TAM
 		// -> speakermode =
@@ -300,6 +300,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 			} catch (IOException e1) {
 				if (!Sipdroid.release)
 					e1.printStackTrace();
+				Log.d("SIPDROID", "[PTTCallScreen] - onResume - Exepction: " + e1.getMessage());
 				//super.onResume();
 				finish();
 				return;
@@ -310,7 +311,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 				initializeVideo();
 			startVideoRecording();
 			//} else if (Receiver.engine(mContext).getRemoteVideo() != 0) {
-			Log.d("HAO", "THANH CONG ROI !!!!!!!!!!!!!!!!!!!!!!");
+			Log.d("SIPDROID", "[PTTCallScreen] - onResume - start video recording successfully");
 			mVideoFrame.setVideoURI(Uri.parse("rtsp://220.149.84.222/livetv.sdp"));
 			//			mVideoFrame.setVideoURI(Uri.parse("rtsp://"+Receiver.engine(mContext).getRemoteAddr()+"/"+
 			//	        		Receiver.engine(mContext).getRemoteVideo()+"/sipdroid"));
@@ -328,7 +329,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 
 	@Override
 	public void onPause() {
-		Log.d("HAO", "PTTCallScreen_onPause");
+		Log.d("SIPDROID", "[PTTCallScreen] - onPause");
 		super.onPause();
 
 		// This is similar to what mShutterButton.performClick() does,
@@ -501,7 +502,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 	}
 
 	public void onError(MediaRecorder mr, int what, int extra) {
-		Log.d("HAO", "PTTCallScreen_onError");
+		Log.d("SIPDROID", "[PTTCallScreen] - void onError");
 		if (what == MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN) {
 			finish();
 		}
@@ -519,19 +520,19 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 
 			try {
 				if (rtp_socket == null)
-					//					rtp_socket = new RtpSocket(new SipdroidSocket(Receiver
-					//						.engine(mContext).getLocalVideo()), InetAddress
-					//						.getByName(Receiver.engine(mContext)
-					//								.getRemoteAddr()), Receiver
-					//						.engine(mContext).getRemoteVideo());
-
 					rtp_socket = new RtpSocket(new SipdroidSocket(Receiver
 							.engine(mContext).getLocalVideo()), InetAddress
-							.getByName("220.149.84.222"), 1234);
+							.getByName(Receiver.engine(mContext)
+									.getRemoteAddr()), Receiver
+									.engine(mContext).getRemoteVideo());
+
+				//					rtp_socket = new RtpSocket(new SipdroidSocket(Receiver
+				//							.engine(mContext).getLocalVideo()), InetAddress
+				//							.getByName("220.149.84.222"), 1234);
 
 			} catch (Exception e) {
 				if (!Sipdroid.release)
-					e.printStackTrace();
+					Log.d("SIPDROID", "[PTTCallScreen] - startVideoRecording - Exception: " + e.getMessage());
 				return;
 			}
 
@@ -710,7 +711,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 	}
 
 	public void onHangup() {
-		Log.d("HAO", "PTTCallScreen_onHangup");
+		Log.d("SIPDROID", "[PttCallScreen] - onHangup");
 
 		finish();
 	}
@@ -768,7 +769,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 
 	@Override
 	public boolean onLongClick(View v) {
-		Log.d("HAO", "PTTCallScreen_onLongClick");
+		Log.d("SIPDROID", "[PTTCallScreen] - onLongClick");
 
 		videoQualityHigh = !videoQualityHigh;
 		initializeVideo();
@@ -825,27 +826,28 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.d("HAO", "PTTCallScreen_onOptionsItemSelected");
+		Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected");
 
 		switch (item.getItemId()) {
 
 		case SPEAKER_MENU_ITEM:
+			Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - SPEAKER_MENU_ITEM");
 			Receiver.engine(this).speaker(AudioManager.MODE_IN_CALL);
 			break;
 
 		case AUDIO_REQUEST_MENU_ITEM:
-			Log.d("HAO", "PTTCallScreen_audio_button");
+			Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - AUDIO_REQUEST_MENU_ITEM");
 			audio_mbcp_process.RequestMSG();
 			break;
 
 		case AUDIO_RELEASE_MENU_ITEM:
-			Log.d("HAO", "PTTCallScreen_audio_button");
+			Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - AUDIO_RELEASE_MENU_ITEM");
 			audio_mbcp_process.ReleaseMSG();
 			break;
 
 
 		case VIDEO_REQUEST_MENU_ITEM:
-			Log.d("HAO", "PTTCallScreen_video_button");
+			Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - VIDEO_REQUEST_MENU_ITEM");
 			video_mbcp_process.RequestMSG();
 			//startVideoRecording();
 			//onResume();
@@ -863,7 +865,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 			Receiver.stopRingtone();
 			Receiver.engine(this).rejectcall();
 			Receiver.xmppEngine().stopConversation();
-			Log.d("HAO", "CallScreen__HANG_UP_MENU_ITEM:");
+			Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - HANG_UP_MENU_ITEM");
 			finish();
 			break;
 
