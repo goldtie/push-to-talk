@@ -111,6 +111,7 @@ public class RtpStreamReceiver extends Thread {
 	}
 	
 	void bluetooth() {
+		Log.d("SIPDROID", "[RtpStreamReceiver] - bluetooth");
 		speaker(AudioManager.MODE_IN_CALL);
 		enableBluetooth(!bluetoothmode);
 	}

@@ -584,6 +584,7 @@ public class SipdroidEngine implements RegisterAgentListener {
 	}
 	
 	public int speaker(int mode) {
+		android.util.Log.d("SIPDROID", "[SipdroidEngine] - speaker - mode = " + Integer.toString(mode));
 		int ret = ua.speakerMediaApplication(mode);
 		Receiver.progress();
 		return ret;

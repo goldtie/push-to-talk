@@ -201,7 +201,7 @@ public class VideoCamera extends CallScreen implements SipdroidListener,
 
 	@Override
 	public void onStart() {
-		Log.d("HAO", "VideoCamera_onStart");
+		Log.d("SIPDROID", "[VideoCamera] - onStart");
 		super.onStart();
 		speakermode = Receiver.engine(this).speaker(AudioManager.MODE_NORMAL);
 		videoQualityHigh = PreferenceManager.getDefaultSharedPreferences(
@@ -264,7 +264,7 @@ public class VideoCamera extends CallScreen implements SipdroidListener,
 
 	@Override
 	public void onPause() {
-		Log.d("HAO", "VideoCamera_onPause");
+		Log.d("SIPDROID", "[VideoCamera] - onPause");
 		super.onPause();
 
 		// This is similar to what mShutterButton.performClick() does,

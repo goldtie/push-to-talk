@@ -133,6 +133,7 @@ public class CallScreen extends Activity implements DialogInterface.OnClickListe
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Log.d("SIPDROID", "[CallScreen] - onOptionsItemSelected");
 		boolean result = super.onOptionsItemSelected(item);
 		Intent intent = null;
 
@@ -140,7 +141,7 @@ public class CallScreen extends Activity implements DialogInterface.OnClickListe
 		case HANG_UP_MENU_ITEM:
 			Receiver.stopRingtone();
 			Receiver.engine(this).rejectcall();
-			Log.d("HAO", "CallScreen__HANG_UP_MENU_ITEM:");
+			Log.d("SIPDROID", "[CallScreen] - onOptionsItemSelected - HANGUP_ITEM");
 			break;
 			
 		case ANSWER_MENU_ITEM:
