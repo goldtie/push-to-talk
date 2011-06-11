@@ -69,6 +69,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 public class PTTCallScreen extends CallScreen implements SipdroidListener,
@@ -201,7 +202,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 	/** Called with the activity is first created. */
 	@Override
 	public void onCreate(Bundle icicle) {
-		Log.d("HAO", "PTTCallScreen_OnCreate");
+		Log.d("SIPDROID", "[PTTCallScreen] - OnCreate");
 		super.onCreate(icicle);
 
 		audio_mbcp_process = new AudioMBCPProcess(this);
@@ -239,7 +240,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 		mChatContentList = (ListView) this.findViewById(R.id.listMessages);
 		mChatContentList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 		mChatContentList.setStackFromBottom(true);
-		
+
 		mSendText = (EditText) this.findViewById(R.id.txtInputChat);
 		Button send = (Button) this.findViewById(R.id.btnSend);
 
@@ -251,9 +252,9 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 				Receiver.onMsgStatus(XMPPEngine.XMPP_STATE_OUTCOMING_MSG, text);
 			}
 		});
-		
+
 	}
-	
+
 	public static void updateListContent(ArrayAdapter<String> adapter){
 		if(mChatContentList != null)
 			mChatContentList.setAdapter(adapter);
@@ -283,7 +284,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.d("HAO", "PTTCallScreen_onResume");
+		Log.d("SIPDROID", "[PTTCallScreen] - onResume");
 		if (!Sipdroid.release)
 			Log.i("SipUA:", "on resume");
 		justplay = intent.hasExtra("justplay");
@@ -325,6 +326,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 		mRecordingTimeView.setVisibility(View.VISIBLE);
 		mHandler.sendEmptyMessage(UPDATE_RECORD_TIME);
 		
+
 	}
 
 	@Override
@@ -334,20 +336,33 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 
 		// This is similar to what mShutterButton.performClick() does,
 		// but not quite the same.
-		if (mMediaRecorderRecording) {
-			stopVideoRecording();
+		//if (mMediaRecorderRecording) {
 
+		try {
+			stopVideoRecording();
+			lss.close();
+			receiver.close();
+			sender.close();
+		} catch (Exception e) {
+			if (!Sipdroid.release)
+				Log.d("SIPDROID", "[PTTCallScreen] - onPause - Exception: " + e.getMessage());
+		} finally {
 			try {
 				lss.close();
 				receiver.close();
 				sender.close();
 			} catch (IOException e) {
-				if (!Sipdroid.release)
-					e.printStackTrace();
+				Log.d("SIPDROID", "[PTTCallScreen] - onPause - Exception: " + e.getMessage());
+				Toast.makeText(this, "Can not close the socket! Terminate right now!", Toast.LENGTH_LONG).show();
 			}
+
 		}
+		//}
 
 		Receiver.engine(this).speaker(speakermode);
+		Receiver.stopRingtone();
+		Receiver.engine(this).rejectcall();
+		Receiver.xmppEngine().stopConversation();
 		finish();
 	}
 
@@ -380,25 +395,25 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 	}
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-		Log.d("HAO", "PTTCallScreen_surfaceChanged");
+		Log.d("SIPDROID", "[PTTCallScreen] - surfaceChanged");
 		if (!justplay && !mMediaRecorderRecording)
 			initializeVideo();
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {
-		Log.d("HAO", "PTTCallScreen_surfaceCreated");
+		Log.d("SIPDROID", "[PTTCallScreen] - surfaceCreated");
 		mSurfaceHolder = holder;
 	}
 
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		Log.d("HAO", "PTTCallScreen_surfaceDestroyed");
+		Log.d("SIPDROID", "[PTTCallScreen] - surfaceDestroyed");
 		mSurfaceHolder = null;
 	}
 
 	boolean isAvailableSprintFFC, useFront = true;
 
 	private void checkForCamera() {
-		Log.d("HAO", "PTTCallScreen_checkForCamera");
+		Log.d("SIPDROID", "[PTTCallScreen] - checkForCamera");
 		try {
 			Class.forName("android.hardware.HtcFrontFacingCamera");
 			isAvailableSprintFFC = true;
@@ -413,8 +428,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 	// initializeVideo() starts preview and prepare media recorder.
 	// Returns false if initializeVideo fails
 	private boolean initializeVideo() {
-		Log.d("HAO", "PTTCallScreen_initializeVideo");
-		Log.v(TAG, "initializeVideo");
+		Log.d("SIPDROID", "[PTTCallScreen] - initializeVideo");
 
 		if (mSurfaceHolder == null) {
 			Log.v(TAG, "SurfaceHolder is null");
@@ -438,14 +452,22 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 			if (isAvailableSprintFFC) {
 				try {
 					Method method = Class.forName(
-					"android.hardware.HtcFrontFacingCamera")
-					.getDeclaredMethod("getCamera", null);
+							"android.hardware.HtcFrontFacingCamera")
+							.getDeclaredMethod("getCamera", null);
 					mCamera = (Camera) method.invoke(null, null);
 				} catch (Exception ex) {
-					Log.d(TAG, ex.toString());
+					Log.d("SIPDROID", "[PTTCallScreen] - initializeVideo - Exception: " + ex.getMessage());
 				}
 			} else {
-				mCamera = Camera.open();
+				try {
+					mCamera = Camera.open();
+				} catch (Exception e) {
+					Log.d("SIPDROID", "[PTTCallScreen] - initializeVideo - Exception: Open camera - " + e.getMessage());
+					mCamera.release();
+					finish();
+					return false;
+				}
+
 				Camera.Parameters parameters = mCamera.getParameters();
 				parameters.set("camera-id", 2);
 				mCamera.setParameters(parameters);
@@ -454,6 +476,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 			mMediaRecorder.setCamera(mCamera);
 			mVideoPreview.setOnClickListener(this);
 		}
+
 		mVideoPreview.setOnLongClickListener(this);
 		mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 		mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
@@ -476,18 +499,20 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 			mMediaRecorder.prepare();
 			mMediaRecorder.setOnErrorListener(this);
 			mMediaRecorder.start();
-		} catch (IOException exception) {
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			Log.d("SIPDROID", "[PTTCallScreen] - initializeVideo - Exception: " + e.getMessage());
 			releaseMediaRecorder();
 			finish();
-			return false;
-		}
+		} 
+
+
 		return true;
 	}
 
 	private void releaseMediaRecorder() {
-		Log.d("HAO", "PTTCallScreen_releaseMediaRecorder");
+		Log.d("SIPDROID", "[PTTCallScreen] - releaseMediaRecorder");
 
-		Log.v(TAG, "Releasing media recorder.");
 		if (mMediaRecorder != null) {
 			mMediaRecorder.reset();
 			if (mCamera != null) {
@@ -691,7 +716,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 					mMediaRecorder.setOnInfoListener(null);
 					mMediaRecorder.stop();
 				} catch (RuntimeException e) {
-					Log.e(TAG, "stop fail: " + e.getMessage());
+					Log.e("SIPDROID", "[PTTCallScreen] - stopVideoRecording - Exception: " + e.getMessage());
 				}
 
 				mMediaRecorderRecording = false;
@@ -862,14 +887,18 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 			break;
 
 		case HANG_UP_MENU_ITEM:
-			Receiver.stopRingtone();
-			Receiver.engine(this).rejectcall();
-			Receiver.xmppEngine().stopConversation();
-			Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - HANG_UP_MENU_ITEM");
-			finish();
+			hangup();
 			break;
 
 		}
 		return true;
+	}
+
+	private void hangup() {
+		Receiver.stopRingtone();
+		Receiver.engine(this).rejectcall();
+		Receiver.xmppEngine().stopConversation();
+		Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - HANG_UP_MENU_ITEM");
+		finish();
 	}
 }

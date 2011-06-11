@@ -111,25 +111,20 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
 	public void onStart() {
 		Log.d("HAO", "InCallScreen_onStart");
 		super.onStart();
-		if (Receiver.call_state == UserAgent.UA_STATE_IDLE)
-     		mHandler.sendEmptyMessageDelayed(MSG_BACK, Receiver.call_end_reason == -1?
-    				2000:5000);
+		
 	    first = true;
 	    pactive = false;
 	    sensorManager.registerListener(this,proximitySensor,SensorManager.SENSOR_DELAY_NORMAL);
 	    started = true;
 	    
-	    if(Presence.mIsPttService){
-			Log.d("HAO", "VIDEO_MENU_ITEM_PTTCallScreen.class");
-			intent = new Intent(this, org.sipdroid.sipua.ui.PTTCallScreen.class);
-			startActivity(intent);
-			finish();
-		}
+	    if (Receiver.call_state == UserAgent.UA_STATE_IDLE)
+     		mHandler.sendEmptyMessageDelayed(MSG_BACK, Receiver.call_end_reason == -1?
+    				2000:5000);
 	}
 
 	@Override
 	public void onPause() {
-		Log.d("HAO", "InCallScreen_onPause");
+		Log.d("SIPDROID", "[InCallScreen] - onPause");
 		super.onPause();
     	if (!Sipdroid.release) Log.i("SipUA:","on pause");
     	switch (Receiver.call_state) {
@@ -139,8 +134,7 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
     	case UserAgent.UA_STATE_IDLE:
     		if (Receiver.ccCall != null)
     			mCallCard.displayMainCallStatus(ccPhone,Receiver.ccCall);
-     		mHandler.sendEmptyMessageDelayed(MSG_BACK, Receiver.call_end_reason == -1?
-    				2000:5000);
+    		mHandler.sendEmptyMessageDelayed(MSG_BACK, Receiver.call_end_reason == -1? 2000:5000);
     		break;
     	}
 		if (t != null) {
@@ -260,19 +254,23 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
     		Log.d("SIPDROID", "[InCallScreen] - mHandler - handleMessage");
     		switch (msg.what) {
     		case MSG_ANSWER:
+    			Log.d("SIPDROID", "[InCallScreen] - mHandler - handleMessage - MSG_ANSWER");
         		if (Receiver.call_state == UserAgent.UA_STATE_INCOMING_CALL)
         			answer();
         		break;
     		case MSG_ANSWER_SPEAKER:
+    			Log.d("SIPDROID", "[InCallScreen] - mHandler - handleMessage - MSG_ANSWER_SPEAKER");
         		if (Receiver.call_state == UserAgent.UA_STATE_INCOMING_CALL) {
         			answer();
     				Receiver.engine(mContext).speaker(AudioManager.MODE_NORMAL);
         		}
         		break;
     		case MSG_BACK:
+    			Log.d("SIPDROID", "[InCallScreen] - mHandler - handleMessage - MSG_BACK");
     			moveBack();
     			break;
     		case MSG_TICK:
+    			Log.d("SIPDROID", "[InCallScreen] - mHandler - handleMessage - MSG_TICK");
     			mCodec.setText(RtpStreamReceiver.getCodec());
     			if (RtpStreamReceiver.good != 0) {
     				if (RtpStreamReceiver.timeout != 0)

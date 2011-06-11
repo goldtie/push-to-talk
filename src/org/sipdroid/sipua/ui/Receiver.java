@@ -296,7 +296,10 @@ import org.zoolu.sip.provider.SipProvider;
 					stopRingtone();
 					if (wl != null && wl.isHeld())
 						wl.release();
-						Log.d("HAO","UA_STATE_INCALL");
+					Log.d("HAO","UA_STATE_INCALL");
+					if (Presence.mIsPttService) {
+						mContext.startActivity(createIntent(PTTCallScreen.class));
+					} else
 						mContext.startActivity(createIntent(InCallScreen.class));	
 					break;
 				case UserAgent.UA_STATE_HOLD:
@@ -642,8 +645,12 @@ import org.zoolu.sip.provider.SipProvider;
 		
 		public static void moveTop() {
 			progress();
-			Log.d("HAO","Receiver_moveTop");
-			mContext.startActivity(createIntent(Activity2.class)); 
+			Log.d("SIPDROID","[Receiver] - moveTop");
+			if(Presence.mIsPttService) {
+				mContext.startActivity(createIntent(PTTCallScreen.class));
+			} else {
+				mContext.startActivity(createIntent(Activity2.class));
+			}
 		}
 
 		public static void progress() {
