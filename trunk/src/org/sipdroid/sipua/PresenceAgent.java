@@ -364,6 +364,7 @@ public class PresenceAgent implements
 								gua.checkFireEvent[i] = false;
 								gua.changeUserStatus(i, Presence.OFFLINE_STATUS);
 							} else if (sender_state.equals("Fire On")) {
+								android.util.Log.d("SIPDROID", "[PresenceAgent] - onDlgNotify - fire event occurs");
 								gua.checkFireEvent[i] = true;
 								gua.changeUserStatus(i,Presence.FIREON_STATUS);
 								if (!Receiver.mSipdroidEngine.isFire()) {
