@@ -412,6 +412,7 @@ public class UserAgent extends CallListenerAdapter {
 
 	/** Launches the Media Application (currently, the RAT audio tool) */
 	protected void launchMediaApplication() {
+		android.util.Log.d("SIPDROID", "[UserAgent] - launchMediaApplication");
 		// exit if the Media Application is already running
 		if (audio_app != null) {
 			printLog("DEBUG: media application is already running",

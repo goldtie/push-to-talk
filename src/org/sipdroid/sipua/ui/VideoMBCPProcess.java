@@ -211,6 +211,7 @@ public class VideoMBCPProcess{
 
 	public void network_send(String servaddr, int port, byte data[],
 			int buf_size) {
+		android.util.Log.d("SIPDROID", "VideoMBCPProcess] - network_send - servaddr: " + servaddr + " - port: " + Integer.toString(port));
 		byte sendbuf[] = new byte[BUF_SIZE];
 		System.arraycopy(data, 0, sendbuf, 0, buf_size);
 		try {
@@ -220,9 +221,9 @@ public class VideoMBCPProcess{
 			socket.send(outPacket);
 			System.out.println(outPacket);
 		} catch (UnknownHostException e) {
-			System.err.println(e);
+			android.util.Log.d("SIPDROID", "VideoMBCPProcess] - network_send - UnknownHostException: " + e.getMessage());
 		} catch (IOException e) {
-			System.err.println(e);
+			android.util.Log.d("SIPDROID", "VideoMBCPProcess] - network_send - IOException: " + e.getMessage());
 		}
 		Allinit();
 	}
@@ -264,6 +265,7 @@ public class VideoMBCPProcess{
 	}
 
 	public void RequestMSG() {
+		Log.d("SIPDROID", "[VideoMBCPProcess] - RequestMSG");
 		encode_mbcp_media_burst_req_msg(ssrc, (short) 0);
 		network_send(Sipdroid.ptt_address, ptt_port, msgbuf,
 				get_mbcp_length());
@@ -271,6 +273,7 @@ public class VideoMBCPProcess{
 	}
 
 	public void ReleaseMSG() {
+		Log.d("SIPDROID", "[VideoMBCPProcess] - ReleaseMSG");
 		encode_mbcp_media_burst_rel_msg(ssrc);
 		network_send(Sipdroid.ptt_address, ptt_port, msgbuf,
 				get_mbcp_length());

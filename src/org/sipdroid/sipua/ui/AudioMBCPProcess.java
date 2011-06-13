@@ -110,30 +110,29 @@ public class AudioMBCPProcess {
 			running = true;
 			while (running) {
 				try {
+					Log.d("SIPDROID", "[AudioMBCPProcess - ReceiveThread]");
 					socket.receive(receivePacket);
 				} catch (Exception ex) {
-					System.out.println(ex.toString());
+					Log.d("SIPDROID", "[AudioMBCPProcess - ReceiveThread] - run - Exception: " + ex.getMessage());
 					running = false;
 					break;
 				}
 
 				MBCP_parse(data);
-				Log.d("HAO", String.valueOf(ptt_state));
+				Log.d("SIPDROID", "[AudioMBCPProcess - ReceiveThread] - run - State: " + String.valueOf(ptt_state));
 				
 				if (ptt_state == MBCP_BURST_GRANTED) {
 					try {
 						UserAgent.audio_app.startSendMedia();
 					} catch (Exception ex) {
-						System.out.println("mbcp send Stream start fail : "
-								+ ex);
+						Log.d("SIPDROID", "[AudioMBCPProcess - ReceiveThread] - run - Exception: MBCP sending fails. Details: " + ex.getMessage());
 					}
 					PTTCallScreen.isAudioSending = true;
 				} else if (ptt_state != MBCP_CONNECT) {
 					try {
 						UserAgent.audio_app.stopSendMedia();
 					} catch (Exception ex) {
-						System.out.println("mbcp send Stream start fail : "
-								+ ex);
+						Log.d("SIPDROID", "[AudioMBCPProcess - ReceiveThread] - run - Exception: MBCP stopping fails. Details: " + ex.getMessage());
 					}
 					PTTCallScreen.isAudioSending = false;
 				}
@@ -147,12 +146,13 @@ public class AudioMBCPProcess {
 		try {
 			socket = new DatagramSocket();
 		} catch (SocketException se) {
-			System.err.println(se);
+			android.util.Log.d("SIPDROID", "[AudioMBCPProcess] - initilizing AudioMBCPProcess error - Exception: " + se.getMessage());
 		}
 	}
 
 	public void network_send(String servaddr, int port, byte data[],
 			int buf_size) {
+		android.util.Log.d("SIPDROID", "[AudioMBCPProcess] - network_send - servaddr: " + servaddr + " - port: " + Integer.toString(port));
 		byte sendbuf[] = new byte[buf_size];
 		System.arraycopy(data, 0, sendbuf, 0, buf_size);
 		// System.out.println("���ۻ������ : " + sendbuf.length);
@@ -169,9 +169,9 @@ public class AudioMBCPProcess {
 			socket.send(outPacket);
 
 		} catch (UnknownHostException e) {
-			System.err.println(e);
+			android.util.Log.d("SIPDROID", "[AudioMBCPProcess] - network_send - UnknownHostException: " + e.getMessage());
 		} catch (IOException e) {
-			System.err.println(e);
+			android.util.Log.d("SIPDROID", "[AudioMBCPProcess] - network_send - IOException: " + e.getMessage());
 		}
 		Allinit();
 	}
@@ -193,24 +193,29 @@ public class AudioMBCPProcess {
 	}
 
 	public void HelloMSG(String URI) {
+		Log.d("SIPDROID", "[AudioMBCPProcess] - HelloMSG");
 		ssrc = gen_ssrc();
 		byte name[] = URI.getBytes();
 		encode_mbcp_media_burst_hello_msg(ssrc, name);
 		network_send(Sipdroid.ptt_address, ptt_port, msgbuf, get_mbcp_length());
 		try {
+			
 			RT = new ReceiveThread("Receive");
+			
 		} catch (Exception ex) {
-			System.out.println(ex.toString());
+			Log.d("SIPDROID", "[AudioMBCPProcess] - HelloMSG - Exception: " + ex.getMessage());
 		}
 		RT.start();
 	}
 
 	public void RequestMSG() {
+		Log.d("SIPDROID", "[AudioMBCPProcess] - RequestMSG");
 		encode_mbcp_media_burst_req_msg(ssrc, (short) 0);
 		network_send(Sipdroid.ptt_address, ptt_port, msgbuf, get_mbcp_length());
 	}
 
 	public void ReleaseMSG() {
+		Log.d("SIPDROID", "[AudioMBCPProcess] - ReleaseMSG");
 		encode_mbcp_media_burst_rel_msg(ssrc);
 		network_send(Sipdroid.ptt_address, ptt_port, msgbuf, get_mbcp_length());
 	}
@@ -363,66 +368,68 @@ public class AudioMBCPProcess {
 		case MBCP_BURST_REQUEST:
 			ptt_state = MBCP_BURST_REQUEST;
 			System.out.println("\nAudio Request state.\n");
-			
+			Log.d("SIPDROID", "[AudioMBCPProcess] - MBCP_parse - Audio Request state");
 			Status = "Waiting";
 			break;
 		case MBCP_BURST_GRANTED:
 			ptt_state = MBCP_BURST_GRANTED;
-			System.out.println("\nAudio Granted state.\n");
-			
+			Log.d("SIPDROID", "[AudioMBCPProcess] - MBCP_parse - Audio Granted state");
+
 			Status = "Sending";
 			break;
 		case MBCP_BURST_TAKEN_EXPECT_NO_REPLY:
 			ptt_state = MBCP_BURST_TAKEN_EXPECT_NO_REPLY;
-			System.out.println("\nAudio Taken state.\n");
-			
+			Log.d("SIPDROID", "[AudioMBCPProcess] - MBCP_parse - Audio Taken state");
 			Status = "Receiving";
 			break;
 		case MBCP_BURST_DENY:
 			ptt_state = MBCP_BURST_DENY;
-			System.out.println("\nAudio Deny state.\n");
-			
+			Log.d("SIPDROID", "[AudioMBCPProcess] - MBCP_parse - Audio Deny state");
 			Status =  "Receiving";
 			
 			break;
 		case MBCP_BURST_RELEASE:
 			ptt_state = MBCP_BURST_RELEASE;
-			System.out.println("\nAudio Release state.\n");
-			
+			Log.d("SIPDROID", "[AudioMBCPProcess] - MBCP_parse - Audio Release state");
 			Status = "Waiting";
 			break;
 		case MBCP_BURST_IDLE:
 			ptt_state = MBCP_BURST_IDLE;
-			System.out.println("\nAudio IDLE state.\n");
+			Log.d("SIPDROID", "[AudioMBCPProcess] - MBCP_parse - Audio IDLE state");
 			
 			Status="Waiting";
 			break;
 		case MBCP_BURST_REVOKE:
 			ptt_state = MBCP_BURST_REVOKE;
-			System.out.println("\nAudio Revoke state.\n");
+			Log.d("SIPDROID", "[AudioMBCPProcess] - MBCP_parse - Audio Revoke state");
+			
 			break;
 		case MBCP_BURST_ACKNOWLEDGMENT:
 			ptt_state = MBCP_BURST_ACKNOWLEDGMENT;
-			System.out.println("\nAudio Acknowledgement state.\n");
+			Log.d("SIPDROID", "[AudioMBCPProcess] - MBCP_parse - Audio Acknowledgement state");
+			
 			break;
 		case MBCP_QUEUE_STATUS_REQUEST:
 			ptt_state = MBCP_QUEUE_STATUS_REQUEST;
-			System.out.println("\nAudio Queue status request state.\n");
+			Log.d("SIPDROID", "[AudioMBCPProcess] - MBCP_parse - Audio Queue status request state");
+			
 			break;
 		case MBCP_QUEUE_STATUS_RESPONSE:
 			ptt_state = MBCP_QUEUE_STATUS_RESPONSE;
-			System.out.println("\nAudio Queue status response state.\n");
+			Log.d("SIPDROID", "[AudioMBCPProcess] - MBCP_parse - Audio Queue status response state");
+			
 			break;
 		case MBCP_DISCONNECT:
 			ptt_state = MBCP_DISCONNECT;
-			System.out.println("\n\nAudio Disconnect state.\n\n");
+			Log.d("SIPDROID", "[AudioMBCPProcess] - MBCP_parse - Audio Disconnect state");
 			
 			Status="Waiting";
 			break;
 		case MBCP_CONNECT:
 			ptt_state = MBCP_CONNECT;
 			Allinit();
-			System.out.println("\n\nAudio Connect state.\n\n");
+			Log.d("SIPDROID", "[AudioMBCPProcess] - MBCP_parse - Audio Connect state");
+			
 			encode_mbcp_media_burst_ack_msg(ssrc);
 			network_send(Sipdroid.ptt_address, ptt_port, msgbuf,get_mbcp_length());
 			System.out.println("\nAudio Connect state, sendto success!!!!\n");
@@ -432,13 +439,13 @@ public class AudioMBCPProcess {
 			break;
 		case MBCP_BURST_TAKEN_EXPECT_REPLY:
 			ptt_state = MBCP_BURST_TAKEN_EXPECT_REPLY;
-			System.out.println("\nAudio Taken expect reply state.\n");
+			Log.d("SIPDROID", "[AudioMBCPProcess] - MBCP_parse - Audio Taken expect reply state");
 			
 			Status="Waiting";
 			break;
 		case MBCP_BURST_HELLO:
 			ptt_state = MBCP_BURST_HELLO;
-			System.out.println("\nAudio Hellow state.\n");
+			Log.d("SIPDROID", "[AudioMBCPProcess] - MBCP_parse - Audio Hello state");
 			
 			Status="Waiting";
 			break;
