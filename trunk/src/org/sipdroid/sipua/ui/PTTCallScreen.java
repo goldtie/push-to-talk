@@ -881,7 +881,6 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 		case VIDEO_RELEASE_MENU_ITEM:
 			//intent.removeExtra("justplay");
 			video_mbcp_process.ReleaseMSG();
-
 			//			intent.removeExtra("justplay");
 			//			onResume();
 			break;
@@ -895,10 +894,10 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 	}
 
 	private void hangup() {
+		Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - HANG_UP_MENU_ITEM");
 		Receiver.stopRingtone();
 		Receiver.engine(this).rejectcall();
 		Receiver.xmppEngine().stopConversation();
-		Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - HANG_UP_MENU_ITEM");
 		finish();
 	}
 }

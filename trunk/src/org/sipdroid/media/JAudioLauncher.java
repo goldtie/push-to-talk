@@ -119,9 +119,7 @@ public class JAudioLauncher implements MediaLauncher
 	// for PTT -->
 	/** Starts Send media application */
 	public boolean startSendMedia() {
-		printLog("starting java audio..", LogLevel.HIGH);
-		
-		android.util.Log.d("HAO", "--- Start SEND Audio && Stop RECEIVER---");
+		android.util.Log.d("SIPDROID", "[JAudioLauncher] - startSendMedia");
 		if (sender != null) {
 			printLog("start sending", LogLevel.LOW);
 			if(!RtpStreamSender.isSending && sender.isRunning())
@@ -134,9 +132,8 @@ public class JAudioLauncher implements MediaLauncher
 
 	/** Stops send media application */
 	public boolean stopSendMedia() {
-		printLog("halting java audio..", LogLevel.HIGH);
+		android.util.Log.d("SIPDROID", "[JAudioLauncher] - stopSendMedia");
 		
-		android.util.Log.d("HAO", "--- Stop SEND Audio && Start RECEIVER---");
 		if (sender != null && sender.isRunning()) {
 			RtpStreamSender.isSending = false;
 		}
