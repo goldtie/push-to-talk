@@ -565,6 +565,7 @@ public class RtpStreamReceiver extends Thread {
 				}
 				timeout = 0;
 			} catch (IOException e) {
+				android.util.Log.d("SIPDROID", "[RtpStreamReceiver] - run - Exception: " + e.getMessage());
 				if (timeout == 0 && nodata) {
 					tg.startTone(ToneGenerator.TONE_SUP_RINGTONE);
 				}

@@ -277,7 +277,7 @@ import org.zoolu.sip.provider.SipProvider;
 					stopRingtone();
 					if (wl != null && wl.isHeld())
 						wl.release();
-					Log.d("HAO", "UA_STATE_IDLE");
+					Log.d("SIPDROID", "[Receiver] - onState - UA_STATE_IDLE");
 					// HAO SUA
 					if (!Presence.mIsPttService)
 						mContext.startActivity(createIntent(InCallScreen.class));
@@ -296,7 +296,7 @@ import org.zoolu.sip.provider.SipProvider;
 					stopRingtone();
 					if (wl != null && wl.isHeld())
 						wl.release();
-					Log.d("HAO","UA_STATE_INCALL");
+					Log.d("SIPDROID", "[Receiver] - onState - UA_STATE_INCALL");
 					if (Presence.mIsPttService) {
 						mContext.startActivity(createIntent(PTTCallScreen.class));
 					} else
@@ -305,6 +305,7 @@ import org.zoolu.sip.provider.SipProvider;
 				case UserAgent.UA_STATE_HOLD:
 					onText(CALL_NOTIFICATION, mContext.getString(R.string.card_title_on_hold), android.R.drawable.stat_sys_phone_call_on_hold,ccCall.base);
 					ccCall.setState(Call.State.HOLDING);
+					Log.d("SIPDROID", "[Receiver] - onState - UA_STATE_HOLD");
 					// HAO SUA 
 			        if (InCallScreen.started && !Presence.mIsPttService){ 
 			        	Log.d("HAO", "UA_STATE_HOLD");
