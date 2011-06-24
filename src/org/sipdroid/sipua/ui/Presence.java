@@ -486,13 +486,12 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 	@Override
 	public void onCreate(Bundle icicle) {
 		
-		Log.d("P", "Presence_OnCreate");
+		Log.d("SIPDROID", "[Presence]  - onCreate");
 		super.onCreate(icicle);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.presence);
 
 		
-
 		sip_provider = Receiver.mSipdroidEngine.sip_providers[0];
 		user_profile = Receiver.mSipdroidEngine.user_profiles[0];
 		
@@ -566,6 +565,8 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		btnMySelf.setText(Settings.getAccountUserName(this));
 	}
 
+	
+	
 	private void initStatusList() {
 		if (Receiver.mSipdroidEngine.user_profiles[0].username.equals("fire")){
 			statusList = new String[] {"On Line", "Off Line", "Busy", "Fire On","Fire Off"};

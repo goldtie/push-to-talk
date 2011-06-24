@@ -142,7 +142,7 @@ public class JAudioLauncher implements MediaLauncher
 	@Override
 	public boolean startReceiveMedia() {
 		if (receiver!=null)	{
-			printLog("start receiving",LogLevel.LOW);
+			android.util.Log.i("SIPDROID", "[JAudioLauncher] - startReceiveMedia");
 	        receiver.start();
 	    }
 		return true; 

@@ -392,10 +392,10 @@ public class UserAgent extends CallListenerAdapter {
 		{
 			return false;
 		}
+		android.util.Log.i("SIPDROID", "[UserAgent] - accept - local_session: " + local_session);
 		
-		printLog("ACCEPT");
 		changeStatus(UA_STATE_INCALL); // modified
-
+		
 		call.accept(local_session);
 		
 		return true;
@@ -412,7 +412,7 @@ public class UserAgent extends CallListenerAdapter {
 
 	/** Launches the Media Application (currently, the RAT audio tool) */
 	protected void launchMediaApplication() {
-		android.util.Log.d("SIPDROID", "[UserAgent] - launchMediaApplication");
+		android.util.Log.i("SIPDROID", "[UserAgent] - launchMediaApplication");
 		// exit if the Media Application is already running
 		if (audio_app != null) {
 			printLog("DEBUG: media application is already running",
@@ -435,6 +435,9 @@ public class UserAgent extends CallListenerAdapter {
 		MediaDescriptor m = local_sdp.getMediaDescriptor("video");
 		if ( m != null)
 			local_video_port = m.getMedia().getPort();
+		
+		android.util.Log.d("SIPRDOIR", "[UserAgent] - launchMediaApplication - local_sdp: " + local_sdp);
+		
 		m = local_sdp.getMediaDescriptor("audio");
 		if (m != null) {
 			local_audio_port = m.getMedia().getPort();
@@ -444,6 +447,9 @@ public class UserAgent extends CallListenerAdapter {
 		// parse remote sdp
 		SessionDescriptor remote_sdp = new SessionDescriptor(call
 				.getRemoteSessionDescriptor());
+		
+		android.util.Log.d("SIPRDOIR", "[UserAgent] - launchMediaApplication - remote_sdp: " + remote_sdp);
+		
 		remote_media_address = (new Parser(remote_sdp.getConnection()
 				.toString())).skipString().skipString().getString();
 		int remote_audio_port = 0;
@@ -599,7 +605,7 @@ public class UserAgent extends CallListenerAdapter {
 				return;
 			}
 		}
-		call.ring(local_session);		
+		call.ring(local_session);	
 		launchMediaApplication();
 	}
 

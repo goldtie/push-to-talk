@@ -109,7 +109,7 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
 	
 	@Override
 	public void onStart() {
-		Log.d("HAO", "InCallScreen_onStart");
+		Log.d("SIPDROID", "[InCallScreen] - onStart");
 		super.onStart();
 		
 	    first = true;
@@ -155,13 +155,14 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
 			
 		}
 		onStop();
+		
 	}
 	
 	Context mContext = this;
 
 	@Override
 	public void onResume() {
-		Log.d("HAO", "InCallScreen_onResume");
+		Log.d("SIPDROID", "[InCallScreen]  - onResume");
 		super.onResume();
     	if (!Sipdroid.release) Log.i("SipUA:","on resume");
 		switch (Receiver.call_state) {
@@ -241,12 +242,6 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
 			}).start();
 	    }
 	    
-//	    if(Sipdroid.pttService){
-//			Log.d("HAO", "VIDEO_MENU_ITEM_PTTCallScreen.class");
-//			intent = new Intent(this, org.sipdroid.sipua.ui.PTTCallScreen.class);
-//			startActivity(intent);
-//			finish();
-//		}
 	}
 	
     Handler mHandler = new Handler() {
@@ -272,6 +267,7 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
     		case MSG_TICK:
     			Log.d("SIPDROID", "[InCallScreen] - mHandler - handleMessage - MSG_TICK");
     			mCodec.setText(RtpStreamReceiver.getCodec());
+    			Log.d("SIPDROID", "[InCallScreen] - mHandler - handleMessage - mCodec: " + RtpStreamReceiver.getCodec());
     			if (RtpStreamReceiver.good != 0) {
     				if (RtpStreamReceiver.timeout != 0)
     					mStats.setText("no data");
@@ -371,7 +367,7 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
         new HashMap<Character, Integer>();
     
 	public void onClick(View v) {
-		Log.d("HAO", "InCallScreen_onClick");
+		Log.i("SIPDROID", "[InCallScreen] - onClick");
         int viewId = v.getId();
 
         // if the button is recognized
@@ -386,7 +382,7 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
 
     @Override
 	public void onCreate(Bundle icicle) {
-    	Log.d("HAO", "InCallScreen_onCreate");
+    	Log.d("SIPDROID", "[InCallScreen]  - onCreate");
 		super.onCreate(icicle);
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -419,6 +415,7 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
     }
 	
 	public void answer() {
+		Log.d("SIPDROID", "[InCallScreen]  - answer");
         (new Thread() {
 			public void run() {
 				Receiver.engine(mContext).answercall();
