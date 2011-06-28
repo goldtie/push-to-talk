@@ -39,6 +39,7 @@ import org.zoolu.tools.Log;
 import org.zoolu.tools.LogLevel;
 
 import android.content.Intent;
+import android.os.Handler;
 
 /**
  * Simple Presence Agent (PA). <br/>
@@ -321,7 +322,7 @@ public class PresenceAgent implements
 		listener.onPaSubscriptionTerminated(this, dialog.getRemoteName(),
 				"Terminated");
 	}
-
+	protected Handler mHandler = new Handler();
 	/** When an incoming NOTIFY is received. */
 	public void onDlgNotify(SubscriberDialog dialog, NameAddress target,
 			NameAddress notifier, NameAddress contact, String state,
@@ -368,10 +369,15 @@ public class PresenceAgent implements
 								gua.checkFireEvent[i] = true;
 								gua.changeUserStatus(i,Presence.FIREON_STATUS);
 								if (!Receiver.mSipdroidEngine.isFire()) {
-									Presence.mIsPttService = true;
-									String ptt = Settings.getPTT_Username(Receiver.mContext)+"@"+ Settings.getPTT_Server(Receiver.mContext);
-									Receiver.mSipdroidEngine.call(ptt, true);
-									Receiver.xmppEngine().startConversation("ptt@conference." + Settings.getXMPP_Service(Receiver.mContext), XMPPEngine.CONFERENCE);
+									mHandler.post(new Runnable() {
+										public void run() {
+											Presence.mIsPttService = true;
+											String ptt = Settings.getPTT_Username(Receiver.mContext)+"@"+ Settings.getPTT_Server(Receiver.mContext);
+											Receiver.mSipdroidEngine.call(ptt, true);
+											Receiver.xmppEngine().startConversation("ptt@conference." + Settings.getXMPP_Service(Receiver.mContext), XMPPEngine.CONFERENCE);
+										}
+									});
+									
 								}
 							} else if (sender_state.equals("Fire Off")) {
 								gua.checkFireEvent[i] = false;
