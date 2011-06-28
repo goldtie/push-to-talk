@@ -89,6 +89,7 @@ public class CallScreen extends Activity implements DialogInterface.OnClickListe
 	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
+		Log.d("SIPDROID", "[CallScreen] - onPrepareOptionsMenu");
 		boolean result = super.onPrepareOptionsMenu(menu);
 
 		if (Receiver.mSipdroidEngine != null &&
@@ -228,7 +229,7 @@ public class CallScreen extends Activity implements DialogInterface.OnClickListe
 	
 	@Override
 	public void onResume() {
-		Log.d("HAO", "CallScreen_onResume -!!!!!!!!!!!!!!");
+		Log.d("SIPDROID", "[CallScreen] - onResume");
 		super.onResume();
 		if (Integer.parseInt(Build.VERSION.SDK) >= 5 && Integer.parseInt(Build.VERSION.SDK) <= 7)
 			disableKeyguard();
@@ -302,6 +303,7 @@ public class CallScreen extends Activity implements DialogInterface.OnClickListe
     		
     @Override
 	public void onPause() {
+    	Log.d("SIPDROID", "[CallScreen] - onPause");
 		if (socket != null) {
 			socket.close();
 			socket = null;
@@ -313,6 +315,7 @@ public class CallScreen extends Activity implements DialogInterface.OnClickListe
 	
 	@Override
 	public void onStart() {
+		Log.d("SIPDROID", "[CallScreen] - onStart");
 		super.onStart();
 		if (Integer.parseInt(Build.VERSION.SDK) < 5 || Integer.parseInt(Build.VERSION.SDK) > 7)
 			disableKeyguard();
@@ -320,6 +323,7 @@ public class CallScreen extends Activity implements DialogInterface.OnClickListe
 	
 	@Override
 	public void onStop() {
+		Log.d("SIPDROID", "[CallScreen] - onStop");
 		super.onStop();
 		if (Integer.parseInt(Build.VERSION.SDK) < 5 || Integer.parseInt(Build.VERSION.SDK) > 7)
 			reenableKeyguard();
