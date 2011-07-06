@@ -1,9 +1,0 @@
-[Header]
-Type=GifSplitter Frames
-Version=2.0
-Count=4
-[Frames]
-IMG00000=C:\Documents and Settings\HoangTuanSu\workspace\ptt\res\drawable\chat_icon.gif.ifl\IMG00000.bmp
-IMG00001=C:\Documents and Settings\HoangTuanSu\workspace\ptt\res\drawable\chat_icon.gif.ifl\IMG00001.bmp
-IMG00002=C:\Documents and Settings\HoangTuanSu\workspace\ptt\res\drawable\chat_icon.gif.ifl\IMG00002.bmp
-IMG00003=C:\Documents and Settings\HoangTuanSu\workspace\ptt\res\drawable\chat_icon.gif.ifl\IMG00003.bmp
