@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="lib" path="C:/Documents and Settings/HoangTuanSu/workspace/ptt/libs/asmack-issue-13.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/HoangTuanSu/workspace/ptt/libs/TomP2P-3.2.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

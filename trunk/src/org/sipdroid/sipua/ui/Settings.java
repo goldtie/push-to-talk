@@ -23,6 +23,7 @@ package org.sipdroid.sipua.ui;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.concurrent.TimeUnit;
 
 import org.sipdroid.codecs.Codecs;
 import org.sipdroid.media.RtpStreamReceiver;
@@ -31,6 +32,7 @@ import org.sipdroid.sipua.SipdroidEngine;
 import org.zoolu.sip.provider.SipStack;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -38,6 +40,7 @@ import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -98,9 +101,8 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 	 */
 
 	// Name of the keys in the Preferences XML file
-	public static final String PREF_USERNAME = "username";
+	
 	public static final String PREF_PASSWORD = "password";
-	public static final String PREF_SERVER = "server";
 	public static final String PREF_DOMAIN = "domain";
 	public static final String PREF_FROMUSER = "fromuser";
 	public static final String PREF_PORT = "port";
@@ -109,19 +111,17 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 	public static final String PREF_3G = "3g";
 	public static final String PREF_EDGE = "edge";
 	public static final String PREF_VPN = "vpn";
-
-	// for PTT -->
-	public static final String PREF_PTT_SETTING = "ptt";
-	public static final String PREF_PTT = "ptt_on";
-	public static final String PREF_PTT_USERNAME = "ptt_username";
-	public static final String PREF_PTT_SERVER = "ptt_server";
-	// <--
-
-	public static final String PREF_XMPP_SETTING = "xmpp";
-	public static final String PREF_XMPP = "xmpp_on";
+	
+	public static final String PREF_USERNAME = "server_settings_sip_account";
+	public static final String PREF_PTT_USERNAME = "server_settings_ptt_identification";
+	public static final String PREF_SERVER = "server_settings_server_address";
+	public static final String PREF_XMPP_SERVICE = "server_settings_xmpp_service";
 	public static final String PREF_XMPP_SERVER = "xmpp_server";
+	public static final String DEFAULT_XMPP_SERVER = "220.70.2.113";
+	
+	// for PTT -->
 	public static final String PREF_XMPP_PORT = "xmpp_port";
-	public static final String PREF_XMPP_SERVICE = "xmpp_service";
+	
 	
 	public static final String PREF_PREF = "pref";
 	public static final String PREF_AUTO_ON = "auto_on";
@@ -183,7 +183,6 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 	// <--
 	
 	public static final boolean DEFAULT_XMPP = true;
-	public static final String DEFAULT_XMPP_SERVER = "220.70.2.113";
 	public static final String DEFAULT_XMPP_PORT = "5222";
 	public static final String DEFAULT_XMPP_SERVICE = "tieuhao-pc";
 	
@@ -292,14 +291,6 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 				.getString(PREF_USERNAME, "");
 	}
 	
-	// for PTT -->
-	// This code retrieve the current values of our PTT options
-	/** Get the current value of the PTT option */
-	public static boolean getPTT(Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context)
-				.getBoolean(PREF_PTT, DEFAULT_PTT);
-	}
-
 	/** Get the current value of the PTT Username option */
 	public static String getPTT_Username(Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context)
@@ -309,22 +300,15 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 	/** Get the current value of the PTT Server option */
 	public static String getPTT_Server(Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context)
-				.getString(PREF_PTT_SERVER, DEFAULT_PTT_SERVER);
+				.getString(PREF_SERVER, DEFAULT_PTT_SERVER);
 	}
 
 	 public static String getPTTServer(SharedPreferences s) {
-	    	String pttServer = s.getString(PREF_PTT_SERVER, DEFAULT_PTT_SERVER);
+	    	String pttServer = s.getString(PREF_SERVER, DEFAULT_PTT_SERVER);
 
 	    	return pttServer;
 	    }
 	
-	// <--
-
-	 public static boolean getXMPP(Context context) {
-		 return PreferenceManager.getDefaultSharedPreferences(context)
-		 .getBoolean(PREF_XMPP, DEFAULT_XMPP);
-	 }
-
 	 public static String getXMPP_Server(Context context) {
 		 return PreferenceManager.getDefaultSharedPreferences(context)
 		 .getString(PREF_XMPP_SERVER, DEFAULT_XMPP_SERVER);
@@ -343,22 +327,20 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
     	if (Receiver.mContext == null) Receiver.mContext = this;
-		addPreferencesFromResource(R.xml.preferences);
-		setDefaultValues();
-		Codecs.check();
+    	
+    	
+        addPreferencesFromResource(R.xml.preferences);
+ 		
+ 		setDefaultValues();
+ 		Codecs.check();
 
-		// for PTT -->
-		CheckBoxPreference cb_ptt = (CheckBoxPreference) getPreferenceScreen()
-				.findPreference(PREF_PTT);
-		cb_ptt.setChecked(true);
-
-		getPreferenceScreen().findPreference(PREF_PTT_USERNAME)
-				.setDefaultValue(DEFAULT_PTT_USERNAME);
-		getPreferenceScreen().findPreference(PREF_PTT_SERVER).setDefaultValue(
-				DEFAULT_PTT_SERVER);
-
+ 		getPreferenceScreen().findPreference(PREF_PTT_USERNAME)
+ 				.setDefaultValue(DEFAULT_PTT_USERNAME);
+ 		getPreferenceScreen().findPreference(PREF_SERVER).setDefaultValue(
+ 				DEFAULT_PTT_SERVER);
+       
 		
 		// <--
 	}
@@ -437,6 +419,7 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
     	context = this;
 
     	switch (item.getItemId()) {
+    	
             case MENU_IMPORT:
             	// Get the content of the directory
             	profileFiles = getProfileList();
@@ -653,26 +636,7 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 		if (key.startsWith(PREF_WLAN) || key.startsWith(PREF_3G) || key.startsWith(PREF_EDGE) || key.startsWith(PREF_OWNWIFI)) {
 			updateSleep();
 		}
-		// for PTT -->
-		if (key.startsWith(PREF_PTT)) {
-			CheckBoxPreference cb = (CheckBoxPreference) getPreferenceScreen()
-					.findPreference(PREF_PTT);
-			EditTextPreference et_Username = (EditTextPreference) getPreferenceScreen()
-					.findPreference(PREF_PTT_USERNAME);
-			EditTextPreference et_Server = (EditTextPreference) getPreferenceScreen()
-					.findPreference(PREF_PTT_SERVER);
-			
-			et_Username.setSelectable(cb.isChecked());
-			//et_Username.setShouldDisableView(cb.isChecked());
-			et_Username.setEnabled(cb.isChecked());
-			
-
-			et_Server.setSelectable(cb.isChecked());
-			//et_Server.setShouldDisableView(cb.isChecked());
-			et_Server.setEnabled(cb.isChecked());
-			
-		}
-		// <--
+		
 		updateSummaries();
     }
 
@@ -747,7 +711,7 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 	    	getPreferenceScreen().findPreference(PREF_PORT+j).setSummary(settings.getString(PREF_PORT+j, DEFAULT_PORT));
 	    	getPreferenceScreen().findPreference(PREF_PROTOCOL+j).setSummary(settings.getString(PREF_PROTOCOL+j,
 	    		settings.getString(PREF_SERVER+j, DEFAULT_SERVER).equals(DEFAULT_SERVER) ? "tcp" : "udp").toUpperCase());
-	    	getPreferenceScreen().findPreference(PREF_ACCOUNT+j).setSummary(username.equals("")||server.equals("")?getResources().getString(R.string.settings_line)+" "+(i+1):username+"@"+server);
+
        	}
        	
     	getPreferenceScreen().findPreference(PREF_SEARCH).setSummary(settings.getString(PREF_SEARCH, DEFAULT_SEARCH)); 
@@ -793,25 +757,6 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
        	}
        	getPreferenceScreen().findPreference(PREF_BLUETOOTH).setEnabled(RtpStreamReceiver.isBluetoothSupported());
 		
-		// for PTT --> 
-		// set summary text 
-		if (settings.getBoolean(PREF_PTT, DEFAULT_PTT)) {
-		getPreferenceScreen().findPreference(PREF_PTT_SERVER).setSummary(
-				settings.getString(PREF_PTT_SERVER, DEFAULT_PTT_SERVER));
-		getPreferenceScreen().findPreference(PREF_PTT_USERNAME).setSummary(
-				settings.getString(PREF_PTT_USERNAME,
-						DEFAULT_PTT_USERNAME));
-		
-		String ptt_username = settings.getString(PREF_PTT_USERNAME ,
-				DEFAULT_PTT_USERNAME), ptt_server = settings.getString(PREF_PTT_SERVER
-				, DEFAULT_PTT_SERVER);
-		getPreferenceScreen().findPreference(PREF_PTT_SETTING).setSummary(
-				ptt_username+"@"+ptt_server);
-
-		}
-		else 
-			getPreferenceScreen().findPreference(PREF_PTT_SETTING).setSummary("");
-		// <--
 	}
 
     @Override

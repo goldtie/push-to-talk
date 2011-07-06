@@ -5,7 +5,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
-import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.sipdroid.sipua.PresenceAgent;
 import org.sipdroid.sipua.PresenceAgentListener;
 import org.sipdroid.sipua.R;
@@ -25,7 +24,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -111,7 +109,9 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 	public boolean[] checkFireEvent;
 
 	private String[] statusList;
-		
+	
+	final Handler mHandler = new Handler();
+	
 	private static class EfficientAdapter extends BaseAdapter {
 		private LayoutInflater mInflater;
 		private Bitmap mIconOnLine;
@@ -358,7 +358,7 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		}).show();
 	}
 	
-	final Handler mHandler = new Handler();
+	
 	public void changeUserStatus(int index, int status) {
 		final int tmp1 = index, tmp2 = status;
 		mHandler.post(new Runnable() {
@@ -563,6 +563,7 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		Receiver.xmppEngine().setContext(this);
 		Button btnMySelf = (Button) findViewById(R.id.mystatus);
 		btnMySelf.setText(Settings.getAccountUserName(this));
+		
 	}
 
 	
