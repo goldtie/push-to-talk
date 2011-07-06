@@ -97,7 +97,7 @@
 	
 	<!--  for Presence  end -->
 
-<string name="settings_account">SIP Account</string>
+
 <string name="settings_line">Line</string>
 <string name="settings_username">Authorization Username</string>
 <string name="settings_password">Password</string>
@@ -236,7 +236,7 @@
 <string name="settings_nodata">No Data</string>
 <string name="settings_nodata2">Indicate missing voice packets by audible tones</string>
 
-<string name="settings_advanced_options">Advanced Options</string>
+
 <string name="settings_av_options">Audio/Video</string>
 <string name="settings_policy_never">Changed system sleep policy to keep Wi-Fi on.</string>
 <string name="settings_policy_default">Reset Wi-Fi sleep policy to default.</string>
@@ -338,5 +338,88 @@
 
 <string name="help_speakerphone">Press and hold volume buttons to force talk</string>
 
+<string name="settings_basic">Basic</string>
+<string name="settings_basic_about">About</string>
+<string name="settings_basic_version">Version</string>
+<string name="settings_basic_help">Help</string>
+<string name="main_no_items">No items</string>
+<string name="checkbox_text">Selected</string>
 
+
+<string name="settings_chat_room_settings">Chat Room Settings</string>
+
+<string name="settings_chat_room_settings_message_font_size">Message Font Size</string>
+<string-array name="message_font_size_display_values">
+        <item>Tiny</item>
+        <item>Normal</item>
+        <item>Big</item>
+        <item>Bigger</item>
+</string-array>
+<string-array name="message_font_size_values">
+        <item>10</item>
+        <item>13</item>
+        <item>15</item>
+        <item>20</item>
+</string-array>
+
+<string name="settings_chat_room_settings_message_font_summary">Set the Message Font Size when chatting</string>
+
+<string name="settings_chat_room_settings_message_font_dialog_title">You can set the message font size when chatting</string>
+
+
+<string name="settings_chat_room_settings_send_with_enter_key">Send with enter key</string>
+
+<string name="settings_chat_room_settings_send_with_enter_key_summary">Convenient Message Sending with Bluetooth Keyboard of Qwerty Keypad</string>
+
+
+<string name="settings_alert">Alert</string>
+
+<string name="settings_alert_at_message_arrival">Alert at Message Arrival</string>
+<string name="settings_alert_at_message_arrival_summary">Set Various Alerts at Message Arrival</string>
+<string name="settings_alert_at_message_arrival_text">Message Arrival Alert</string>
+<string name="settings_alert_at_message_arrival_text_summary">Message Arrival alerts even when a user is not in chatting</string>
+<string name="settings_alert_at_message_arrival_fireon">Fire On Event Arrival Alert</string>
+<string name="settings_alert_at_message_arrival_fireon_summary">A sound will alert you of new fire-on event</string>
+
+<string name="settings_set_alert_sound">Set Alert Sound</string>
+
+<string-array name="set_alert_sound_display_values">
+        <item>Tiny</item>
+        <item>Normal</item>
+        <item>Big</item>
+        <item>Bigger</item>
+</string-array>
+
+<string-array name="set_alert_sound_values">
+        <item>10</item>
+        <item>13</item>
+        <item>15</item>
+        <item>20</item>
+</string-array>
+
+<string name="settings_set_alert_sound_list_summary">Set Alert sound for Event Arrival</string>
+
+<string name="settings_set_alert_sound_list_dialog_title">Alert Sound</string>
+
+
+<string name="settings_server_settings">Server Settings</string>
+<string name="settings_server_settings_sip_account">SIP Account</string>
+<string name="settings_server_settings_ptt_identification">Push-To-Talk Identification</string>
+<string name="settings_server_settings_xmpp_service">XMPP Service</string>
+<string name="settings_server_settings_server_address">Server Address</string>
+
+
+<string name="settings_personal">Personal</string>
+<string name="settings_personal_username">Username</string>
+<string name="settings_personal_email">Email</string>
+<string name="settings_personal_phone_number">Phone Number</string>
+<string name="settings_personal_status">Status</string>
+
+
+<string name="settings_advance">Advance</string>
+<string name="settings_account">Account</string>
+<string name="settings_other_options">Other Options</string>
+
+<string name="contacts_list_no_contact">No Contacts</string>
+ <string name="search_bar_hint">Search contacts</string>   
 </resources>

@@ -33,4 +33,10 @@
 
     <color name="recording_time_elapsed_text">#FFFFFFFF</color>
     <color name="recording_time_remaining_text">#FFFF0033</color>
+    
+    	<color name="item_bg">#d6dffa</color>
+	<color name="seleted_item_bg">#a6b9f4</color>
+    <color name="settings_bg">#d6dffa</color>
+    <color name="divider">#a6b9f4</color>
+    
   </resources>

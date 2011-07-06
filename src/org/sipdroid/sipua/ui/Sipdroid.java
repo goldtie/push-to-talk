@@ -22,9 +22,11 @@
 package org.sipdroid.sipua.ui;
 
 
+import net.tomp2p.p2p.Peer;
+import net.tomp2p.peers.Number160;
+
 import org.sipdroid.sipua.R;
 import org.sipdroid.sipua.SipdroidEngine;
-import org.sipdroid.sipua.XMPPEngine;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -37,17 +39,12 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-
 
 /////////////////////////////////////////////////////////////////////
 // this the main activity of Sipdroid
@@ -59,14 +56,9 @@ public class Sipdroid extends Activity implements OnDismissListener{
 	public static final boolean release = true;
 	public static final boolean market = false;
 	
-	// for PTT -->
 	public static String ptt_address = "";
 	
-	
-//	/** MBCPProcess */
-//	public static AudioMBCPProcess audio_mbcp_process = null;
-//	public static VideoMBCPProcess video_mbcp_process = null;
-	// <---
+	private Peer peer;
 	
 	Intent intent;
 	
@@ -283,7 +275,6 @@ public class Sipdroid extends Activity implements OnDismissListener{
 		onResume();
 	}
 	
-	
 	public void login() {
 		if(!Receiver.engine(this).isRegistered()) {
 			//Toast.makeText(this, "No suitable network connection available. Please check your configuration!", Toast.LENGTH_LONG).show();
@@ -293,7 +284,10 @@ public class Sipdroid extends Activity implements OnDismissListener{
 			Receiver.xmppEngine().login(org.sipdroid.sipua.ui.Settings.getAccountUserName(getBaseContext()) + "@" +  
 					org.sipdroid.sipua.ui.Settings.getXMPP_Service(getBaseContext()), 
 					org.sipdroid.sipua.ui.Settings.getAccountUserName(getBaseContext()));
-			intent = new Intent(getBaseContext(), org.sipdroid.sipua.ui.Presence.class);
+			
+			
+			
+			intent = new Intent(getBaseContext(), org.sipdroid.sipua.ui.MainUIActivity.class);
 			startActivity(intent);
 			finish();
 			
