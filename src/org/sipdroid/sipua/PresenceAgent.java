@@ -352,8 +352,8 @@ public class PresenceAgent implements
 					String get_notifier_URI = notifier_URI
 							.substring(s2 + 1, e2);
 
-					for (i = 0; i < gua.contactList.size(); i++) {
-						if (gua.contactList.get(i).mName
+					for (i = 0; i < gua.mContactList.size(); i++) {
+						if (gua.mContactList.get(i).mUsername
 								.equals(get_notifier_URI)) {
 							if (sender_state.equals("Busy")) {
 								gua.checkFireEvent[i] = false;
