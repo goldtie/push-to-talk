@@ -43,10 +43,10 @@ public class ContactsListActivity extends ListActivity implements TextWatcher, T
         mAdapter = new SeparatedListAdapter(this);
         setListAdapter(mAdapter);
 		
-		mAdapter.addNewContact("A", new Contact("Anh"));
-        mAdapter.addNewContact("A", new Contact("Anh"));
-        mAdapter.addNewContact("B", new Contact("Binh"));
-        mAdapter.addNewContact("B", new Contact("Ban"));
+		mAdapter.addNewContact("A", new Contact("Anh", EMPTY));
+        mAdapter.addNewContact("A", new Contact("Anh", EMPTY));
+        mAdapter.addNewContact("B", new Contact("Binh", EMPTY));
+        mAdapter.addNewContact("B", new Contact("Ban", EMPTY));
 
 	}
 	
