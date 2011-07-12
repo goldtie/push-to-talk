@@ -696,8 +696,8 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
        		String j = (i!=0?""+i:"");
        		String username = settings.getString(PREF_USERNAME+j, DEFAULT_USERNAME),
        			server = settings.getString(PREF_SERVER+j, DEFAULT_SERVER);
-	    	getPreferenceScreen().findPreference(PREF_USERNAME+j).setSummary(username); 
-	    	getPreferenceScreen().findPreference(PREF_SERVER+j).setSummary(server);
+	    	//getPreferenceScreen().findPreference(PREF_USERNAME+j).setSummary(username); 
+	    	//getPreferenceScreen().findPreference(PREF_SERVER+j).setSummary(server);
 	    	if (settings.getString(PREF_DOMAIN+j, DEFAULT_DOMAIN).length() == 0) {
 	    		getPreferenceScreen().findPreference(PREF_DOMAIN+j).setSummary(getString(R.string.settings_domain2));
 	    	} else {

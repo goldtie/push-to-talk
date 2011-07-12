@@ -421,5 +421,8 @@
 <string name="settings_other_options">Other Options</string>
 
 <string name="contacts_list_no_contact">No Contacts</string>
- <string name="search_bar_hint">Search contacts</string>   
+ <string name="search_bar_hint">Search contacts</string>
+ 
+<string name="spinner_prompt">Change my status</string>
+ 
 </resources>
