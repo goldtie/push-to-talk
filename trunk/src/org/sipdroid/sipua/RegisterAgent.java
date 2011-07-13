@@ -513,7 +513,7 @@ public class RegisterAgent implements TransactionClientListener, SubscriberDialo
 			}
 			
 			printLog("Registration success: " + result, LogLevel.HIGH);
-			//HAO copy tam -->
+			
 			if (CurrentState == REGISTERING)
 			{
 				CurrentState = REGISTERED;
@@ -531,7 +531,6 @@ public class RegisterAgent implements TransactionClientListener, SubscriberDialo
 					listener.onUaRegistrationSuccess(this, target, contact, result);
 				}
 			}
-			//HAO copy tam <---
 		}
 	}
 
