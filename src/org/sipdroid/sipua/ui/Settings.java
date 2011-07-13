@@ -23,10 +23,6 @@ package org.sipdroid.sipua.ui;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
 import java.util.concurrent.TimeUnit;
 
 import org.sipdroid.codecs.Codecs;
@@ -122,13 +118,8 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 	public static final String PREF_XMPP_SERVICE = "server_settings_xmpp_service";
 	public static final String PREF_XMPP_SERVER = "xmpp_server";
 	public static final String DEFAULT_XMPP_SERVER = "220.70.2.113";
-
-	// for P2P -->
-	public static final String PREF_P2P = "p2p";
-	public static final String PREF_P2P_MODE = "p2p_mode";
-	public static final String PREF_P2P_IP_BOOTSTRAP = "p2p_ip_bootstrap";
-	// <--
-
+	
+	// for PTT -->
 	public static final String PREF_XMPP_PORT = "xmpp_port";
 	
 	
@@ -173,32 +164,24 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 	public static final String PREF_ACCOUNT = "account";
 	
 	// Default values of the preferences
-	public static final String DEFAULT_USERNAME = "";
-	public static final String DEFAULT_PASSWORD = "";
-	public static final String DEFAULT_SERVER = "p2p.dcn.ssu.ac.kr";
-	public static final String DEFAULT_DOMAIN = "";
-	public static final String DEFAULT_FROMUSER = "";
-	public static final String DEFAULT_PORT = "" + SipStack.default_port;
-	public static final String DEFAULT_PROTOCOL = "tcp";
-	public static final boolean DEFAULT_WLAN = true;
-	public static final boolean DEFAULT_3G = false;
-	public static final boolean DEFAULT_EDGE = false;
-	public static final boolean DEFAULT_VPN = false;
+	public static final String	DEFAULT_USERNAME = "";
+	public static final String	DEFAULT_PASSWORD = "";
+	public static final String	DEFAULT_SERVER = "220.149.84.7";
+	public static final String	DEFAULT_DOMAIN = "";
+	public static final String	DEFAULT_FROMUSER = "";
+	public static final String	DEFAULT_PORT = "" + SipStack.default_port;
+	public static final String	DEFAULT_PROTOCOL = "tcp";
+	public static final boolean	DEFAULT_WLAN = true;
+	public static final boolean	DEFAULT_3G = false;
+	public static final boolean	DEFAULT_EDGE = false;
+	public static final boolean	DEFAULT_VPN = false;
 
 	// for PTT --> default value
 	public static final boolean DEFAULT_PTT = true;
 	public static final String DEFAULT_PTT_USERNAME = "4440";
 	public static final String DEFAULT_PTT_SERVER = "220.70.2.108";
 	// <--
-
-	// for P2P --> default value
-	public static final boolean DEFAULT_P2P = true;
-	// 1 means "Join P2P Overlay";
-	// 0 means Be Bootstrap node
-	public static final String DEFAULT_P2P_MODE = "1";
-	public static final String DEFAULT_P2P_IP_BOOTSTRAP = "220.70.2.113";
-	// <--
-
+	
 	public static final boolean DEFAULT_XMPP = true;
 	public static final String DEFAULT_XMPP_PORT = "5222";
 	public static final String DEFAULT_XMPP_SERVICE = "tieuhao-pc";
@@ -341,21 +324,6 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 		 .getString(PREF_XMPP_SERVICE, DEFAULT_XMPP_SERVICE);
 	 }
 
-	// <---
-
-	// for P2P -->
-	public static String getP2P_Mode(Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context)
-				.getString(PREF_P2P_MODE, DEFAULT_P2P_MODE);
-	}
-
-	public static String getP2P_IP_Bootstrap(Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context)
-				.getString(PREF_P2P_IP_BOOTSTRAP, DEFAULT_P2P_IP_BOOTSTRAP);
-	}
-
-	// <---
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -367,6 +335,14 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
  		
  		setDefaultValues();
  		Codecs.check();
+
+ 		getPreferenceScreen().findPreference(PREF_PTT_USERNAME)
+ 				.setDefaultValue(DEFAULT_PTT_USERNAME);
+ 		getPreferenceScreen().findPreference(PREF_SERVER).setDefaultValue(
+ 				DEFAULT_PTT_SERVER);
+       
+		
+		// <--
 	}
 
 	void reload() {
@@ -402,26 +378,6 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 			reload();
 		}
 
-		// for P2P -->
-		
-		if (settings.getBoolean(PREF_P2P, DEFAULT_P2P)) {
-			Editor edit = settings.edit();
-
-			edit.putBoolean(PREF_P2P, DEFAULT_P2P);
-			edit.commit();
-			reload();
-		}
-		
-		if (settings.getString(PREF_P2P_MODE, "").equals("")) {
-			Editor edit = settings.edit();
-
-			edit.putString(PREF_P2P_MODE, DEFAULT_P2P_MODE);
-			edit.putString(PREF_P2P_IP_BOOTSTRAP, DEFAULT_P2P_IP_BOOTSTRAP);
-			edit.commit();
-			reload();
-		}
-		// <--
-
 		if (! settings.contains(PREF_MWI_ENABLED)) {
 			CheckBoxPreference cb = (CheckBoxPreference) getPreferenceScreen().findPreference(PREF_MWI_ENABLED);
 			cb.setChecked(true);
@@ -439,17 +395,9 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 			getPreferenceScreen().findPreference(PREF_EDGE).setEnabled(false);
 		}
 
-		
-		
-		// for PTT --->
-		getPreferenceScreen().findPreference(PREF_PTT_USERNAME)
-				.setDefaultValue(DEFAULT_PTT_USERNAME);
-		getPreferenceScreen().findPreference(PREF_SERVER).setDefaultValue(
-				DEFAULT_PTT_SERVER);
-		// <---
 		settings.registerOnSharedPreferenceChangeListener(this);
-		
-		updateSummaries();
+
+		updateSummaries();		
 	}
 
     @Override
@@ -660,58 +608,35 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
         } else if (sharedPreferences.getBoolean(PREF_CALLBACK, DEFAULT_CALLBACK) && sharedPreferences.getBoolean(PREF_CALLTHRU, DEFAULT_CALLTHRU)) {
     		CheckBoxPreference cb = (CheckBoxPreference) getPreferenceScreen().findPreference(key.equals(PREF_CALLBACK) ? PREF_CALLTHRU : PREF_CALLBACK);
     		cb.setChecked(false);
-		} else if (key.startsWith(PREF_WLAN)
-				|| key.startsWith(PREF_3G)
-				|| key.startsWith(PREF_EDGE)
-				|| key.startsWith(PREF_USERNAME)
-				|| key.startsWith(PREF_PASSWORD)
-				|| key.startsWith(PREF_DOMAIN)
-				|| key.startsWith(PREF_SERVER)
-				|| key.startsWith(PREF_PORT)
-				|| key.equals(PREF_STUN)
-				|| key.equals(PREF_STUN_SERVER)
-				|| key.equals(PREF_STUN_SERVER_PORT)
-				|| key.equals(PREF_MMTEL)
-				|| // (added by mandrajg)
-				key.equals(PREF_MMTEL_QVALUE)
-				|| // (added by mandrajg)
-				key.startsWith(PREF_PROTOCOL) || key.startsWith(PREF_VPN)
-				|| key.equals(PREF_POS) || key.equals(PREF_POSURL)
-				|| key.startsWith(PREF_FROMUSER)
-				|| key.equals(PREF_AUTO_ONDEMAND)
-				|| key.equals(PREF_MWI_ENABLED)
-				|| key.equals(PREF_REGISTRATION) || key.equals(PREF_KEEPON) || key.equals(PREF_P2P)) {
-
-			// for P2P -->
-			if (settings.getBoolean(PREF_P2P, DEFAULT_P2P)) {
-				// Here means use P2P
-				if (Receiver.tomP2PEngine().start()) {
-					Receiver.engine(this).halt();
-					Receiver.engine(this).StartEngine();
-				}
-			} else {
-				// here means use Client-Server
-				Receiver.engine(this).halt();
-				Receiver.engine(this).StartEngine();
-			}
-			// <--
+	    } else if (key.startsWith(PREF_WLAN) ||
+        			key.startsWith(PREF_3G) ||
+        			key.startsWith(PREF_EDGE) ||
+        			key.startsWith(PREF_USERNAME) ||
+        			key.startsWith(PREF_PASSWORD) ||
+        			key.startsWith(PREF_DOMAIN) ||
+        			key.startsWith(PREF_SERVER) ||
+        			key.startsWith(PREF_PORT) ||
+        			key.equals(PREF_STUN) ||
+        			key.equals(PREF_STUN_SERVER) ||
+        			key.equals(PREF_STUN_SERVER_PORT) ||
+        			key.equals(PREF_MMTEL) ||			// (added by mandrajg)
+        			key.equals(PREF_MMTEL_QVALUE) ||	// (added by mandrajg)
+        			key.startsWith(PREF_PROTOCOL) ||
+        			key.startsWith(PREF_VPN) ||
+        			key.equals(PREF_POS) ||
+        			key.equals(PREF_POSURL) ||
+        			key.startsWith(PREF_FROMUSER) ||
+        			key.equals(PREF_AUTO_ONDEMAND) ||
+        			key.equals(PREF_MWI_ENABLED) ||
+        			key.equals(PREF_REGISTRATION) ||
+        			key.equals(PREF_KEEPON)) {
+        	Receiver.engine(this).halt();
+    		Receiver.engine(this).StartEngine();
 		}
-		if (key.startsWith(PREF_WLAN) || key.startsWith(PREF_3G)
-				|| key.startsWith(PREF_EDGE) || key.startsWith(PREF_OWNWIFI)) {
+		if (key.startsWith(PREF_WLAN) || key.startsWith(PREF_3G) || key.startsWith(PREF_EDGE) || key.startsWith(PREF_OWNWIFI)) {
 			updateSleep();
 		}
-
-		if (key.startsWith(PREF_P2P_MODE)) {
-			Editor edit = settings.edit();
-			if (settings.getString(PREF_P2P_MODE, DEFAULT_P2P_MODE).equals("1")) {
-				edit.putString(PREF_P2P_IP_BOOTSTRAP, DEFAULT_P2P_IP_BOOTSTRAP);
-			} else {
-				edit.putString(PREF_P2P_IP_BOOTSTRAP, getLocalIpAddress());
-			}
-			edit.commit();
-			reload();
-		}
-
+		
 		updateSummaries();
     }
 
@@ -771,8 +696,8 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
        		String j = (i!=0?""+i:"");
        		String username = settings.getString(PREF_USERNAME+j, DEFAULT_USERNAME),
        			server = settings.getString(PREF_SERVER+j, DEFAULT_SERVER);
-	    	getPreferenceScreen().findPreference(PREF_USERNAME+j).setSummary(username); 
-	    	getPreferenceScreen().findPreference(PREF_SERVER+j).setSummary(server);
+	    	//getPreferenceScreen().findPreference(PREF_USERNAME+j).setSummary(username); 
+	    	//getPreferenceScreen().findPreference(PREF_SERVER+j).setSummary(server);
 	    	if (settings.getString(PREF_DOMAIN+j, DEFAULT_DOMAIN).length() == 0) {
 	    		getPreferenceScreen().findPreference(PREF_DOMAIN+j).setSummary(getString(R.string.settings_domain2));
 	    	} else {
@@ -811,46 +736,6 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
     		getPreferenceScreen().findPreference(PREF_STUN_SERVER_PORT).setEnabled(false);       	
     	}
     	
-
-		// for P2P --> set summary text
-		if (settings.getBoolean(PREF_P2P, DEFAULT_P2P)) {
-			if (settings.getString(PREF_P2P_MODE, DEFAULT_P2P_MODE).equals("0")) {
-				getPreferenceScreen().findPreference(PREF_P2P_MODE).setSummary(
-						"Bootstrap");
-
-			} else {
-				getPreferenceScreen().findPreference(PREF_P2P_MODE).setSummary(
-						"Peer");
-			}
-
-			getPreferenceScreen().findPreference(PREF_P2P_IP_BOOTSTRAP)
-					.setSummary(
-							settings.getString(PREF_P2P_IP_BOOTSTRAP,
-									DEFAULT_P2P_IP_BOOTSTRAP));
-
-			getPreferenceScreen().findPreference(PREF_P2P_MODE)
-					.setEnabled(true);
-			getPreferenceScreen().findPreference(PREF_P2P_MODE).setSelectable(
-					true);
-
-			getPreferenceScreen().findPreference(PREF_P2P_IP_BOOTSTRAP)
-					.setEnabled(true);
-			getPreferenceScreen().findPreference(PREF_P2P_IP_BOOTSTRAP)
-					.setSelectable(true);
-		} else {
-			getPreferenceScreen().findPreference(PREF_P2P_MODE).setEnabled(
-					false);
-			getPreferenceScreen().findPreference(PREF_P2P_MODE).setSelectable(
-					false);
-
-			getPreferenceScreen().findPreference(PREF_P2P_IP_BOOTSTRAP)
-					.setEnabled(false);
-
-			getPreferenceScreen().findPreference(PREF_P2P_IP_BOOTSTRAP)
-					.setSelectable(false);
-		}
-		// for P2P -->
-
     	// MMTel configuration (added by mandrajg)
     	if (settings.getBoolean(PREF_MMTEL, DEFAULT_MMTEL)) {
     		getPreferenceScreen().findPreference(PREF_MMTEL_QVALUE).setEnabled(true);
@@ -874,34 +759,7 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 		
 	}
 
-	// for P2P -->
-	/**
-	 * Get IP Address of the device
-	 * 
-	 * @return String IP Address of the device
-	 */
-	public static String getLocalIpAddress() {
-		try {
-			for (Enumeration<NetworkInterface> en = NetworkInterface
-					.getNetworkInterfaces(); en.hasMoreElements();) {
-				NetworkInterface intf = en.nextElement();
-				for (Enumeration<InetAddress> enumIpAddr = intf
-						.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-					InetAddress inetAddress = enumIpAddr.nextElement();
-					if (!inetAddress.isLoopbackAddress()) {
-						return inetAddress.getHostAddress().toString();
-					}
-				}
-			}
-		} catch (SocketException ex) {
-			// Log.e(LOG_TAG, ex.toString());
-		}
-		return null;
-	}
-
-	// <---
-
-	@Override
+    @Override
 	public void onClick(DialogInterface arg0, int arg1) {
 		Editor edit = settings.edit();
  		edit.putString(mKey, transferText.getText().toString());

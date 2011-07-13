@@ -49,7 +49,7 @@ import android.util.Log;
 
 public class SipdroidEngine implements RegisterAgentListener {
 
-	public static final int LINES = 1;
+	public static final int LINES = 2;
 	public int pref;
 	
 	public static final int UNINITIALIZED = 0x0;
@@ -283,31 +283,19 @@ public class SipdroidEngine implements RegisterAgentListener {
 		int i = 0;
 		for (RegisterAgent ra : ras) {
 			try {
-				if (user_profiles[i] == null
-						|| user_profiles[i].username.equals("")
-						|| user_profiles[i].realm.equals("")) {
+				if (user_profiles[i] == null || user_profiles[i].username.equals("") ||
+						user_profiles[i].realm.equals("")) {
 					i++;
 					continue;
 				}
-				user_profiles[i].contact_url = getContactURL(
-						user_profiles[i].from_url, sip_providers[i]);
-				// for P2P -->
-				if (PreferenceManager.getDefaultSharedPreferences(
-						Receiver.mContext).getBoolean(Settings.PREF_P2P,
-						Settings.DEFAULT_P2P)) {
-					// here means P2P
-					if (ra != null)
-						ra.p2pRegister();
+				user_profiles[i].contact_url = getContactURL(user_profiles[i].from_url,sip_providers[i]);
+		
+				if (!Receiver.isFast(i)) {
+					unregister(i);
 				} else {
-					if (!Receiver.isFast(i)) {
-						unregister(i);
-					} else {
-						if (ra != null && ra.register()) {
-							Receiver.onText(Receiver.REGISTER_NOTIFICATION + i,
-									getUIContext().getString(R.string.reg),
-									R.drawable.sym_presence_idle, 0);
-							wl[i].acquire();
-						}
+					if (ra != null && ra.register()) {
+						Receiver.onText(Receiver.REGISTER_NOTIFICATION+i,getUIContext().getString(R.string.reg),R.drawable.sym_presence_idle,0);
+						wl[i].acquire();
 					}
 				}
 			} catch (Exception ex) {

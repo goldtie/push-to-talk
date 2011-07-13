@@ -1,5 +1,58 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/settings_basic">
+		<PreferenceScreen android:key="basic_help"
+			android:title="@string/settings_basic_help" android:singleLine="true">
 
+			<intent android:action="org.sipdroid.action.HELPVIEW" />
+		</PreferenceScreen>
+
+		<PreferenceScreen android:key="basic_version"
+			android:title="@string/settings_basic_version" android:singleLine="true">
+
+		</PreferenceScreen>
+
+		<PreferenceScreen android:key="basic_about"
+			android:title="@string/settings_basic_about" android:singleLine="true">
+
+		</PreferenceScreen>
+
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/settings_chat_room_settings">
+		<ListPreference android:key="chat_room_settings_message_font_size"
+
+			android:title="@string/settings_chat_room_settings_message_font_size"
+			android:entries="@array/message_font_size_display_values"
+			android:entryValues="@array/message_font_size_values"
+			android:summary="@string/settings_chat_room_settings_message_font_summary"
+			android:dialogTitle="@string/settings_chat_room_settings_message_font_dialog_title" />
+
+		<CheckBoxPreference android:key="chat_room_settings_send_with_enter_key"
+			android:title="@string/settings_chat_room_settings_send_with_enter_key"
+			android:summary="@string/settings_chat_room_settings_send_with_enter_key_summary"
+			android:selectable="true" />
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/settings_alert">
+		<PreferenceScreen android:title="@string/settings_alert_at_message_arrival"
+			android:summary="@string/settings_alert_at_message_arrival_summary"
+			android:key="alert_at_message_arrival">
+			<CheckBoxPreference android:key="alert_at_message_arrival_text"
+				android:title="@string/settings_alert_at_message_arrival_text"
+				android:summary="@string/settings_alert_at_message_arrival_text_summary"
+				android:selectable="true" />
+			<CheckBoxPreference android:key="alert_at_message_arrival_fireon"
+				android:title="@string/settings_alert_at_message_arrival_fireon"
+				android:summary="@string/settings_alert_at_message_arrival_fireon_summary"
+				android:selectable="true" />
+		</PreferenceScreen>
+
+		<ListPreference android:key="set_alert_sound"
+			android:title="@string/settings_set_alert_sound" android:entries="@array/set_alert_sound_display_values"
+			android:entryValues="@array/set_alert_sound_values" android:summary="@string/settings_set_alert_sound_list_summary"
+			android:dialogTitle="@string/settings_set_alert_sound_list_dialog_title" />
+
+	</PreferenceCategory>
 
 	<PreferenceCategory android:title="@string/settings_server_settings">
 		<EditTextPreference android:key="server_settings_sip_account"
@@ -15,21 +68,6 @@
 			android:title="@string/settings_server_settings_server_address"
 			android:singleLine="true" />
 	</PreferenceCategory>
-
-	<!--  for P2P  start -->
-	<PreferenceCategory android:title="@string/settings_p2p">
-		<CheckBoxPreference android:key="p2p"
-			android:title="@string/settings_p2p1" android:summary="@string/settings_p2p2"/>
-		<ListPreference android:title="@string/settings_p2p_mode"
-			android:key="p2p_mode" android:defaultValue="1" android:entries="@array/listModes"
-			android:entryValues="@array/listValues" />
-		<EditTextPreference android:key="p2p_ip_bootstrap"
-			android:title="@string/settings_bootstrap_ip_address"
-			android:singleLine="true" android:enabled="true" />
-	</PreferenceCategory>
-	<!--  for P2P  end -->
-
-
 
 	<PreferenceCategory android:title="@string/settings_personal">
 		<EditTextPreference android:key="personal_username"
@@ -197,59 +235,16 @@
 
 	</PreferenceCategory>
 
-	<PreferenceCategory android:title="@string/settings_basic">
-		<PreferenceScreen android:key="basic_help"
-			android:title="@string/settings_basic_help" android:singleLine="true">
 
-			<intent android:action="org.sipdroid.action.HELPVIEW" />
-		</PreferenceScreen>
 
-		<PreferenceScreen android:key="basic_version"
-			android:title="@string/settings_basic_version" android:singleLine="true">
 
-		</PreferenceScreen>
 
-		<PreferenceScreen android:key="basic_about"
-			android:title="@string/settings_basic_about" android:singleLine="true">
 
-		</PreferenceScreen>
 
-	</PreferenceCategory>
 
-	<PreferenceCategory android:title="@string/settings_chat_room_settings">
-		<ListPreference android:key="chat_room_settings_message_font_size"
 
-			android:title="@string/settings_chat_room_settings_message_font_size"
-			android:entries="@array/message_font_size_display_values"
-			android:entryValues="@array/message_font_size_values"
-			android:summary="@string/settings_chat_room_settings_message_font_summary"
-			android:dialogTitle="@string/settings_chat_room_settings_message_font_dialog_title" />
 
-		<CheckBoxPreference android:key="chat_room_settings_send_with_enter_key"
-			android:title="@string/settings_chat_room_settings_send_with_enter_key"
-			android:summary="@string/settings_chat_room_settings_send_with_enter_key_summary"
-			android:selectable="true" />
-	</PreferenceCategory>
 
-	<PreferenceCategory android:title="@string/settings_alert">
-		<PreferenceScreen android:title="@string/settings_alert_at_message_arrival"
-			android:summary="@string/settings_alert_at_message_arrival_summary"
-			android:key="alert_at_message_arrival">
-			<CheckBoxPreference android:key="alert_at_message_arrival_text"
-				android:title="@string/settings_alert_at_message_arrival_text"
-				android:summary="@string/settings_alert_at_message_arrival_text_summary"
-				android:selectable="true" />
-			<CheckBoxPreference android:key="alert_at_message_arrival_fireon"
-				android:title="@string/settings_alert_at_message_arrival_fireon"
-				android:summary="@string/settings_alert_at_message_arrival_fireon_summary"
-				android:selectable="true" />
-		</PreferenceScreen>
 
-		<ListPreference android:key="set_alert_sound"
-			android:title="@string/settings_set_alert_sound" android:entries="@array/set_alert_sound_display_values"
-			android:entryValues="@array/set_alert_sound_values" android:summary="@string/settings_set_alert_sound_list_summary"
-			android:dialogTitle="@string/settings_set_alert_sound_list_dialog_title" />
-
-	</PreferenceCategory>
 
 </PreferenceScreen>

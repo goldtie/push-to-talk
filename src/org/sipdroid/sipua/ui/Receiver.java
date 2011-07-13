@@ -111,10 +111,7 @@ import org.zoolu.sip.provider.SipProvider;
 		
 		public static SipdroidEngine mSipdroidEngine;
 		public static XMPPEngine mXMPPEngine = null;
-
-	// for P2P -->
-	public static TomP2PFunctions mTomP2PEngine = null;
-	// <--
+		
 		public static Context mContext;
 		public static SipdroidListener listener_video;
 		public static Call ccCall;
@@ -140,48 +137,31 @@ import org.zoolu.sip.provider.SipProvider;
         	context.startService(new Intent(context,RegisterService.class));
         	
 
-		return mSipdroidEngine;
-	}
-
-	public static synchronized XMPPEngine xmppEngine() {
-		if (mXMPPEngine == null) {
-			try {
-				mXMPPEngine = new XMPPEngine(org.sipdroid.sipua.ui.Settings
-						.getXMPP_Server(mContext), Integer
-						.parseInt(org.sipdroid.sipua.ui.Settings
-								.getXMPP_Port(mContext)),
-						org.sipdroid.sipua.ui.Settings
-								.getXMPP_Service(mContext));
-			} catch (Exception ec) {
-				ec.printStackTrace();
-			}
-			mXMPPEngine.connect();
-
-			// should implement Login Service for XMPP but not have time
-			// mXMPPEngine.login(org.sipdroid.sipua.ui.Settings.getAccountUserName(mContext)
-			// + "@" +
-			// org.sipdroid.sipua.ui.Settings.getXMPP_Service(mContext),
-			// org.sipdroid.sipua.ui.Settings.getAccountUserName(mContext));
+			return mSipdroidEngine;
 		}
-		return mXMPPEngine;
-	}
+		
+		public static synchronized XMPPEngine xmppEngine()
+		{
+			if(mXMPPEngine == null) {
+				try
+				{
+				mXMPPEngine = new XMPPEngine(org.sipdroid.sipua.ui.Settings.getXMPP_Server(mContext), 
+						Integer.parseInt(org.sipdroid.sipua.ui.Settings.getXMPP_Port(mContext)), 
+						org.sipdroid.sipua.ui.Settings.getXMPP_Service(mContext));
+				} catch(Exception ec)
+				{
+					ec.printStackTrace();
+				}
+				mXMPPEngine.connect();
 
-	// for P2P -->
-	public static synchronized TomP2PFunctions tomP2PEngine() {
-		if (mTomP2PEngine == null) {
-			try {
-				mTomP2PEngine = new TomP2PFunctions(org.sipdroid.sipua.ui.Settings
-						.getP2P_Mode(mContext).equals("0"),
-						org.sipdroid.sipua.ui.Settings.getP2P_IP_Bootstrap(mContext));
-			} catch (Exception ec) {
-				ec.printStackTrace();
+				//should implement Login Service for XMPP but not have time
+//				mXMPPEngine.login(org.sipdroid.sipua.ui.Settings.getAccountUserName(mContext) + "@" +  
+//						org.sipdroid.sipua.ui.Settings.getXMPP_Service(mContext), 
+//						org.sipdroid.sipua.ui.Settings.getAccountUserName(mContext));
 			}
+			return mXMPPEngine;
 		}
-		return mTomP2PEngine;
-	}
-
-	// <---
-
+		
 		public static void onMsgStatus(int state, String content) {
 			//not good, should find a better solution later
 			if(state == XMPPEngine.XMPP_STATE_OUTCOMING_MSG) {
