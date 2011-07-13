@@ -21,11 +21,14 @@
 
 package org.sipdroid.sipua;
 
+import java.io.IOException;
 import java.util.Vector;
 
+import org.sipdroid.sipua.ui.LoopAlarm;
 import org.sipdroid.sipua.ui.Receiver;
 import org.sipdroid.sipua.ui.Settings;
 import org.sipdroid.sipua.ui.Sipdroid;
+import org.sipdroid.sipua.ui.TomP2PFunctions;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.authentication.DigestAuthentication;
 import org.zoolu.sip.dialog.SubscriberDialog;
@@ -179,6 +182,46 @@ public class RegisterAgent implements TransactionClientListener, SubscriberDialo
 	public boolean isRegistered() {
 		return (CurrentState == REGISTERED || CurrentState == REGISTERING);
 	}
+	
+	
+	/**
+	 * This function will register the URL to the P2P Overlay
+	 * 
+	 * @param url
+	 */
+	public boolean p2pRegister() {
+		boolean rs = false;
+		try {
+			CurrentState = REGISTERING;
+			rs = TomP2PFunctions.register(target.getAddress().getHost().toString());
+			if (rs){
+				//HAO copy tam -->
+				if (CurrentState == REGISTERING)
+				{
+					CurrentState = REGISTERED;
+					if (listener != null)
+					{
+						listener.onUaRegistrationSuccess(this, target, contact, "");
+						Receiver.reRegister(0);
+					}
+				}
+				else
+				{
+					CurrentState = UNREGISTERED;
+					if (listener != null)
+					{
+						listener.onUaRegistrationSuccess(this, target, contact, "");
+					}
+				}
+				//HAO copy tam <--
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			rs = false;
+		}
+		return rs;
+	}
+	
 	
 	/** Registers with the registrar server. */
 	public boolean register() {
@@ -470,7 +513,7 @@ public class RegisterAgent implements TransactionClientListener, SubscriberDialo
 			}
 			
 			printLog("Registration success: " + result, LogLevel.HIGH);
-			
+			//HAO copy tam -->
 			if (CurrentState == REGISTERING)
 			{
 				CurrentState = REGISTERED;
@@ -488,6 +531,7 @@ public class RegisterAgent implements TransactionClientListener, SubscriberDialo
 					listener.onUaRegistrationSuccess(this, target, contact, result);
 				}
 			}
+			//HAO copy tam <---
 		}
 	}
 
