@@ -1,12 +1,5 @@
 package org.sipdroid.sipua.ui;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -41,7 +34,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -49,7 +41,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class Presence extends ListActivity implements PresenceAgentListener, DialogInterface.OnClickListener{
 
@@ -426,23 +417,23 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 	}
 	
 	public void presenceFinish() {
-		ObjectOutput out = null;
-		try {
-			out = new ObjectOutputStream(new FileOutputStream(STORAGE_CONTACT_LIST));
-			mContactList.add(mMyProfile);
-			for(Contact c : mContactList)
-				c.mPresence = OFFLINE_STATUS;
-            out.writeObject(mContactList);
-            out.close();
-		} catch (Exception e) {
-			Log.d("SIPDROID", "[Presence]  - onCreate - Exception: " + e.getMessage());
-		} finally {
-			try {
-				out.close();
-			} catch (IOException e) {
-				Log.d("SIPDROID", "[Presence]  - presenceFinish - Exception: " + e.getMessage());
-			}
-		}
+//		ObjectOutput out = null;
+//		try {
+//			out = new ObjectOutputStream(new FileOutputStream(STORAGE_CONTACT_LIST));
+//			//mContactList.add(mMyProfile);
+//			for(Contact c : mContactList)
+//				c.mPresence = OFFLINE_STATUS;
+//            out.writeObject(mContactList);
+//            out.close();
+//		} catch (Exception e) {
+//			Log.d("SIPDROID", "[Presence]  - onCreate - Exception: " + e.getMessage());
+//		} finally {
+//			try {
+//				out.close();
+//			} catch (IOException e) {
+//				Log.d("SIPDROID", "[Presence]  - presenceFinish - Exception: " + e.getMessage());
+//			}
+//		}
 		pa.publish(user_profile.username + "@" + user_profile.realm, 0, "Off Line", "Off-Line");
 		
 		if (isSubscribed)
@@ -500,33 +491,40 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		sip_provider = Receiver.mSipdroidEngine.sip_providers[0];
 		user_profile = Receiver.mSipdroidEngine.user_profiles[0];
 		
-		ObjectInputStream in = null;
-		try {
-			in = new ObjectInputStream(new FileInputStream(STORAGE_CONTACT_LIST));
-			mContactList = (ArrayList<Contact>)in.readObject();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			try {
-				mContactList.clear();
-				mContactList.add(new Contact(FIRE, EMPTY));
-				mContactList.add(new Contact(CAMERA, EMPTY));
-				mContactList.add(new Contact("1001", "I love you", "mnt/sdcard/download/icon_1001.png"));
-				mContactList.add(new Contact("1002", "Demo Sipdroid", "mnt/sdcard/download/icon_1002.png"));
-				mContactList.add(new Contact("1003", "Soongsil University", "mnt/sdcard/download/icon_1003.png"));
-				mContactList.add(new Contact("1004", EMPTY, "mnt/sdcard/download/icon_1004.png"));
-				mContactList.add(new Contact("1005", "Ec Ec", "mnt/sdcard/download/icon_1005.png"));
-				
-				
-			    File file = new File(STORAGE_CONTACT_LIST);
-			    // Create file if it does not exist
-			    file.createNewFile();
-			    
-			} catch (IOException ex) {
-				Log.d("SIPDROID", "[Presence]  - onCreate - Exception: " + ex.getMessage());
-			}
-		}
+//		ObjectInputStream in = null;
+//		try {
+//			in = new ObjectInputStream(new FileInputStream(STORAGE_CONTACT_LIST));
+//			mContactList = (ArrayList<Contact>)in.readObject();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			try {
+//				mContactList.clear();
+//				mContactList.add(new Contact(FIRE, EMPTY));
+//				mContactList.add(new Contact(CAMERA, EMPTY));
+//				mContactList.add(new Contact("1001", "I love you", "mnt/sdcard/download/icon_1001.png"));
+//				mContactList.add(new Contact("1002", "Demo Sipdroid", "mnt/sdcard/download/icon_1002.png"));
+//				mContactList.add(new Contact("1003", "Soongsil University", "mnt/sdcard/download/icon_1003.png"));
+//				mContactList.add(new Contact("1004", EMPTY, "mnt/sdcard/download/icon_1004.png"));
+//				mContactList.add(new Contact("1005", "Ec Ec", "mnt/sdcard/download/icon_1005.png"));
+//				
+//				
+//			    File file = new File(STORAGE_CONTACT_LIST);
+//			    // Create file if it does not exist
+//			    file.createNewFile();
+//			    
+//			} catch (IOException ex) {
+//				Log.d("SIPDROID", "[Presence]  - onCreate - Exception: " + ex.getMessage());
+//			}
+//		}
 		
-		
+		mContactList.clear();
+		mContactList.add(new Contact(FIRE, EMPTY));
+		mContactList.add(new Contact(CAMERA, EMPTY));
+		mContactList.add(new Contact("1001", "I love you", "mnt/sdcard/download/icon_1001.png"));
+		mContactList.add(new Contact("1002", "Demo Sipdroid", "mnt/sdcard/download/icon_1002.png"));
+		mContactList.add(new Contact("1003", "Soongsil University", "mnt/sdcard/download/icon_1003.png"));
+		mContactList.add(new Contact("1004", EMPTY, "mnt/sdcard/download/icon_1004.png"));
+		mContactList.add(new Contact("1005", "Ec Ec", "mnt/sdcard/download/icon_1005.png"));
 		
 		checkFireEvent = new boolean[mContactList.size()];
 		
@@ -623,17 +621,12 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 			}
 		});
 		
+		
+		
 		PresenceInitialize();
 		Receiver.xmppEngine().setContext(this);
 		//need this code to be after initializing presence lst_PA 
-		for(Contact contact : mContactList) {
-			if(contact.mUsername.equals(user_profile.username)) {
-				mMyProfile = contact;
-				mMyProfile.mPresence = ONLINE_STATUS;
-				mContactList.remove(contact);		//will add later before finishing presence
-				break;
-			}
-		}
+		
 		
 	}
 	

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout01" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        	
+		<TextView android:id="@+id/messageComingTime"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:gravity="center"
+			android:paddingTop="3dip" android:paddingBottom="3dip" android:paddingLeft="10dip" android:paddingRight="10dip" 
+			android:layout_marginTop="17px"
+			android:textColor="#FFFFFF" android:background="@drawable/message_sending_time_border"/>
+			
+		<TextView android:id="@+id/messageContent" 
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_alignParentRight="true" android:gravity="center"
+			android:paddingTop="4dip" android:paddingBottom="4dip" android:paddingLeft="10dip" android:paddingRight="10dip" 
+			android:layout_marginRight="10dip" android:layout_marginTop="14px"
+    		android:textSize="23px"
+			android:textColor="#000000" android:background="@drawable/message_sending_border"/>
+			
+</RelativeLayout>

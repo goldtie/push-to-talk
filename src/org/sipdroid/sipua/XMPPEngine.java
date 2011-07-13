@@ -1,6 +1,8 @@
 package org.sipdroid.sipua;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.jivesoftware.smack.Chat;
@@ -38,7 +40,9 @@ public class XMPPEngine {
 	private MultiUserChat mMUC = null;
 	private Chat mChat = null;
 	
-	protected List<String> messages = new ArrayList<String>();
+	
+	
+	protected ArrayList<MessageStruct> messages = new ArrayList<MessageStruct>();
 	
 	protected Handler mHandler = new Handler();
 	
@@ -47,6 +51,8 @@ public class XMPPEngine {
 	private int mCurrentConversation = IDLE;	//0:conference, 1: personal
 	
 	private Context mContext;
+	
+	
 	
 	private MessageListener mChatListener = new MessageListener() {
 		
@@ -62,8 +68,12 @@ public class XMPPEngine {
 					return;
 				}
 				Log.i("XMPPEngine", "Got text [" + message.getBody() + "] from [" + fromName + "]");
-				messages.add(fromName.substring(0, fromName.indexOf("@")) + ":");
-				messages.add(message.getBody());
+				MessageStruct m = new MessageStruct();
+				m.mMessageSender = fromName.substring(0, fromName.indexOf("@"));
+				m.mMessageContent = message.getBody();
+				messages.add(m);
+//				messages.add(fromName.substring(0, fromName.indexOf("@")) + ":");
+//				messages.add(message.getBody());
 				// Add the incoming message to the list view
 				mHandler.post(new Runnable() {
 					public void run() {
@@ -89,8 +99,11 @@ public class XMPPEngine {
 					return;
 				}
 				Log.i("XMPPEngine", "Got text [" + message.getBody() + "] from [" + fromName + "]");
-				messages.add(fromName + ":");
-				messages.add(message.getBody());
+				MessageStruct m = new MessageStruct();
+				m.mMessageSender = fromName.substring(0, fromName.indexOf("@"));
+				m.mMessageContent = message.getBody();
+				messages.add(m);
+				
 				// Add the incoming message to the list view
 				mHandler.post(new Runnable() {
 					public void run() {
@@ -149,8 +162,10 @@ public class XMPPEngine {
             						return;
             					}
             					Log.i("XMPPEngine", "Got text [" + message.getBody() + "] from [" + fromName + "]");
-            					messages.add(fromName.substring(0, fromName.indexOf("@")) + ":");
-            					messages.add(message.getBody());
+            					MessageStruct m = new MessageStruct();
+            					m.mMessageSender = fromName.substring(0, fromName.indexOf("@"));
+            					m.mMessageContent = message.getBody();
+            					messages.add(m);
             					// Add the incoming message to the list view
             					mHandler.post(new Runnable() {
             						public void run() {
@@ -169,8 +184,10 @@ public class XMPPEngine {
             					return;
             				}
             				Log.i("XMPPEngine", "Got text [" + message.getBody() + "] from [" + fromName + "]");
-            				messages.add(fromName.substring(0, fromName.indexOf("@")) + ":");
-            				messages.add(message.getBody());
+            				MessageStruct m = new MessageStruct();
+            				m.mMessageSender = fromName.substring(0, fromName.indexOf("@"));
+            				m.mMessageContent = message.getBody();
+            				messages.add(m);
             				// Add the incoming message to the list view
             				mHandler.post(new Runnable() {
             					public void run() {
@@ -195,7 +212,13 @@ public class XMPPEngine {
 		mContext = context;
 	}
 	
-	public List<String> getChatLog() {
+	public MessageStruct getLastMessage() {
+		if(messages.size() > 0)
+			return messages.get(messages.size()-1);
+		return null;
+	}
+	
+	public ArrayList<MessageStruct> getChatLog() {
 		return messages;
 	}
 	
@@ -227,8 +250,10 @@ public class XMPPEngine {
 	public void sendMessage(String message) {
 		try {
 			if (message.length() > 0) {
-				messages.add(Settings.getAccountUserName(mContext)+ ":");
-				messages.add(message);
+				MessageStruct m = new MessageStruct();
+				m.mMessageSender = Settings.getAccountUserName(mContext);
+				m.mMessageContent = message;
+				messages.add(m);
 			}
 			
 			if(mCurrentConversation == CONFERENCE) {
