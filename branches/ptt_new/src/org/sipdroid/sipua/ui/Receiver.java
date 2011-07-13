@@ -73,6 +73,7 @@ import org.sipdroid.media.RtpStreamSender;
 import org.sipdroid.sipua.*;
 import org.sipdroid.sipua.phone.Call;
 import org.sipdroid.sipua.phone.Connection;
+import org.sipdroid.sipua.ui.PTTCallScreen.MessageListAdapter;
 import org.zoolu.sip.provider.SipProvider;
 
 	public class Receiver extends BroadcastReceiver {
@@ -167,10 +168,8 @@ import org.zoolu.sip.provider.SipProvider;
 			if(state == XMPPEngine.XMPP_STATE_OUTCOMING_MSG) {
 				mXMPPEngine.sendMessage(content);
 			}
-			ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext,
-					R.layout.multi_line_list_item,
-					mXMPPEngine.getChatLog());
-			PTTCallScreen.updateListContent(adapter);
+			
+			PTTCallScreen.mMessageListAdapter.addMessage(mXMPPEngine.getLastMessage());
 		}
 		public static Ringtone oRingtone;
 		static PowerManager.WakeLock wl;
