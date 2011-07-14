@@ -52,8 +52,6 @@ public class XMPPEngine {
 	
 	private Context mContext;
 	
-	
-	
 	private MessageListener mChatListener = new MessageListener() {
 		
 		@Override
@@ -72,8 +70,6 @@ public class XMPPEngine {
 				m.mMessageSender = fromName.substring(0, fromName.indexOf("@"));
 				m.mMessageContent = message.getBody();
 				messages.add(m);
-//				messages.add(fromName.substring(0, fromName.indexOf("@")) + ":");
-//				messages.add(message.getBody());
 				// Add the incoming message to the list view
 				mHandler.post(new Runnable() {
 					public void run() {
@@ -146,7 +142,7 @@ public class XMPPEngine {
             					public void run() {
             						String fromName = StringUtils.parseBareAddress(message.getFrom());
             						// TODO Auto-generated method stub
-            						Toast.makeText(mContext, fromName + " wants to talk something with you!", Toast.LENGTH_LONG).show();
+            						Toast.makeText(mContext, org.sipdroid.sipua.ui.Presence.mContactManagement.getDisplayName(fromName.substring(0, fromName.indexOf("@"))) + " wants to talk something with you!", Toast.LENGTH_LONG).show();
             					}
             				});
 

@@ -12,10 +12,10 @@
 			
 		<TextView android:id="@+id/messageContent" 
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:layout_alignParentRight="true" android:gravity="center"
+			android:layout_alignParentRight="true" android:gravity="left"
 			android:paddingTop="4dip" android:paddingBottom="4dip" android:paddingLeft="10dip" android:paddingRight="10dip" 
 			android:layout_marginRight="10dip" android:layout_marginTop="14px"
-    		android:textSize="23px"
+    		android:textSize="23px" android:maxWidth="200dip" android:maxLines="3"
 			android:textColor="#000000" android:background="@drawable/message_sending_border"/>
 			
 </RelativeLayout>

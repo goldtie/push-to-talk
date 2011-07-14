@@ -90,7 +90,6 @@
     <string name="change_status">Status</string>
     
 	<string name="menu_conference">Conference</string>
-	<string name="menu_mystatus">My Status</string>
 	<string name="menu_preference">Preference</string>
 	<string name="menu_sign_out">Sign Out</string>
 
@@ -424,5 +423,6 @@
  <string name="search_bar_hint">Search contacts</string>
  
 <string name="spinner_prompt">Change my status</string>
+ <string name="chat_archive_empty">No Content</string>
  
 </resources>

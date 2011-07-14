@@ -24,7 +24,7 @@ public class MainUIActivity extends TabActivity {
         TabSpec chatTab = tabHost.newTabSpec("chat");
         
         friendTab.setIndicator("Friends", getResources().getDrawable(R.drawable.friends)).setContent(new Intent(this,Presence.class));
-        chatTab.setIndicator("Chat", getResources().getDrawable(R.drawable.chat)).setContent(new Intent(this,ContactsListActivity.class));
+        chatTab.setIndicator("Chat", getResources().getDrawable(R.drawable.chat)).setContent(new Intent(this,HistoryListActivity.class));
         settingTab.setIndicator("Settings", getResources().getDrawable(R.drawable.settings)).setContent(new Intent(this,Settings.class));
         
         

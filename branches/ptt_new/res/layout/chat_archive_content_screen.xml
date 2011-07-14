@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+ android:background="@drawable/background_chat_screen">
+    
+
+	<ListView android:id="@+id/listArchiveMessages"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:layout_marginTop="10dip"
+			android:divider="@null"
+			android:layout_alignParentTop="true"
+			android:scrollbars="horizontal" 
+			android:cacheColorHint="#00000000"
+			/>
+	
+	<!--</LinearLayout> -->
+</LinearLayout>
