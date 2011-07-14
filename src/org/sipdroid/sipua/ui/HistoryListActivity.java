@@ -1,67 +1,120 @@
 package org.sipdroid.sipua.ui;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.sipdroid.sipua.MessageStruct;
 import org.sipdroid.sipua.R;
 
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-public class ContactsListActivity extends ListActivity implements TextWatcher, TextView.OnEditorActionListener {
+public class HistoryListActivity extends ListActivity{
 
-	public final static String ITEM_TITLE = "title";
-	public final static String ITEM_CAPTION = "caption";
 	public static final String EMPTY = "";
 	
 	private SeparatedListAdapter mAdapter;
-	//private SearchEditText mSearchEditText;
 	
+	class ChatArchiveStruct {
+		public String mUserName;		//who I talk with
+		public ArrayList<MessageStruct> mChatArchiveContent;
+		
+		public ChatArchiveStruct(String username, ArrayList<MessageStruct> chatArchiveContent) {
+			mUserName = username;
+			mChatArchiveContent = chatArchiveContent;
+		}
+	}
 	
+	public static ChatArchiveStruct mTarget = null;
+	
+	public ContactManagement mContactManagement = new ContactManagement();
 	
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		setContentView(R.layout.contacts_list);
+		setContentView(R.layout.chat_archive_list);
 		getListView().setEmptyView(findViewById(R.id.empty));
 		//mSearchEditText = (SearchEditText)findViewById(R.id.search_src_text);
 		// create our list and custom adapter
         mAdapter = new SeparatedListAdapter(this);
         setListAdapter(mAdapter);
-		
-		mAdapter.addNewContact("A", new Contact("Anh", EMPTY));
-        mAdapter.addNewContact("A", new Contact("Anh", EMPTY));
-        mAdapter.addNewContact("B", new Contact("Binh", EMPTY));
-        mAdapter.addNewContact("B", new Contact("Ban", EMPTY));
+
+        File[] files = new File(PTTCallScreen.STORAGE_CHAT_HISTORY).listFiles();
+        if(files != null) {
+        	for(File f : files) {
+        		for(Contact c : mContactManagement.mContactList) {
+
+        			String fileName = f.getName().substring(0, f.getName().indexOf(".car"));
+
+        			if(fileName.equals(c.mUserName) || fileName.equals("conference")) {
+        				try {
+        					ObjectInputStream in = new ObjectInputStream(new FileInputStream(f.getAbsolutePath()));
+        					@SuppressWarnings("unchecked")
+        					ArrayList<MessageStruct> messageArr = (ArrayList<MessageStruct>)in.readObject();
+        					if(messageArr != null) {
+        						mAdapter.addNewContact(new ChatArchiveStruct(fileName, messageArr));	//if fileName is conference, its display name is Conference
+        					}
+        					in.close();
+        				} catch (Exception e) {
+        					Log.d("SIPDROID", "[ContactsListActivity] - OnCreate - Exception: " + e.getMessage());
+        				}
+        				break;
+        			}
+        		}
+        	}
+        }
+        
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> paramAdapterView,
+					View paramView, int paramInt, long paramLong) {
+				mTarget = (ChatArchiveStruct)((SeparatedListAdapter)paramAdapterView.getAdapter()).getItem(paramInt);
+				Intent intent = new Intent(getBaseContext(), ChatArchiveContentActivity.class);
+				startActivity(intent);
+				
+			}
+        	
+        });
 
 	}
-	
-	
-	private class ContactItemAdapter extends ArrayAdapter<Contact> {
-		private ArrayList<Contact> mContacts;
 
-		public ContactItemAdapter(Context context, int textViewResourceId, ArrayList<Contact> contacts) {
+	
+	private class ContactItemAdapter extends ArrayAdapter<ChatArchiveStruct> {
+		
+		private ArrayList<ChatArchiveStruct> mContacts;
+		
+		private Context mContext;
+
+		public ContactItemAdapter(Context context, int textViewResourceId, ArrayList<ChatArchiveStruct> contacts) {
 			super(context, textViewResourceId, contacts);
+			mContext = context;
 			this.mContacts = contacts;
 		}
 		
-		public void addContact(Contact contact) {
-			for(Contact c : mContacts) {
-				if(c.mUsername == contact.mUsername) {
+		public void addContact(ChatArchiveStruct contact) {
+			for(ChatArchiveStruct c : mContacts) {
+				if(c.mUserName == contact.mUserName) {
 					return;
 				}
 			}
@@ -71,22 +124,33 @@ public class ContactsListActivity extends ListActivity implements TextWatcher, T
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
+			
 			if (v == null) {
 				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				v = vi.inflate(R.layout.contacts_list_item, null);
+				v = vi.inflate(R.layout.chat_archive_list_item, null);
 			}
 			
-			Contact user = mContacts.get(position);
+			ChatArchiveStruct user = mContacts.get(position);
 			if (user != null) {
+				Contact contact = mContactManagement.getContact(user.mUserName);
+				
 				TextView username = (TextView) v.findViewById(R.id.username);
-				TextView status = (TextView) v.findViewById(R.id.status);
-
-				if (username != null) {
-					username.setText(user.mUsername);
-				}
-
-				if(status != null) {
-					status.setText("abcdefgqweqeweASDASDASDASSD3434343434343434343434343434");
+				TextView status = (TextView) v.findViewById(R.id.briefChatArchive);
+				ImageView avatar = (ImageView) v.findViewById(R.id.avatar);
+				if(username != null)
+					username.setText(contact == null ? "Conference" : contact.mDisplayName);
+				
+				//just display the first message in archive
+				if(status != null)
+					status.setText(mContacts.get(position).mChatArchiveContent.get(0).mMessageContent);
+				
+				if(contact == null) {
+					Bitmap iconOnLine = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_conference);
+					avatar.setImageBitmap(iconOnLine);
+				} else if(contact.mAvatar == null) {
+					contact.mAvatar = BitmapFactory.decodeFile(contact.mImagePath);
+					if(avatar != null)
+						avatar.setImageBitmap(contact.mAvatar);
 				}
 			}
 			return v;
@@ -106,15 +170,16 @@ public class ContactsListActivity extends ListActivity implements TextWatcher, T
 			mContext = context;
 		}
 		
-		public void addNewContact(String section, Contact contact) {
-			
+		public void addNewContact(ChatArchiveStruct contact) {
+			String str = mContactManagement.getDisplayName(contact.mUserName);
+			String section = str.equals(EMPTY) ? "C" : str.substring(0, 1);
 			if(headers.getPosition(section) == -1) {
 				headers.add(section);
 			}
 			if(mSections.get(section) != null) {
 				((ContactItemAdapter)mSections.get(section)).addContact(contact);
 			} else {
-				ArrayList<Contact> contactsList = new ArrayList<Contact>();
+				ArrayList<ChatArchiveStruct> contactsList = new ArrayList<ChatArchiveStruct>();
 				contactsList.add(contact);
 				mSections.put(section, new ContactItemAdapter(mContext, android.R.layout.simple_list_item_1, contactsList));
 			}
@@ -218,33 +283,5 @@ public class ContactsListActivity extends ListActivity implements TextWatcher, T
 		
 
 	}
-
-	@Override
-	public void beforeTextChanged(CharSequence paramCharSequence,
-			int paramInt1, int paramInt2, int paramInt3) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onTextChanged(CharSequence paramCharSequence, int paramInt1,
-			int paramInt2, int paramInt3) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void afterTextChanged(Editable paramEditable) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean onEditorAction(TextView paramTextView, int paramInt,
-			KeyEvent paramKeyEvent) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	
 }

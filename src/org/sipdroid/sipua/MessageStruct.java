@@ -1,9 +1,10 @@
 package org.sipdroid.sipua;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class MessageStruct {
+public class MessageStruct implements Serializable {
 	public String mMessageContent;
 	public String mMessageSender;
 	public String mMessageIncomingTime;

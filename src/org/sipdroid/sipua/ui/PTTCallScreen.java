@@ -21,19 +21,23 @@ package org.sipdroid.sipua.ui;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import org.sipdroid.media.RtpStreamReceiver;
 import org.sipdroid.sipua.MessageStruct;
 import org.sipdroid.sipua.R;
+import org.sipdroid.sipua.UserAgent;
 import org.sipdroid.sipua.XMPPEngine;
 
 import android.content.Context;
 import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
-import android.net.LocalServerSocket;
-import android.net.LocalSocket;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -45,8 +49,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
@@ -57,12 +59,16 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
-public class PTTCallScreen extends CallScreen implements SipdroidListener, OnClickListener, OnLongClickListener {
+public class PTTCallScreen extends CallScreen implements SipdroidListener {
+
+	ArrayList<MessageStruct> mMessagesList = new ArrayList<MessageStruct>();
+	
+	public final static String STORAGE_CHAT_HISTORY = "mnt/sdcard/download/chatlog/";
 
 	public class MessageListAdapter extends BaseAdapter {
 		private LayoutInflater mInflater;
 		
-		ArrayList<MessageStruct> mMessagesList = new ArrayList<MessageStruct>();
+		
 		
 		public MessageListAdapter(Context context) {
 			mInflater = LayoutInflater.from(context);
@@ -131,34 +137,32 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener, OnCli
 			return convertView;
 		}
 
+		public boolean areAllItemsEnabled() {
+			return false;
+		}
+		
+		public boolean isEnabled(int position) {
+			return false;
+		}
+		
+		
 		class ViewHolder {
 			TextView mMessage;
 			TextView mIncomingTime;
 		}
 	}
 	
-	Context mContext = this;
-
 	private static int UPDATE_RECORD_TIME = 1;
 
-	private TextView mRecordingTimeView;
-
 	private static ListView mChatContentList;
+	
 	private EditText mSendText;
 
-	private TextView mAudioStatus;
-
-	ArrayList<MenuItem> mGalleryItems = new ArrayList<MenuItem>();
-
-	View mPostPictureAlert;
 	LocationManager mLocationManager = null;
 	
 	public static MessageListAdapter mMessageListAdapter;
 	
 	private Handler mHandler = new MainHandler();
-	LocalSocket receiver, sender;
-	LocalServerSocket lss;
-	int obuffering;
 
 	public static final int FIRST_MENU_ID = Menu.FIRST;
 	public static final int AUDIO_REQUEST_MENU_ITEM = FIRST_MENU_ID + 1;
@@ -168,15 +172,8 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener, OnCli
 
 	public static boolean isAudioSending = false;
 
-	final String strAudio = "Audio: ";
-
-	/** MBCPProcess */
 	public AudioMBCPProcess audio_mbcp_process = null;
 
-	/**
-	 * This Handler is used to post message back onto the main thread of the
-	 * application
-	 */
 	private class MainHandler extends Handler {
 		@Override
 		public void handleMessage(android.os.Message msg) {
@@ -206,12 +203,12 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener, OnCli
 				text = hoursString + ":" + text;
 			}
 
-			mRecordingTimeView.setText(text);
+			//mRecordingTimeView.setText(text);
 
 			
 
 			// for Audio status and video status 
-			mAudioStatus.setText(strAudio+AudioMBCPProcess.Status);
+			//mAudioStatus.setText(strAudio+AudioMBCPProcess.Status);
 			
 			mHandler.sendEmptyMessageDelayed(UPDATE_RECORD_TIME, 1000);
 		}
@@ -239,10 +236,6 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener, OnCli
 		// surfaceCreated / surfaceDestroyed, other parts of the code
 		// assume that when it is set, the surface is also set.
 
-		mAudioStatus = (TextView) findViewById(R.id.audio_status);
-
-		mRecordingTimeView = (TextView) findViewById(R.id.recording_time1);
-
 		mChatContentList = (ListView) this.findViewById(R.id.listMessages);
 		mChatContentList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 		mChatContentList.setStackFromBottom(true);
@@ -269,16 +262,10 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener, OnCli
 			mChatContentList.setAdapter(adapter);
 	}
 
-	int speakermode;
-	boolean justplay;
-
 	@Override
 	public void onStart() {
 		Log.d("SIPDROID", "[PTTCallScreen] - onStart");
 		super.onStart();
-		// SUA TAM
-		// -> speakermode =
-		// Receiver.engine(this).speaker(AudioManager.MODE_NORMAL);
 		
 	}
 
@@ -289,29 +276,13 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener, OnCli
 		if (!Sipdroid.release)
 			Log.i("SipUA:", "on resume");
 		
-
-		mRecordingTimeView.setText("");
-		mRecordingTimeView.setVisibility(View.VISIBLE);
 		mHandler.sendEmptyMessage(UPDATE_RECORD_TIME);
-		
-
 	}
 
 	@Override
 	public void onPause() {
 		Log.d("SIPDROID", "[PTTCallScreen] - onPause");
 		super.onPause();
-
-		// This is similar to what mShutterButton.performClick() does,
-		// but not quite the same.
-		//if (mMediaRecorderRecording) {
-
-		
-//		Receiver.engine(this).speaker(speakermode);
-//		Receiver.stopRingtone();
-//		Receiver.engine(this).rejectcall();
-//		Receiver.xmppEngine().stopConversation();
-//		finish();
 	}
 
 	/*
@@ -351,11 +322,8 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener, OnCli
 		}
 	}
 
-	boolean change;
-
 	private void setScreenOnFlag() {
 		Log.d("HAO", "PTTCallScreen_setScreenOnFlag");
-
 		Window w = getWindow();
 		final int keepScreenOnFlag = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
 		if ((w.getAttributes().flags & keepScreenOnFlag) == 0) {
@@ -365,7 +333,6 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener, OnCli
 
 	public void onHangup() {
 		Log.d("SIPDROID", "[PttCallScreen] - onHangup");
-
 		finish();
 	}
 
@@ -404,23 +371,6 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener, OnCli
 	}
 
 	@Override
-	public void onClick(View v) {
-		// Log.d("HAO", "PTTCallScreen_onClick");
-
-		useFront = !useFront;
-		change = true;
-
-	}
-
-	@Override
-	public boolean onLongClick(View v) {
-		Log.d("SIPDROID", "[PTTCallScreen] - onLongClick");
-
-		change = true;
-		return true;
-	}
-
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
 		MenuItem m = menu.add(0, AUDIO_REQUEST_MENU_ITEM, 0, R.string.menu_audiosend);
@@ -444,7 +394,7 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener, OnCli
 
 		if (Receiver.mSipdroidEngine != null
 				&& Receiver.mSipdroidEngine.ua != null
-				&& Receiver.mSipdroidEngine.ua.audio_app != null) {
+				&& UserAgent.audio_app != null) {
 			menu.findItem(AUDIO_REQUEST_MENU_ITEM).setVisible(!isAudioSending && !AudioMBCPProcess.Status.equals("Receiving"));
 			menu.findItem(HANG_UP_MENU_ITEM).setVisible(true);
 		} 
@@ -459,7 +409,6 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener, OnCli
 		Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected");
 
 		switch (item.getItemId()) {
-
 		case SPEAKER_MENU_ITEM:
 			Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - SPEAKER_MENU_ITEM");
 			Receiver.engine(this).speaker(AudioManager.MODE_IN_CALL);
@@ -475,16 +424,29 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener, OnCli
 			audio_mbcp_process.ReleaseMSG();
 			break;
 
-
 		case HANG_UP_MENU_ITEM:
 			hangup();
 			break;
-
 		}
 		return true;
 	}
-
+	
 	private void hangup() {
+		if(mMessagesList.size() > 0) {
+			
+			try {
+				String archiveFileName = STORAGE_CHAT_HISTORY + (Presence.mTarget == null ? "conference.car" : (Presence.mTarget.mUserName + ".car")); 
+				File file = new File(archiveFileName);
+				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
+				out.writeObject(mMessagesList);
+				out.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - HANG_UP_MENU_ITEM");
 		Receiver.stopRingtone();
 		Receiver.engine(this).rejectcall();

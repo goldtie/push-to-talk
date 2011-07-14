@@ -1,6 +1,5 @@
 package org.sipdroid.sipua.ui;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
@@ -101,8 +100,7 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 
 	public static final int FIRST_MENU_ID = Menu.FIRST;
 	public static final int CONFERENCE_MENU_ITEM = FIRST_MENU_ID + 1;
-	public static final int MY_STATUS_MENU_ITEM = CONFERENCE_MENU_ITEM + 1;
-	public static final int PREFERENCE_MENU_ITEM = MY_STATUS_MENU_ITEM + 1;
+	public static final int PREFERENCE_MENU_ITEM = CONFERENCE_MENU_ITEM + 1;
 	public static final int SIGNOUT_MENU_ITEM = PREFERENCE_MENU_ITEM + 1;
 	
 	public static final int ONLINE_STATUS = 0;
@@ -126,8 +124,9 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 	SipProvider sip_provider;
 	UserAgentProfile user_profile;
 	
-	Contact mMyProfile;
+	Contact mMyProfile = null;
 	
+	public static Contact mTarget = null;
 	public static boolean mIsPttService;	//replace Sipdroid.pttService due to Sipdroid activity is gone be removed
 	
 	boolean isSubscribed = false;
@@ -159,11 +158,11 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		}
 
 		public int getCount() {
-			return mContactList.size();
+			return mContactManagement.mContactList.size();
 		}
 
 		public Object getItem(int position) {
-			return mContactList.get(position);
+			return mContactManagement.mContactList.get(position);
 		}
 
 		public long getItemId(int position) {
@@ -186,20 +185,21 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 			}
 
 			// Bind the data efficiently with the holder.
-			holder.userName.setText(mContactList.get(position).mUsername);
-			Contact contact = mContactList.get(position);
+			holder.userName.setText(mContactManagement.mContactList.get(position).mDisplayName);
+			Contact contact = mContactManagement.mContactList.get(position);
 			holder.userStatus.setBackgroundResource(contact.mStatus.length() == 0 ? 0 : R.drawable.status_border);
-			holder.userStatus.setText(mContactList.get(position).mStatus);
+			holder.userStatus.setText(mContactManagement.mContactList.get(position).mStatus);
 			
 			switch (contact.mPresence) {
 			case ONLINE_STATUS:
-				Bitmap iconOnLine = BitmapFactory.decodeFile(contact.mImagePath);
-				holder.avatar.setImageBitmap(iconOnLine);
+				if(contact.mAvatar == null)
+					contact.mAvatar = BitmapFactory.decodeFile(contact.mImagePath);
+				holder.avatar.setImageBitmap(contact.mAvatar);
 				break;
 			case OFFLINE_STATUS: 
-				if(contact.mUsername.equals(FIRE)) {
+				if(contact.mUserName.equals(FIRE)) {
 					holder.avatar.setImageBitmap(mIconFireOff);
-				} else if(contact.mUsername.equals(CAMERA)) {
+				} else if(contact.mUserName.equals(CAMERA)) {
 					holder.avatar.setImageBitmap(mIconCameraOff);
 				} else {
 					holder.avatar.setImageBitmap(mIconOffLine);
@@ -233,7 +233,6 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		boolean result = super.onCreateOptionsMenu(menu);
 
 		menu.add(0, CONFERENCE_MENU_ITEM, 0, R.string.menu_conference);
-		menu.add(0, MY_STATUS_MENU_ITEM, 0, R.string.menu_mystatus);
 		menu.add(0, PREFERENCE_MENU_ITEM, 0, R.string.menu_preference);
 		menu.add(0, SIGNOUT_MENU_ITEM, 0, R.string.menu_sign_out);
 		return result;
@@ -244,7 +243,6 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		boolean result = super.onPrepareOptionsMenu(menu);
 
 		menu.findItem(CONFERENCE_MENU_ITEM).setVisible(true);
-		menu.findItem(MY_STATUS_MENU_ITEM).setVisible(true);
 		menu.findItem(PREFERENCE_MENU_ITEM).setVisible(true);
 		menu.findItem(SIGNOUT_MENU_ITEM).setVisible(true);
 
@@ -274,70 +272,6 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		pa.publisher_dialog.rePublish(lastPublishMsg);
 	}
 	
-	private void changeMyStatus() {
-		new AlertDialog.Builder(this)
-		.setTitle(R.string.change_status)
-		.setItems(statusList, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface paramDialogInterface, int whichButton) {
-				switch (whichButton) {
-				case 0:
-					pa.publish(user_profile.username + "@"
-							+ user_profile.realm,
-							SipStack.default_expires,
-							statusList[whichButton], "On-Line");
-					//mContactList.get(myIndex).mPresence = ONLINE_STATUS;
-					break;
-				case 1:
-					pa.publish(user_profile.username + "@"
-							+ user_profile.realm,
-							SipStack.default_expires,
-							statusList[whichButton], "Off-Line");
-					//mContactList.get(myIndex).mPresence = OFFLINE_STATUS;
-					break;
-				case 2:
-					pa.publish(user_profile.username + "@"
-							+ user_profile.realm,
-							SipStack.default_expires,
-							statusList[whichButton], "Busy");
-					//mContactList.get(myIndex).mPresence = BUSY_STATUS;
-					break;
-				case 3:
-					if (user_profile.username.equals(FIRE)){
-						pa.publish(user_profile.username + "@"
-								+ user_profile.realm,
-								SipStack.default_expires,
-								statusList[whichButton], "Fire-On");
-						//mContactList.get(myIndex).mPresence = FIREON_STATUS;
-					}else if (user_profile.username.equals(CAMERA)){
-						pa.publish(user_profile.username + "@"
-								+ user_profile.realm,
-								SipStack.default_expires,
-								statusList[whichButton], "Camera-On");
-						//mContactList.get(myIndex).mPresence = CAMERAON_STATUS;
-					}
-					break;
-				case 4:
-					if (user_profile.username.equals(FIRE)){
-						pa.publish(user_profile.username + "@"
-								+ user_profile.realm,
-								SipStack.default_expires,
-								statusList[whichButton], "Fire-Off");
-						//mContactList.get(myIndex).mPresence = FIREOFF_STATUS;
-					}else if (user_profile.username.equals(CAMERA)){
-						pa.publish(user_profile.username + "@"
-								+ user_profile.realm,
-								SipStack.default_expires,
-								statusList[whichButton], "Camera-Off");
-						//mContactList.get(myIndex).mPresence = CAMERAOFF_STATUS;
-					}
-					break;
-				}
-				contactAdapter.notifyDataSetChanged();	
-			}
-		}).show();
-	}
-	
 	public void changeUserStatus(int index, int status) {
 		final int tmp1 = index, tmp2 = status;
 		mHandler.post(new Runnable() {
@@ -345,8 +279,8 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				if (mContactList.get(tmp1).mPresence != tmp2){
-					mContactList.get(tmp1).mPresence = tmp2;
+				if (mContactManagement.mContactList.get(tmp1).mPresence != tmp2){
+					mContactManagement.mContactList.get(tmp1).mPresence = tmp2;
 					contactAdapter.notifyDataSetChanged();
 				}
 			}
@@ -395,10 +329,6 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 			
 			break;
 
-		case MY_STATUS_MENU_ITEM:
-			// Do change status
-			changeMyStatus();
-			break;
 		}
 
 		return result;
@@ -407,11 +337,11 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 	void reSubscribe(int period) {
 		pa_presence.resubscribe(user_profile.username + "@"
 				+ user_profile.realm, period);
-		for (int i = 0, j = 0; i < mContactList.size(); i++) {
-			if (mContactList.get(i).mUsername == null)
+		for (int i = 0, j = 0; i < mContactManagement.mContactList.size(); i++) {
+			if (mContactManagement.mContactList.get(i).mUserName == null)
 				break;
 			lst_PA.get(j).resubscribe(
-					mContactList.get(i).mUsername  + "@" + user_profile.realm, period);
+					mContactManagement.mContactList.get(i).mUserName  + "@" + user_profile.realm, period);
 			j++;
 		}
 	}
@@ -444,7 +374,7 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 	}
 	
 	public void changeFireEvent(boolean b) {
-		for (int i = 0; i < mContactList.size(); i++) {
+		for (int i = 0; i < mContactManagement.mContactList.size(); i++) {
 			checkFireEvent[i] = b;
 		}
 	}
@@ -460,12 +390,12 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		lst_PA = new Vector<PresenceAgent>();
 		changeFireEvent(false);
 
-		for (int i = 0, j = 0; i < mContactList.size(); i++) {
-			if (mContactList.get(i).mUsername == null)
+		for (int i = 0, j = 0; i < mContactManagement.mContactList.size(); i++) {
+			if (mContactManagement.mContactList.get(i).mUserName == null)
 				break;
 			
 			PresenceAgent pa_temp = new PresenceAgent(sip_provider, user_profile, this, this);
-			pa_temp.subscribe(mContactList.get(i).mUsername + "@" + user_profile.realm,SipStack.default_expires * 2);
+			pa_temp.subscribe(mContactManagement.mContactList.get(i).mUserName + "@" + user_profile.realm,SipStack.default_expires * 2);
 			
 			lst_PA.add(j, pa_temp);
 			j++;
@@ -476,9 +406,8 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		isSubscribed = true;
 	}
 
-	public static ArrayList<Contact> mContactList = new ArrayList<Contact>();
+	public static ContactManagement mContactManagement = null;
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle icicle) {
 		
@@ -491,42 +420,15 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		sip_provider = Receiver.mSipdroidEngine.sip_providers[0];
 		user_profile = Receiver.mSipdroidEngine.user_profiles[0];
 		
-//		ObjectInputStream in = null;
-//		try {
-//			in = new ObjectInputStream(new FileInputStream(STORAGE_CONTACT_LIST));
-//			mContactList = (ArrayList<Contact>)in.readObject();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			try {
-//				mContactList.clear();
-//				mContactList.add(new Contact(FIRE, EMPTY));
-//				mContactList.add(new Contact(CAMERA, EMPTY));
-//				mContactList.add(new Contact("1001", "I love you", "mnt/sdcard/download/icon_1001.png"));
-//				mContactList.add(new Contact("1002", "Demo Sipdroid", "mnt/sdcard/download/icon_1002.png"));
-//				mContactList.add(new Contact("1003", "Soongsil University", "mnt/sdcard/download/icon_1003.png"));
-//				mContactList.add(new Contact("1004", EMPTY, "mnt/sdcard/download/icon_1004.png"));
-//				mContactList.add(new Contact("1005", "Ec Ec", "mnt/sdcard/download/icon_1005.png"));
-//				
-//				
-//			    File file = new File(STORAGE_CONTACT_LIST);
-//			    // Create file if it does not exist
-//			    file.createNewFile();
-//			    
-//			} catch (IOException ex) {
-//				Log.d("SIPDROID", "[Presence]  - onCreate - Exception: " + ex.getMessage());
-//			}
-//		}
-		
-		mContactList.clear();
-		mContactList.add(new Contact(FIRE, EMPTY));
-		mContactList.add(new Contact(CAMERA, EMPTY));
-		mContactList.add(new Contact("1001", "I love you", "mnt/sdcard/download/icon_1001.png"));
-		mContactList.add(new Contact("1002", "Demo Sipdroid", "mnt/sdcard/download/icon_1002.png"));
-		mContactList.add(new Contact("1003", "Soongsil University", "mnt/sdcard/download/icon_1003.png"));
-		mContactList.add(new Contact("1004", EMPTY, "mnt/sdcard/download/icon_1004.png"));
-		mContactList.add(new Contact("1005", "Ec Ec", "mnt/sdcard/download/icon_1005.png"));
-		
-		checkFireEvent = new boolean[mContactList.size()];
+		mContactManagement = new ContactManagement();
+		for(Contact c : mContactManagement.mContactList) {
+			if(c.mUserName.equals(user_profile.username)) {
+				mMyProfile = c;
+				mContactManagement.mContactList.remove(c);
+				break;
+			}
+		}
+		checkFireEvent = new boolean[mContactManagement.mContactList.size()];
 		
 		lst_PA = new Vector<PresenceAgent>();
 		pa_presence = new PresenceAgent(sip_provider, user_profile, this, this);
@@ -545,7 +447,7 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mySpinner.setAdapter(adapter);
         
-        mySpinner.setPrompt(user_profile.username + " - Change my status");
+        mySpinner.setPrompt(mMyProfile.mDisplayName + " - Change my status");
         mySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
@@ -587,10 +489,10 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 					View paramView, int paramInt, long paramLong) {
 				// TODO Auto-generated method stub
 				
-				final Contact con = (Contact)((EfficientAdapter)paramAdapterView.getAdapter()).getItem(paramInt);
+				mTarget = (Contact)((EfficientAdapter)paramAdapterView.getAdapter()).getItem(paramInt);
 				
 				new AlertDialog.Builder(Presence.this)
-				.setTitle(Settings.getAccountUserName(Presence.this))
+				.setTitle(mMyProfile.mDisplayName)
 				.setItems(new String[] {"Call", "Chat"}, new DialogInterface.OnClickListener() {
 					
 					@Override
@@ -600,7 +502,7 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 						switch (whichButton) {
 						case CALL_ACTION:
 							Presence.mIsPttService = false;
-							Receiver.engine(getBaseContext()).call(con.mUsername + "@" + PreferenceManager.getDefaultSharedPreferences(Presence.this)
+							Receiver.engine(getBaseContext()).call(mTarget.mUserName + "@" + PreferenceManager.getDefaultSharedPreferences(Presence.this)
 									.getString(Settings.PREF_SERVER, EMPTY), true);							
 							break;
 						case CHAT_ACTION:
@@ -609,7 +511,7 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 							Receiver.engine(getBaseContext()).call(target, true);
 							
 							Receiver.xmppEngine().startConversation(
-									con.mUsername +
+									mTarget.mUserName +
 									"@" + Settings.getXMPP_Service(getBaseContext()), 
 									XMPPEngine.PERSONAL);
 							break;
