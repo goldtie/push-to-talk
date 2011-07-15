@@ -23,7 +23,6 @@ package org.sipdroid.sipua.ui;
 
 
 import net.tomp2p.p2p.Peer;
-import net.tomp2p.peers.Number160;
 
 import org.sipdroid.sipua.R;
 import org.sipdroid.sipua.SipdroidEngine;
@@ -57,8 +56,6 @@ public class Sipdroid extends Activity implements OnDismissListener{
 	public static final boolean market = false;
 	
 	public static String ptt_address = "";
-	
-	private Peer peer;
 	
 	Intent intent;
 	

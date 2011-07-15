@@ -10,7 +10,6 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Random;
 
-import org.sipdroid.media.MediaLauncher;
 import org.sipdroid.sipua.UserAgent;
 
 import android.util.Log;
