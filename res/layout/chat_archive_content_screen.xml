@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
+	android:orientation="vertical"
 	xmlns:android="http://schemas.android.com/apk/res/android"
  android:background="@drawable/background_chat_screen">
-    
+    <TextView
+	android:id="@+id/datetime_header"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:layout_marginLeft="10dip"
+	android:layout_marginRight="10dip"
+	android:layout_marginTop="10dip"
+	android:paddingTop="5dip"
+	android:paddingBottom="5dip"
+	android:gravity="center"
+	android:textColor="#ffffff"
+	android:background="@drawable/message_header_border"/> 
 
 	<ListView android:id="@+id/listArchiveMessages"
 			android:layout_width="fill_parent" android:layout_height="wrap_content"
-			android:layout_marginTop="10dip"
+			android:paddingTop="10dip"
 			android:divider="@null"
 			android:layout_alignParentTop="true"
 			android:scrollbars="horizontal" 

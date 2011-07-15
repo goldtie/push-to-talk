@@ -35,17 +35,9 @@ public class HistoryListActivity extends ListActivity{
 	
 	private SeparatedListAdapter mAdapter;
 	
-	class ChatArchiveStruct {
-		public String mUserName;		//who I talk with
-		public ArrayList<MessageStruct> mChatArchiveContent;
-		
-		public ChatArchiveStruct(String username, ArrayList<MessageStruct> chatArchiveContent) {
-			mUserName = username;
-			mChatArchiveContent = chatArchiveContent;
-		}
-	}
 	
 	public static ChatArchiveStruct mTarget = null;
+	public static String mDateTime = EMPTY;
 	
 	public ContactManagement mContactManagement = new ContactManagement();
 	
@@ -69,6 +61,7 @@ public class HistoryListActivity extends ListActivity{
         			if(fileName.equals(c.mUserName) || fileName.equals("conference")) {
         				try {
         					ObjectInputStream in = new ObjectInputStream(new FileInputStream(f.getAbsolutePath()));
+        					mDateTime = (String) in.readObject();
         					@SuppressWarnings("unchecked")
         					ArrayList<MessageStruct> messageArr = (ArrayList<MessageStruct>)in.readObject();
         					if(messageArr != null) {
@@ -143,15 +136,16 @@ public class HistoryListActivity extends ListActivity{
 				//just display the first message in archive
 				if(status != null)
 					status.setText(mContacts.get(position).mChatArchiveContent.get(0).mMessageContent);
-				
-				if(contact == null) {
-					Bitmap iconOnLine = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_conference);
-					avatar.setImageBitmap(iconOnLine);
-				} else if(contact.mAvatar == null) {
-					contact.mAvatar = BitmapFactory.decodeFile(contact.mImagePath);
-					if(avatar != null)
+				if(avatar != null) {
+					if(contact == null) {
+						Bitmap iconOnLine = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_conference);
+						avatar.setImageBitmap(iconOnLine);
+					} else if(contact.mAvatar == null) {
+						contact.mAvatar = BitmapFactory.decodeFile(contact.mImagePath);
 						avatar.setImageBitmap(contact.mAvatar);
+					}					
 				}
+
 			}
 			return v;
 		}
@@ -246,19 +240,26 @@ public class HistoryListActivity extends ListActivity{
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			int sectionnum = 0;
+			View v = convertView;
 			for(Object section : this.mSections.keySet()) {
 				Adapter adapter = mSections.get(section);
 				int size = adapter.getCount() + 1;
-
+				
 				// check if position inside this section
-				if(position == 0) return headers.getView(sectionnum, convertView, parent);
+				if(position == 0) {
+					LayoutInflater vi = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+					v = vi.inflate(R.layout.contacts_list_header, null);
+					TextView sectionView = (TextView) v.findViewById(R.id.list_header_title);
+					sectionView.setText(section.toString());
+					return v;//headers.getView(sectionnum, convertView, parent);
+				}
 				if(position < size) return adapter.getView(position - 1, convertView, parent);
 
 				// otherwise jump into next section
 				position -= size;
 				sectionnum++;
 			}
-			return null;
+			return v;
 		}
 
 		@Override

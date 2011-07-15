@@ -10,6 +10,8 @@
     android:id="@+id/chatInputPanel"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:paddingTop="3dip"
+    android:background="#c2c2c2"
     android:layout_alignParentBottom="true"
     >
     <Button
@@ -30,14 +32,29 @@
         />
 </RelativeLayout>
 
+
 	<ListView android:id="@+id/listMessages"
-			android:layout_width="fill_parent" android:layout_height="fill_parent"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
 			android:layout_marginBottom="10dip"
+			android:paddingTop="10dip"
 			android:divider="@null"
-			android:layout_alignParentTop="true"
 			android:layout_above="@id/chatInputPanel"
+			android:layout_below="@id/datetime_header"
 			android:scrollbars="horizontal" 
 			android:cacheColorHint="#00000000"/>
+	
+	<TextView
+	android:id="@+id/datetime_header"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:layout_marginLeft="10dip"
+	android:layout_marginRight="10dip"
+	android:layout_marginTop="10dip"
+	android:paddingTop="5dip"
+	android:paddingBottom="5dip"
+	android:textColor="#ffffff"
+	android:gravity="center"
+	android:background="@drawable/message_header_border"/> 
 	
 	<!--</LinearLayout> -->
 </RelativeLayout>
