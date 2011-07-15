@@ -22,6 +22,7 @@ package org.sipdroid.sipua.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -50,7 +51,12 @@ public class SIP extends Activity {
 		super.onCreate(saved);
 		Intent intent;
 		Uri uri;
-		Sipdroid.on(this,true);
+		
+		Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
+		edit.putBoolean(Settings.PREF_ON, true);
+		edit.commit();
+        if (true) Receiver.engine(this).isRegistered();
+        
 		if ((intent = getIntent()) != null
 			&& (uri = intent.getData()) != null)
 				callPSTN(uri.toString());

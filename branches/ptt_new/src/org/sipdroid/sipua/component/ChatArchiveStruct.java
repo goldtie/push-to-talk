@@ -1,4 +1,4 @@
-package org.sipdroid.sipua.ui;
+package org.sipdroid.sipua.component;
 
 import java.util.ArrayList;
 
@@ -14,7 +14,8 @@ public class ChatArchiveStruct{
 	public ChatArchiveStruct(String username, ArrayList<MessageStruct> chatArchiveContent) {
 		mUserName = username;
 		mChatArchiveContent = chatArchiveContent;
-		this.mImagePath = new ContactManagement().getContact(mUserName).mImagePath;
+		Contact contact = new ContactManagement().getContact(mUserName);
+		this.mImagePath = (contact == null) ? null : contact.mImagePath;		//if contact is a conference => set null image path (bad code => need to change later)
 	}
 
 }

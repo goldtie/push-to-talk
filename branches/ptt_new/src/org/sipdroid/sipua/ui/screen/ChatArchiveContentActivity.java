@@ -1,4 +1,4 @@
-package org.sipdroid.sipua.ui;
+package org.sipdroid.sipua.ui.screen;
 
 /*
  * Copyright (C) 2009 The Sipdroid Open Source Project
@@ -25,6 +25,8 @@ import java.util.ArrayList;
 
 import org.sipdroid.sipua.MessageStruct;
 import org.sipdroid.sipua.R;
+import org.sipdroid.sipua.component.ContactManagement;
+import org.sipdroid.sipua.ui.Settings;
 
 import android.app.Activity;
 import android.content.Context;
@@ -112,7 +114,7 @@ public class ChatArchiveContentActivity extends Activity{
 				lp5.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 				holder.mAvatar.setLayoutParams(lp5);
 				
-				holder.mAvatar.setImageBitmap(mTargetAvatar);
+				holder.mAvatar.setImageBitmap(BitmapFactory.decodeFile(new ContactManagement().getContact(mess.mMessageSender).mImagePath));
 				holder.mAvatar.setVisibility(View.VISIBLE);
 				
 				RelativeLayout.LayoutParams lp3 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
