@@ -2,6 +2,11 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/RelativeLayout01" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        
+        <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="wrap_content" android:paddingRight="5dip" android:layout_height="fill_parent" android:layout_marginRight="6dip"
+        android:src="@drawable/icon" />
         	
 		<TextView android:id="@+id/messageComingTime"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
