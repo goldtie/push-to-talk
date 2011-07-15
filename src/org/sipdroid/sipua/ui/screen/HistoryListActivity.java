@@ -1,4 +1,4 @@
-package org.sipdroid.sipua.ui;
+package org.sipdroid.sipua.ui.screen;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +9,9 @@ import java.util.Map;
 
 import org.sipdroid.sipua.MessageStruct;
 import org.sipdroid.sipua.R;
+import org.sipdroid.sipua.component.ChatArchiveStruct;
+import org.sipdroid.sipua.component.Contact;
+import org.sipdroid.sipua.component.ContactManagement;
 
 import android.app.ListActivity;
 import android.content.Context;

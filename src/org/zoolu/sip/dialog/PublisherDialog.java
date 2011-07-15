@@ -9,7 +9,7 @@ package org.zoolu.sip.dialog;
 //import local.ua.GraphicalUA;
 //import local.ua.presenceService;
 
-import org.sipdroid.sipua.ui.Presence;
+import org.sipdroid.sipua.ui.screen.Presence;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.address.SipURL;
 import org.zoolu.sip.header.CSeqHeader;

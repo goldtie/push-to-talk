@@ -1,4 +1,4 @@
-package org.sipdroid.sipua.ui;
+package org.sipdroid.sipua.ui.screen;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -11,12 +11,17 @@ import org.sipdroid.sipua.XMPPEngine;
 
 import android.content.Intent;
 import org.sipdroid.sipua.UserAgentProfile;
+import org.sipdroid.sipua.component.Contact;
+import org.sipdroid.sipua.component.ContactManagement;
+import org.sipdroid.sipua.ui.Receiver;
+import org.sipdroid.sipua.ui.RegisterService;
+import org.sipdroid.sipua.ui.Settings;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.message.Message;
 import org.zoolu.sip.provider.SipProvider;
 import org.zoolu.sip.provider.SipStack;
 
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,12 +31,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -100,8 +108,7 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 
 	public static final int FIRST_MENU_ID = Menu.FIRST;
 	public static final int CONFERENCE_MENU_ITEM = FIRST_MENU_ID + 1;
-	public static final int PREFERENCE_MENU_ITEM = CONFERENCE_MENU_ITEM + 1;
-	public static final int SIGNOUT_MENU_ITEM = PREFERENCE_MENU_ITEM + 1;
+	public static final int SIGNOUT_MENU_ITEM = CONFERENCE_MENU_ITEM + 1;
 	
 	public static final int ONLINE_STATUS = 0;
 	public static final int OFFLINE_STATUS = 1;
@@ -125,6 +132,8 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 	UserAgentProfile user_profile;
 	
 	Contact mMyProfile = null;
+	
+	public static Context mContext;
 	
 	public static Contact mTarget = null;
 	public static boolean mIsPttService;	//replace Sipdroid.pttService due to Sipdroid activity is gone be removed
@@ -233,7 +242,6 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		boolean result = super.onCreateOptionsMenu(menu);
 
 		menu.add(0, CONFERENCE_MENU_ITEM, 0, R.string.menu_conference);
-		menu.add(0, PREFERENCE_MENU_ITEM, 0, R.string.menu_preference);
 		menu.add(0, SIGNOUT_MENU_ITEM, 0, R.string.menu_sign_out);
 		return result;
 	}
@@ -243,7 +251,6 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		boolean result = super.onPrepareOptionsMenu(menu);
 
 		menu.findItem(CONFERENCE_MENU_ITEM).setVisible(true);
-		menu.findItem(PREFERENCE_MENU_ITEM).setVisible(true);
 		menu.findItem(SIGNOUT_MENU_ITEM).setVisible(true);
 
 		return result;
@@ -296,7 +303,7 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		switch (item.getItemId()) {
 		case CONFERENCE_MENU_ITEM:
 			//if (SipDroid.pttService){
-			
+			mTarget = null;
 			Presence.mIsPttService = true;
 			
 			String target = Settings.getPTT_Username(getBaseContext())+"@"+ Settings.getPTT_Server(getBaseContext());
@@ -307,9 +314,7 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 			Receiver.xmppEngine().startConversation("ptt@conference." + Settings.getXMPP_Service(getBaseContext()), XMPPEngine.CONFERENCE);
 
 			break;
-		case PREFERENCE_MENU_ITEM:
-			break;
-
+		
 		case SIGNOUT_MENU_ITEM:
 			// Exit or Stop the presence service function
 			//mContactList.get(myIndex).mPresence = OFFLINE_STATUS;
@@ -417,6 +422,7 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		setContentView(R.layout.contacts_list);
 		getListView().setEmptyView(findViewById(R.id.empty));
 		
+		mContext = this;
 		sip_provider = Receiver.mSipdroidEngine.sip_providers[0];
 		user_profile = Receiver.mSipdroidEngine.user_profiles[0];
 		
@@ -490,47 +496,82 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 				// TODO Auto-generated method stub
 				
 				mTarget = (Contact)((EfficientAdapter)paramAdapterView.getAdapter()).getItem(paramInt);
+				if(mTarget.mDisplayName.equals(FIRE) || mTarget.mDisplayName.equals(CAMERA))
+					return;
+				((ListActivity)mContext).showDialog(CUSTOM_DIALOG);
 				
-				new AlertDialog.Builder(Presence.this)
-				.setTitle(mMyProfile.mDisplayName)
-				.setItems(new String[] {"Call", "Chat"}, new DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface paramDialogInterface, int whichButton) {
-						// TODO Auto-generated method stub
-						
-						switch (whichButton) {
-						case CALL_ACTION:
-							Presence.mIsPttService = false;
-							Receiver.engine(getBaseContext()).call(mTarget.mUserName + "@" + PreferenceManager.getDefaultSharedPreferences(Presence.this)
-									.getString(Settings.PREF_SERVER, EMPTY), true);							
-							break;
-						case CHAT_ACTION:
-							Presence.mIsPttService = true;
-							String target = Settings.getPTT_Username(getBaseContext())+"@"+ Settings.getPTT_Server(getBaseContext());
-							Receiver.engine(getBaseContext()).call(target, true);
-							
-							Receiver.xmppEngine().startConversation(
-									mTarget.mUserName +
-									"@" + Settings.getXMPP_Service(getBaseContext()), 
-									XMPPEngine.PERSONAL);
-							break;
-						}
-						
-					}
-				})
-				.show();
 			}
 		});
 		
-		
-		
 		PresenceInitialize();
 		Receiver.xmppEngine().setContext(this);
+		
 		//need this code to be after initializing presence lst_PA 
 		
 		
 	}
+	private static final int CUSTOM_DIALOG 	= 1;
+	
+	public void onPrepareDialog(int id, Dialog dialog) {
+		if(id == CUSTOM_DIALOG) {
+			 Bitmap iconOnLine = BitmapFactory.decodeFile(Presence.mTarget.mImagePath);
+	         
+			 ImageView avatar = (ImageView)dialog.findViewById(R.id.avatar);
+	         if(avatar != null)
+	        	 avatar.setImageBitmap(iconOnLine);
+	         
+	         TextView status = (TextView)dialog.findViewById(R.id.summary);
+	         if(status != null)
+	        	 status.setText(Presence.mTarget.mStatus);
+	         
+	         TextView message = (TextView)dialog.findViewById(R.id.message);
+	         if(message != null) {
+	        	 if(Presence.mTarget.mStatus.equals(EMPTY)) {
+	        		 status.setVisibility(ViewGroup.GONE);
+	        		 message.setGravity(Gravity.CENTER_VERTICAL);
+	        	 } else {
+	        		 status.setVisibility(ViewGroup.VISIBLE);
+	        		 message.setGravity(Gravity.TOP);
+	        	 }
+	        	 message.setText(Presence.mTarget.mDisplayName);
+	         }
+	        	 
+		}
+	}
+	
+	private Dialog mChatDialog = null;
+	public Dialog onCreateDialog(int dialogId) {
+    	
+    	if(dialogId == CUSTOM_DIALOG) {
+    		CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
+			customBuilder.setTitle(mMyProfile.mDisplayName)
+				.setNegativeButton("Call", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						Presence.mIsPttService = false;
+						Receiver.engine(getBaseContext()).call(mTarget.mUserName + "@" + PreferenceManager.getDefaultSharedPreferences(Presence.this)
+								.getString(Settings.PREF_SERVER, EMPTY), true);	
+						dialog.cancel();
+					}
+				})
+				.setPositiveButton("Chat", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						Presence.mIsPttService = true;
+						String target = Settings.getPTT_Username(getBaseContext())+"@"+ Settings.getPTT_Server(getBaseContext());
+						Receiver.engine(getBaseContext()).call(target, true);
+						
+						Receiver.xmppEngine().startConversation(mTarget.mUserName + "@" + Settings.getXMPP_Service(getBaseContext()), 
+								XMPPEngine.PERSONAL);
+						dialog.cancel();
+					}
+				});
+			mChatDialog = customBuilder.create();
+			mChatDialog.getWindow().getAttributes().width = LayoutParams.FILL_PARENT;
+			mChatDialog.getWindow().getAttributes().height = LayoutParams.WRAP_CONTENT;
+			mChatDialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
+
+    	}
+    	return mChatDialog;
+    }
 	
 	private void initStatusList() {
 		if (Receiver.mSipdroidEngine.user_profiles[0].username.equals(FIRE)){
@@ -600,7 +641,16 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 	public void onClick(DialogInterface dialog, int whichButton) {
 		// publish new status here !!
 		// -->Then receive notify then status will be change automatic
-		
-		
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(keyCode == KeyEvent.KEYCODE_BACK && mChatDialog != null) {
+			if(mChatDialog.isShowing())
+				dismissDialog(CUSTOM_DIALOG);
+		}
+			
+
+		return super.onKeyDown(keyCode, event);
 	}
 }

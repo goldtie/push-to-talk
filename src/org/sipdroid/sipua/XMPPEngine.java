@@ -21,10 +21,12 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.sipdroid.sipua.component.ContactManagement;
 import org.sipdroid.sipua.ui.Receiver;
 import org.sipdroid.sipua.ui.Settings;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
@@ -134,7 +136,6 @@ public class XMPPEngine {
             		final Message message = (Message) packet;
             		if(mCurrentConversation == IDLE) {
 
-            			
             			if (message.getBody() != null) {
             				mHandler.post(new Runnable() {
 
@@ -142,7 +143,8 @@ public class XMPPEngine {
             					public void run() {
             						String fromName = StringUtils.parseBareAddress(message.getFrom());
             						// TODO Auto-generated method stub
-            						Toast.makeText(mContext, org.sipdroid.sipua.ui.Presence.mContactManagement.getDisplayName(fromName.substring(0, fromName.indexOf("@"))) + " wants to talk something with you!", Toast.LENGTH_LONG).show();
+            						Toast.makeText(mContext, 
+            								org.sipdroid.sipua.ui.screen.Presence.mContactManagement.getDisplayName(fromName.substring(0, fromName.indexOf("@"))) + " wants to talk something with you!", Toast.LENGTH_SHORT).show();
             					}
             				});
 
@@ -153,6 +155,8 @@ public class XMPPEngine {
             				if(mCurrentConversation == PERSONAL)
             					return;
             				if (message.getBody() != null) {
+            					//mTargetAvatar = (Presence.mTarget == null) ? BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_conference) : BitmapFactory.decodeFile(Presence.mTarget.mImagePath);
+            					
             					String fromName = StringUtils.parseResource(message.getFrom());		//get the sender address
             					if(fromName.equals(Settings.getAccountUserName(mContext) + "@" + Settings.getXMPP_Service(mContext))) {
             						return;
@@ -162,6 +166,7 @@ public class XMPPEngine {
             					m.mMessageSender = fromName.substring(0, fromName.indexOf("@"));
             					m.mMessageContent = message.getBody();
             					messages.add(m);
+            					//org.sipdroid.sipua.ui.screen.PTTCallScreen.mTargetAvatar = BitmapFactory.decodeFile(new ContactManagement().getContact(m.mMessageSender).mImagePath);
             					// Add the incoming message to the list view
             					mHandler.post(new Runnable() {
             						public void run() {
@@ -184,12 +189,26 @@ public class XMPPEngine {
             				m.mMessageSender = fromName.substring(0, fromName.indexOf("@"));
             				m.mMessageContent = message.getBody();
             				messages.add(m);
-            				// Add the incoming message to the list view
-            				mHandler.post(new Runnable() {
-            					public void run() {
-            						Receiver.onMsgStatus(XMPP_STATE_INCOMING_MSG, null);
-            					}
-            				});
+            				if(!m.mMessageSender.equals(org.sipdroid.sipua.ui.screen.Presence.mTarget.mUserName)) {
+            					mHandler.post(new Runnable() {
+
+                					@Override
+                					public void run() {
+                						String fromName = StringUtils.parseBareAddress(message.getFrom());
+                						// TODO Auto-generated method stub
+                						Toast.makeText(mContext, 
+                								org.sipdroid.sipua.ui.screen.Presence.mContactManagement.getDisplayName(fromName.substring(0, fromName.indexOf("@"))) + " wants to talk something with you!", Toast.LENGTH_SHORT).show();
+                					}
+                				});
+            				} else {
+                				// Add the incoming message to the list view
+                				mHandler.post(new Runnable() {
+                					public void run() {
+                						Receiver.onMsgStatus(XMPP_STATE_INCOMING_MSG, null);
+                					}
+                				});
+
+            				}
             			}
             		}
             	}

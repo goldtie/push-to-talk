@@ -107,8 +107,8 @@
         </intent-filter>
         
         	</activity>
-        <activity android:name=".ui.HistoryListActivity" />
-        <activity android:name=".ui.ChatArchiveContentActivity" />
+        <activity android:name=".ui.screen.HistoryListActivity" />
+        <activity android:name=".ui.screen.ChatArchiveContentActivity" />
         
         <activity android:name=".ui.Settings" android:label="@string/app_name" 
         	android:configChanges="orientation|keyboardHidden" >
@@ -126,7 +126,7 @@
 	        android:configChanges="orientation|keyboardHidden">
         </activity>
         
-        <activity android:name=".ui.PTTCallScreen" android:label="@string/menu_video"
+        <activity android:name=".ui.screen.PTTCallScreen" android:label="@string/menu_video"
 	        android:excludeFromRecents="true" android:taskAffinity=""
 			android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
 	        android:clearTaskOnLaunch="true"
@@ -138,17 +138,12 @@ android:configChanges="orientation">
 	        android:launchMode="singleInstance">
         </activity>
         
-        <activity android:name=".ui.Presence" android:label="@string/app_name"
+        <activity android:name=".ui.screen.Presence" android:label="@string/app_name"
 	        android:excludeFromRecents="true" android:taskAffinity=""
 	        android:launchMode="singleInstance">
 	        <action android:name="android.intent.action.PRESENCE" />
         </activity>
         
-        <activity android:name="ui.PTTCallScreen_1" android:label="@string/app_name"
-	        android:excludeFromRecents="true" android:taskAffinity=""
-	        android:launchMode="singleInstance">
-        </activity>
-       
 	    <receiver android:name=".ui.OneShotAlarm"/>
 	    <receiver android:name=".ui.OneShotAlarm2"/>
 	    <receiver android:name=".ui.LoopAlarm"/>

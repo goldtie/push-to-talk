@@ -71,6 +71,8 @@ import org.sipdroid.media.RtpStreamSender;
 import org.sipdroid.sipua.*;
 import org.sipdroid.sipua.phone.Call;
 import org.sipdroid.sipua.phone.Connection;
+import org.sipdroid.sipua.ui.screen.PTTCallScreen;
+import org.sipdroid.sipua.ui.screen.Presence;
 import org.zoolu.sip.provider.SipProvider;
 
 	public class Receiver extends BroadcastReceiver {
@@ -402,7 +404,7 @@ import org.zoolu.sip.provider.SipProvider;
 		
 		static void updateAutoAnswer() {
 			if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(org.sipdroid.sipua.ui.Settings.PREF_AUTO_ONDEMAND, org.sipdroid.sipua.ui.Settings.DEFAULT_AUTO_ONDEMAND) &&
-				Sipdroid.on(mContext)) {
+					PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(org.sipdroid.sipua.ui.Settings.PREF_ON, org.sipdroid.sipua.ui.Settings.DEFAULT_ON)) {
 				if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(org.sipdroid.sipua.ui.Settings.PREF_AUTO_DEMAND, org.sipdroid.sipua.ui.Settings.DEFAULT_AUTO_DEMAND))
 					updateAutoAnswer(1);
 				else
@@ -446,7 +448,7 @@ import org.zoolu.sip.provider.SipProvider;
 			if (am == null) am = (AlarmManager)mContext.getSystemService(Context.ALARM_SERVICE);
 			pos_gps(false);
 			if (enable) {
-				if (call_state == UserAgent.UA_STATE_IDLE && Sipdroid.on(mContext) &&
+				if (call_state == UserAgent.UA_STATE_IDLE && PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(org.sipdroid.sipua.ui.Settings.PREF_ON, org.sipdroid.sipua.ui.Settings.DEFAULT_ON) &&
 						PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(org.sipdroid.sipua.ui.Settings.PREF_POS, org.sipdroid.sipua.ui.Settings.DEFAULT_POS) &&
 						PreferenceManager.getDefaultSharedPreferences(mContext).getString(org.sipdroid.sipua.ui.Settings.PREF_POSURL, org.sipdroid.sipua.ui.Settings.DEFAULT_POSURL).length() > 0) {
 					Location last = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -743,7 +745,7 @@ import org.zoolu.sip.provider.SipProvider;
 	    @Override
 		public void onReceive(Context context, Intent intent) {
 	        String intentAction = intent.getAction();
-	        if (!Sipdroid.on(context)) return;
+	        if (!PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(org.sipdroid.sipua.ui.Settings.PREF_ON, org.sipdroid.sipua.ui.Settings.DEFAULT_ON)) return;
         	if (!Sipdroid.release) Log.i("SipUA:",intentAction);
         	if (mContext == null) mContext = context;
 	        if (intentAction.equals(Intent.ACTION_BOOT_COMPLETED)){

@@ -21,10 +21,10 @@
 
 package org.sipdroid.sipua;
 
-import org.sipdroid.sipua.ui.Presence;
 import org.sipdroid.sipua.ui.Receiver;
 import org.sipdroid.sipua.ui.Settings;
 import org.sipdroid.sipua.ui.Sipdroid;
+import org.sipdroid.sipua.ui.screen.Presence;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.dialog.NotifierDialog;
 import org.zoolu.sip.dialog.NotifierDialogListener;

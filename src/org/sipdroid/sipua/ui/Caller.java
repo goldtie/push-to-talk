@@ -60,7 +60,7 @@ public class Caller extends BroadcastReceiver {
 	        if (intentAction.equals(Intent.ACTION_NEW_OUTGOING_CALL) && number != null)
 	        {
         		if (!Sipdroid.release) Log.i("SipUA:","outgoing call");
-        		if (!Sipdroid.on(context)) return;
+        		if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Settings.PREF_ON, Settings.DEFAULT_ON)) return;
     			boolean sip_type = !PreferenceManager.getDefaultSharedPreferences(context).getString(Settings.PREF_PREF, Settings.DEFAULT_PREF).equals(Settings.VAL_PREF_PSTN);
     	        boolean ask = PreferenceManager.getDefaultSharedPreferences(context).getString(Settings.PREF_PREF, Settings.DEFAULT_PREF).equals(Settings.VAL_PREF_ASK);
     	        

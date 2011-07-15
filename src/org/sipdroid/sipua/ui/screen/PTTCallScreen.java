@@ -1,4 +1,4 @@
-package org.sipdroid.sipua.ui;
+package org.sipdroid.sipua.ui.screen;
 
 /*
  * Copyright (C) 2009 The Sipdroid Open Source Project
@@ -35,6 +35,13 @@ import org.sipdroid.sipua.MessageStruct;
 import org.sipdroid.sipua.R;
 import org.sipdroid.sipua.UserAgent;
 import org.sipdroid.sipua.XMPPEngine;
+import org.sipdroid.sipua.component.ContactManagement;
+import org.sipdroid.sipua.ui.AudioMBCPProcess;
+import org.sipdroid.sipua.ui.CallScreen;
+import org.sipdroid.sipua.ui.Receiver;
+import org.sipdroid.sipua.ui.Settings;
+import org.sipdroid.sipua.ui.Sipdroid;
+import org.sipdroid.sipua.ui.SipdroidListener;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -65,6 +72,8 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 public class PTTCallScreen extends CallScreen implements SipdroidListener {
+
+	public static final String EMPTY = "";
 
 	ArrayList<MessageStruct> mMessagesList = new ArrayList<MessageStruct>();
 	
@@ -137,7 +146,7 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 				lp5.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 				holder.mAvatar.setLayoutParams(lp5);
 				
-				holder.mAvatar.setImageBitmap(mTargetAvatar);
+				holder.mAvatar.setImageBitmap(BitmapFactory.decodeFile(new ContactManagement().getContact(mess.mMessageSender).mImagePath));
 				holder.mAvatar.setVisibility(View.VISIBLE);
 				
 				RelativeLayout.LayoutParams lp3 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -242,7 +251,9 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 	public void onCreate(Bundle icicle) {
 		Log.d("SIPDROID", "[PTTCallScreen] - OnCreate");
 		super.onCreate(icicle);
-
+		
+		Receiver.xmppEngine().setContext(this);
+		
 		audio_mbcp_process = new AudioMBCPProcess(this);
 
 		android.util.Log.d("HAO", "Sipdroid.audio_mbcp_process.HelloMSG(user_profile.username)");
@@ -254,10 +265,6 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		setScreenOnFlag();
 		setContentView(R.layout.chat_screen);
-
-		// don't set mSurfaceHolder here. We have it set ONLY within
-		// surfaceCreated / surfaceDestroyed, other parts of the code
-		// assume that when it is set, the surface is also set.
 
 		mChatContentList = (ListView) this.findViewById(R.id.listMessages);
 		mChatContentList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
@@ -271,7 +278,7 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 		String[] strMonths = new String[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
 		Calendar now = new GregorianCalendar();
-		mDateTime = strDays[now.get(Calendar.DAY_OF_WEEK)] + ", " + strMonths[now.get(Calendar.MONTH)] + now.get(Calendar.DAY_OF_MONTH) + ", " + now.get(Calendar.YEAR);
+		mDateTime = strDays[now.get(Calendar.DAY_OF_WEEK) - 1] + ", " + strMonths[now.get(Calendar.MONTH)] + now.get(Calendar.DAY_OF_MONTH) + ", " + now.get(Calendar.YEAR);
 
 		TextView datetimeHeader = (TextView) this.findViewById(R.id.datetime_header);
 		datetimeHeader.setText(mDateTime);
@@ -283,12 +290,14 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 			public void onClick(View view) {
 
 				String text = mSendText.getText().toString();
-				mSendText.setText("");
+				if(text.equals(EMPTY))
+					return;
+				mSendText.setText(EMPTY);
 				Receiver.onMsgStatus(XMPPEngine.XMPP_STATE_OUTCOMING_MSG, text);
 			}
 		});
 
-		mTargetAvatar = BitmapFactory.decodeFile(Presence.mTarget.mImagePath);
+		mTargetAvatar = (Presence.mTarget == null) ? BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_conference) : BitmapFactory.decodeFile(Presence.mTarget.mImagePath);
 		
 	}
 

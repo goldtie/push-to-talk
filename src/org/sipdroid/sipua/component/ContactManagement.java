@@ -1,6 +1,8 @@
-package org.sipdroid.sipua.ui;
+package org.sipdroid.sipua.component;
 
 import java.util.ArrayList;
+
+import org.sipdroid.sipua.ui.screen.Presence;
 
 public class ContactManagement {
 	public static final String EMPTY = "";

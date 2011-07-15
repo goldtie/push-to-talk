@@ -26,6 +26,7 @@
 package org.zoolu.sip.provider;
 
 import org.sipdroid.sipua.ui.Receiver;
+import org.sipdroid.sipua.ui.Settings;
 import org.sipdroid.sipua.ui.Sipdroid;
 import org.zoolu.net.*;
 import org.zoolu.sip.header.*;
@@ -48,6 +49,7 @@ import org.zoolu.tools.Iterator;
 
 import android.content.Context;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 
 import java.util.Enumeration;
 import java.util.Date;
@@ -1205,7 +1207,7 @@ public class SipProvider implements Configurable, TransportListener,
 			ConnectionIdentifier conn_id = new ConnectionIdentifier(
 					(ConnectedTransport) transport);
 			removeConnection(conn_id);
-			if (Sipdroid.on(Receiver.mContext))
+			if (PreferenceManager.getDefaultSharedPreferences(Receiver.mContext).getBoolean(Settings.PREF_ON, Settings.DEFAULT_ON))
 				Receiver.engine(Receiver.mContext).register(); // modified
 		}
 		if (error != null)

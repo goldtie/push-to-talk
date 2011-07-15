@@ -2,6 +2,8 @@ package org.sipdroid.sipua.ui;
 
 
 import org.sipdroid.sipua.R;
+import org.sipdroid.sipua.ui.screen.HistoryListActivity;
+import org.sipdroid.sipua.ui.screen.Presence;
 
 import android.app.TabActivity;
 import android.content.Intent;
