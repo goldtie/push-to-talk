@@ -63,17 +63,14 @@ import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.RemoteViews;
 
-import org.jivesoftware.smack.Roster;
 import org.sipdroid.media.Bluetooth;
 import org.sipdroid.media.RtpStreamReceiver;
 import org.sipdroid.media.RtpStreamSender;
 import org.sipdroid.sipua.*;
 import org.sipdroid.sipua.phone.Call;
 import org.sipdroid.sipua.phone.Connection;
-import org.sipdroid.sipua.ui.PTTCallScreen.MessageListAdapter;
 import org.zoolu.sip.provider.SipProvider;
 
 	public class Receiver extends BroadcastReceiver {

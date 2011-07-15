@@ -22,8 +22,6 @@ package org.sipdroid.sipua.ui;
  */
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import org.sipdroid.sipua.MessageStruct;
 import org.sipdroid.sipua.R;

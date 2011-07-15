@@ -44,6 +44,7 @@ import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Log;
 
+@SuppressWarnings("deprecation")
 public class Caller extends BroadcastReceiver {
 
 		static long noexclude;

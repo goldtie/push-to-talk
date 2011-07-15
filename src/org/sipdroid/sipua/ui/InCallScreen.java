@@ -31,7 +31,6 @@ import org.sipdroid.sipua.phone.CallCard;
 import org.sipdroid.sipua.phone.Phone;
 import org.sipdroid.sipua.phone.SlidingCardManager;
 
-import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;

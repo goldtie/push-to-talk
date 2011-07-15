@@ -24,8 +24,6 @@ package org.sipdroid.sipua.ui;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 

@@ -23,7 +23,6 @@ package org.sipdroid.sipua.ui;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.concurrent.TimeUnit;
 
 import org.sipdroid.codecs.Codecs;
 import org.sipdroid.media.RtpStreamReceiver;
@@ -32,7 +31,6 @@ import org.sipdroid.sipua.SipdroidEngine;
 import org.zoolu.sip.provider.SipStack;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -40,19 +38,14 @@ import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -694,8 +687,7 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
     	
        	for (int i = 0; i < SipdroidEngine.LINES; i++) {
        		String j = (i!=0?""+i:"");
-       		String username = settings.getString(PREF_USERNAME+j, DEFAULT_USERNAME),
-       			server = settings.getString(PREF_SERVER+j, DEFAULT_SERVER);
+       		
 	    	//getPreferenceScreen().findPreference(PREF_USERNAME+j).setSummary(username); 
 	    	//getPreferenceScreen().findPreference(PREF_SERVER+j).setSummary(server);
 	    	if (settings.getString(PREF_DOMAIN+j, DEFAULT_DOMAIN).length() == 0) {
