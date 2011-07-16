@@ -23,14 +23,6 @@
 		android:layout_height="320dip" android:layout_gravity="center_horizontal" 
 		android:layout_marginTop="0dip" android:layout_marginBottom="0dip"/>
 
-	<ImageButton android:layout_width="wrap_content"
-	android:id="@+id/btnLogin" android:layout_height="wrap_content"
-	android:layout_gravity="center_horizontal"
-	android:src="@drawable/login_button"
-	android:background="@null"
-	
-	></ImageButton>
-
 		
 	
 </LinearLayout>
