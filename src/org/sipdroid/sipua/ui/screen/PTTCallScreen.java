@@ -263,7 +263,9 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 	public void onCreate(Bundle icicle) {
 		Log.d("SIPDROID", "[PTTCallScreen] - OnCreate");
 		super.onCreate(icicle);
-		
+		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+		setContentView(R.layout.chat_screen);
+		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_window_title);
 		Receiver.xmppEngine().setContext(this);
 		
 		audio_mbcp_process = new AudioMBCPProcess(this);
@@ -274,9 +276,9 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 		mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
 		// setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
-		requestWindowFeature(Window.FEATURE_PROGRESS);
-		setScreenOnFlag();
-		setContentView(R.layout.chat_screen);
+		//requestWindowFeature(Window.FEATURE_PROGRESS);
+		//setScreenOnFlag();
+		
 
 		mChatContentList = (ListView) this.findViewById(R.id.listMessages);
 		mChatContentList.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
@@ -309,8 +311,22 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 			}
 		});
 
-		mTargetAvatar = (Presence.mTarget == null) ? BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_conference) : BitmapFactory.decodeFile(Presence.mTarget.mImagePath);
+		String userName = EMPTY;
+		if(Presence.mTarget == null) {
+			//conference
+			mTargetAvatar = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_conference);
+			userName = "Conference";
+		} else {
+			mTargetAvatar = BitmapFactory.decodeFile(Presence.mTarget.mImagePath);
+			Contact c = new ContactManagement().getContact(Presence.mTarget.mUserName);
+			userName = c.mDisplayName;
+		}
+			
+		TextView tvTarget = (TextView) findViewById(R.id.window_title);
+		tvTarget.setText(userName);
 		
+		ImageView ivTarget = (ImageView) findViewById(R.id.window_icon);
+		ivTarget.setImageBitmap(mTargetAvatar);
 	}
 
 	public static void updateListContent(MessageListAdapter adapter){

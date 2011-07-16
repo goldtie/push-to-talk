@@ -27,8 +27,17 @@
         android:layout_width="fill_parent"
         android:layout_height="55dip"
         android:hint="type something to send"
+        android:layout_marginLeft="55dip"
         android:inputType="text"
         android:maxLines="1"
+        />
+        <Button
+        android:id="@+id/btnSendAudio"
+        android:text="Audio"
+        android:layout_width="wrap_content"
+        android:layout_height="55dip"
+        android:layout_alignParentLeft="true"
+        
         />
 </RelativeLayout>
 
