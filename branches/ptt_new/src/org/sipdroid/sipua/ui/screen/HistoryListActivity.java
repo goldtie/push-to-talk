@@ -12,8 +12,11 @@ import org.sipdroid.sipua.R;
 import org.sipdroid.sipua.component.ChatArchiveStruct;
 import org.sipdroid.sipua.component.Contact;
 import org.sipdroid.sipua.component.ContactManagement;
+import org.sipdroid.sipua.ui.Settings;
+import org.sipdroid.sipua.ui.screen.PTTCallScreen.MessageListAdapter.ViewHolder;
 
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -27,20 +30,24 @@ import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.CursorAdapter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.RelativeLayout.LayoutParams;
 
 public class HistoryListActivity extends ListActivity{
 
 	public static final String EMPTY = "";
 	
-	private SeparatedListAdapter mAdapter;
+	private MessageListAdapter mAdapter;
 	
 	
 	public static ChatArchiveStruct mTarget = null;
 	public static String mDateTime = EMPTY;
+	public static boolean bNeedToUpdate = false;
 	
 	public ContactManagement mContactManagement = new ContactManagement();
 	
@@ -51,41 +58,18 @@ public class HistoryListActivity extends ListActivity{
 		getListView().setEmptyView(findViewById(R.id.empty));
 		//mSearchEditText = (SearchEditText)findViewById(R.id.search_src_text);
 		// create our list and custom adapter
-        mAdapter = new SeparatedListAdapter(this);
+        mAdapter = new MessageListAdapter(this);
         setListAdapter(mAdapter);
-
-        File[] files = new File(PTTCallScreen.STORAGE_CHAT_HISTORY).listFiles();
-        if(files != null) {
-        	for(File f : files) {
-        		for(Contact c : mContactManagement.mContactList) {
-
-        			String fileName = f.getName().substring(0, f.getName().indexOf(".car"));
-
-        			if(fileName.equals(c.mUserName) || fileName.equals("conference")) {
-        				try {
-        					ObjectInputStream in = new ObjectInputStream(new FileInputStream(f.getAbsolutePath()));
-        					mDateTime = (String) in.readObject();
-        					@SuppressWarnings("unchecked")
-        					ArrayList<MessageStruct> messageArr = (ArrayList<MessageStruct>)in.readObject();
-        					if(messageArr != null) {
-        						mAdapter.addNewContact(new ChatArchiveStruct(fileName, messageArr));	//if fileName is conference, its display name is Conference
-        					}
-        					in.close();
-        				} catch (Exception e) {
-        					Log.d("SIPDROID", "[ContactsListActivity] - OnCreate - Exception: " + e.getMessage());
-        				}
-        				break;
-        			}
-        		}
-        	}
-        }
+        
+        loadArchiveContent();
+        bNeedToUpdate = false;
         
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> paramAdapterView,
 					View paramView, int paramInt, long paramLong) {
-				mTarget = (ChatArchiveStruct)((SeparatedListAdapter)paramAdapterView.getAdapter()).getItem(paramInt);
+				mTarget = (ChatArchiveStruct)((MessageListAdapter)paramAdapterView.getAdapter()).getItem(paramInt);
 				Intent intent = new Intent(getBaseContext(), ChatArchiveContentActivity.class);
 				startActivity(intent);
 				
@@ -95,6 +79,123 @@ public class HistoryListActivity extends ListActivity{
 
 	}
 
+	public void loadArchiveContent() {
+		mContacts.clear();
+		 File[] files = new File(PTTCallScreen.STORAGE_CHAT_HISTORY).listFiles();
+	        if(files != null) {
+	        	for(File f : files) {
+	        		for(Contact c : mContactManagement.mContactList) {
+
+	        			String fileName = f.getName().substring(0, f.getName().indexOf(".car"));
+
+	        			if(fileName.equals(c.mUserName) || fileName.equals("conference")) {
+	        				try {
+	        					ObjectInputStream in = new ObjectInputStream(new FileInputStream(f.getAbsolutePath()));
+	        					mDateTime = (String) in.readObject();
+	        					@SuppressWarnings("unchecked")
+	        					ArrayList<MessageStruct> messageArr = (ArrayList<MessageStruct>)in.readObject();
+	        					if(messageArr != null) {
+	        						mAdapter.addNewContact(new ChatArchiveStruct(fileName, messageArr));	//if fileName is conference, its display name is Conference
+	        					}
+	        					in.close();
+	        				} catch (Exception e) {
+	        					Log.d("SIPDROID", "[ContactsListActivity] - OnCreate - Exception: " + e.getMessage());
+	        				}
+	        				break;
+	        			}
+	        		}
+	        	}
+	        }
+	        
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		if(bNeedToUpdate) {
+			loadArchiveContent();
+			bNeedToUpdate = false;
+		}
+	}
+
+	private ArrayList<ChatArchiveStruct> mContacts = new ArrayList<ChatArchiveStruct>();
+	
+	public class MessageListAdapter extends BaseAdapter {
+		private LayoutInflater mInflater;
+		
+		private Context mContext;
+		
+		public MessageListAdapter(Context context) {
+			mInflater = LayoutInflater.from(context);
+			mContext = context;
+		}
+
+		public int getCount() {
+			return mContacts.size();
+		}
+
+		public Object getItem(int position) {
+			return mContacts.get(position);
+		}
+
+		public long getItemId(int position) {
+			return position;
+		}
+
+		public void addNewContact(ChatArchiveStruct newMessage) {
+			mContacts.add(newMessage);
+            notifyDataSetChanged();
+        }
+		
+		public View getView(int position, View convertView, ViewGroup parent) {
+			ViewHolder holder;
+
+			if (convertView == null) {
+				convertView = mInflater.inflate(R.layout.chat_archive_list_item, null);
+
+				holder = new ViewHolder();
+				holder.mUserName = (TextView) convertView.findViewById(R.id.username);
+				holder.mSummary = (TextView) convertView.findViewById(R.id.briefChatArchive);
+				holder.mAvatar = (ImageView) convertView.findViewById(R.id.avatar);
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+			
+			ChatArchiveStruct user = mContacts.get(position);
+			if (user != null) {
+				Contact contact = mContactManagement.getContact(user.mUserName);
+				
+				
+					holder.mUserName.setText(contact == null ? "Conference" : contact.mDisplayName);
+				
+				//just display the first message in archive
+				holder.mSummary.setText(mContacts.get(position).mChatArchiveContent.get(0).mMessageContent);
+				
+				
+					if(contact == null) {
+						Bitmap iconOnLine = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_conference);
+						holder.mAvatar.setImageBitmap(iconOnLine);
+					} else {
+						contact.mAvatar = BitmapFactory.decodeFile(contact.mImagePath);
+						holder.mAvatar.setImageBitmap(contact.mAvatar);
+					}					
+
+			}
+			
+			return convertView;
+		}
+
+		public boolean areAllItemsEnabled() {
+			return false;
+		}
+		
+		class ViewHolder {
+			ImageView mAvatar;
+			TextView mUserName;
+			TextView mSummary;
+		}
+	}
 	
 	private class ContactItemAdapter extends ArrayAdapter<ChatArchiveStruct> {
 		
@@ -106,6 +207,7 @@ public class HistoryListActivity extends ListActivity{
 			super(context, textViewResourceId, contacts);
 			mContext = context;
 			this.mContacts = contacts;
+			mInflater = LayoutInflater.from(context);
 		}
 		
 		public void addContact(ChatArchiveStruct contact) {
@@ -117,40 +219,57 @@ public class HistoryListActivity extends ListActivity{
 			mContacts.add(contact);
 		}
 		
+		class ViewHolder {
+			ImageView mAvatar;
+			TextView mUserName;
+			TextView mStatus;
+		}
+		private LayoutInflater mInflater;
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			View v = convertView;
-			
-			if (v == null) {
-				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				v = vi.inflate(R.layout.chat_archive_list_item, null);
+			ViewHolder holder;
+			if (convertView == null) {
+				convertView = mInflater.inflate(R.layout.chat_archive_list_item, null);
+
+				holder = new ViewHolder();
+				holder.mUserName = (TextView) convertView.findViewById(R.id.username);
+				holder.mStatus = (TextView) convertView.findViewById(R.id.briefChatArchive);
+				holder.mAvatar = (ImageView) convertView.findViewById(R.id.avatar);
+				
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
 			}
+			if(holder == null)
+				return convertView;
+			//View v = convertView;
+			
+//			if (v == null) {
+//				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//				v = vi.inflate(R.layout.chat_archive_list_item, null);
+//			}
 			
 			ChatArchiveStruct user = mContacts.get(position);
 			if (user != null) {
 				Contact contact = mContactManagement.getContact(user.mUserName);
 				
-				TextView username = (TextView) v.findViewById(R.id.username);
-				TextView status = (TextView) v.findViewById(R.id.briefChatArchive);
-				ImageView avatar = (ImageView) v.findViewById(R.id.avatar);
-				if(username != null)
-					username.setText(contact == null ? "Conference" : contact.mDisplayName);
+				
+					holder.mUserName.setText(contact == null ? "Conference" : contact.mDisplayName);
 				
 				//just display the first message in archive
-				if(status != null)
-					status.setText(mContacts.get(position).mChatArchiveContent.get(0).mMessageContent);
-				if(avatar != null) {
+				holder.mStatus.setText(mContacts.get(position).mChatArchiveContent.get(0).mMessageContent);
+				
+				
 					if(contact == null) {
 						Bitmap iconOnLine = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_conference);
-						avatar.setImageBitmap(iconOnLine);
-					} else if(contact.mAvatar == null) {
+						holder.mAvatar.setImageBitmap(iconOnLine);
+					} else {
 						contact.mAvatar = BitmapFactory.decodeFile(contact.mImagePath);
-						avatar.setImageBitmap(contact.mAvatar);
+						holder.mAvatar.setImageBitmap(contact.mAvatar);
 					}					
-				}
 
 			}
-			return v;
+			return convertView;
 		}
 	}
 	
@@ -182,6 +301,11 @@ public class HistoryListActivity extends ListActivity{
 			}
 			
 			notifyDataSetChanged();
+		}
+		
+		public void clearAllContact() {
+			headers.clear();
+			mSections.clear();
 		}
 
 		public Object getItem(int position) {

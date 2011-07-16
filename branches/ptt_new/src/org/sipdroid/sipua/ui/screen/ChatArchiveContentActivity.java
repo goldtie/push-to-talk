@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import org.sipdroid.sipua.MessageStruct;
 import org.sipdroid.sipua.R;
+import org.sipdroid.sipua.component.Contact;
 import org.sipdroid.sipua.component.ContactManagement;
 import org.sipdroid.sipua.ui.Settings;
 
@@ -86,7 +87,7 @@ public class ChatArchiveContentActivity extends Activity{
 				holder.mMessage = (TextView) convertView.findViewById(R.id.messageContent);
 				holder.mIncomingTime = (TextView) convertView.findViewById(R.id.messageComingTime);
 				holder.mAvatar = (ImageView) convertView.findViewById(R.id.avatar);
-				
+				holder.mFriendName = (TextView) convertView.findViewById(R.id.friendName);
 				convertView.setTag(holder);
 			} else {
 				holder = (ViewHolder) convertView.getTag();
@@ -107,24 +108,35 @@ public class ChatArchiveContentActivity extends Activity{
 				lp1.addRule(RelativeLayout.LEFT_OF, holder.mMessage.getId());
 				holder.mIncomingTime.setLayoutParams(lp1);
 				holder.mIncomingTime.setBackgroundResource(R.drawable.message_sending_time_border);
+				
 				holder.mAvatar.setVisibility(View.INVISIBLE);
+				holder.mFriendName.setVisibility(View.GONE);
 			} else {
 				
 				RelativeLayout.LayoutParams lp5 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 				lp5.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+				lp5.topMargin = 10; 
 				holder.mAvatar.setLayoutParams(lp5);
 				
-				holder.mAvatar.setImageBitmap(BitmapFactory.decodeFile(new ContactManagement().getContact(mess.mMessageSender).mImagePath));
+				RelativeLayout.LayoutParams lp6 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+				lp6.topMargin = 10;
+				lp6.addRule(RelativeLayout.RIGHT_OF, holder.mAvatar.getId());
+				holder.mFriendName.setLayoutParams(lp6);
+				
+				Contact c = new ContactManagement().getContact(mess.mMessageSender);
+				holder.mAvatar.setImageBitmap(BitmapFactory.decodeFile(c.mImagePath));
 				holder.mAvatar.setVisibility(View.VISIBLE);
+				holder.mFriendName.setText(c.mDisplayName);
+				holder.mFriendName.setVisibility(View.VISIBLE);
 				
 				RelativeLayout.LayoutParams lp3 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-				lp3.topMargin = 14; 
+				lp3.topMargin = 44; 
 				lp3.addRule(RelativeLayout.RIGHT_OF, holder.mAvatar.getId());
 				holder.mMessage.setLayoutParams(lp3);
 				holder.mMessage.setBackgroundResource(R.drawable.message_receiving_border);
 				
 				RelativeLayout.LayoutParams lp4 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-				lp4.topMargin = 17; 
+				lp4.topMargin = 47; 
 				lp4.addRule(RelativeLayout.RIGHT_OF, holder.mMessage.getId());
 				holder.mIncomingTime.setLayoutParams(lp4);
 				holder.mIncomingTime.setBackgroundResource(R.drawable.message_receiving_time_border);
@@ -143,6 +155,7 @@ public class ChatArchiveContentActivity extends Activity{
 		
 		class ViewHolder {
 			TextView mMessage;
+			TextView mFriendName;
 			TextView mIncomingTime;
 			ImageView mAvatar;
 		}
