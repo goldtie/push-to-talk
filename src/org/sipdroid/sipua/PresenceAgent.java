@@ -24,7 +24,6 @@ package org.sipdroid.sipua;
 import org.sipdroid.sipua.ui.Presence;
 import org.sipdroid.sipua.ui.Receiver;
 import org.sipdroid.sipua.ui.Settings;
-import org.sipdroid.sipua.ui.Sipdroid;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.dialog.NotifierDialog;
 import org.zoolu.sip.dialog.NotifierDialogListener;
@@ -32,13 +31,15 @@ import org.zoolu.sip.dialog.PublisherDialog;
 import org.zoolu.sip.dialog.PublisherDialogListener;
 import org.zoolu.sip.dialog.SubscriberDialog;
 import org.zoolu.sip.dialog.SubscriberDialogListener;
+import org.zoolu.sip.message.BaseMessageFactory;
 import org.zoolu.sip.message.Message;
+import org.zoolu.sip.message.SipResponses;
 import org.zoolu.sip.provider.SipProvider;
 import org.zoolu.sip.provider.SipStack;
+import org.zoolu.sip.transaction.TransactionServer;
 import org.zoolu.tools.Log;
 import org.zoolu.tools.LogLevel;
 
-import android.content.Intent;
 import android.os.Handler;
 
 /**
@@ -75,7 +76,7 @@ public class PresenceAgent implements
 	protected PresenceAgentListener listener;
 
 	String sender_state = "";
-	static Presence gua;
+	static Presence sPresence;
 	static String old_icon_string = "log-out";
 
 	/** Expiration time. */
@@ -103,9 +104,9 @@ public class PresenceAgent implements
 	/** Constructs a new PresenceAgent. */
 	public PresenceAgent(SipProvider sip_provider,
 			UserAgentProfile user_profile, PresenceAgentListener listener,
-			Presence Gua) {
-		if (Gua != null) {
-			gua = Gua;
+			Presence presence) {
+		if (presence != null) {
+			sPresence = presence;
 
 		}
 		this.sip_provider = sip_provider;
@@ -149,7 +150,6 @@ public class PresenceAgent implements
 		subscriber_dialog.reSubscribe(presentity, user_profile.from_url,
 				user_profile.contact_url, expires);
 	}
-
 	// <---
 
 	// ///////////////////09.08.20 add by LHK /////////////////////
@@ -173,18 +173,6 @@ public class PresenceAgent implements
 		publisher_dialog.publish(presentity, user_profile.from_url,
 				user_profile.contact_url, expires, state, state_img);
 	}
-
-	public void publish(Message msg) {
-		publisher_dialog.publish(msg);
-	}
-
-	// public void republish(String presentity, int expires) {
-	// publisher_dialog.publish(presentity, publisher, contact, expires, state,
-	// state_img)
-
-	// presentity, user_profile.from_url,user_profile.contact_url, expires,
-	// state, state_img);
-	// }
 
 	public synchronized void loop_subscribe(String presentity, int expire_time,
 			int renew_time) {
@@ -322,7 +310,9 @@ public class PresenceAgent implements
 		listener.onPaSubscriptionTerminated(this, dialog.getRemoteName(),
 				"Terminated");
 	}
-	protected Handler mHandler = new Handler();
+	//HAO SUA TAM -- handler gay ra LOI ~~
+	//protected Handler mHandler = new Handler();
+	
 	/** When an incoming NOTIFY is received. */
 	public void onDlgNotify(SubscriberDialog dialog, NameAddress target,
 			NameAddress notifier, NameAddress contact, String state,
@@ -333,7 +323,6 @@ public class PresenceAgent implements
 				content_type, body);
 		
 			int i = 0;
-			// JLabel change_icon_label = new JLabel();
 
 			if (content_type != null) {
 				if (content_type.equals("application/pidf+xml")) {
@@ -352,48 +341,46 @@ public class PresenceAgent implements
 					String get_notifier_URI = notifier_URI
 							.substring(s2 + 1, e2);
 
-					for (i = 0; i < gua.mContactList.size(); i++) {
-						if (gua.mContactList.get(i).mUsername
+					for (i = 0; i < Presence.mContactList.size(); i++) {
+						if (Presence.mContactList.get(i).mUsername
 								.equals(get_notifier_URI)) {
 							if (sender_state.equals("Busy")) {
-								gua.checkFireEvent[i] = false;
-								gua.changeUserStatus(i, Presence.BUSY_STATUS);
+								sPresence.checkFireEvent[i] = false;
+								sPresence.changeUserStatus(i, Presence.BUSY_STATUS);
 							} else if (sender_state.equals("On Line")) {
-								gua.checkFireEvent[i] = false;
-								gua.changeUserStatus(i, Presence.ONLINE_STATUS);
+								sPresence.checkFireEvent[i] = false;
+								sPresence.changeUserStatus(i, Presence.ONLINE_STATUS);
 							} else if (sender_state.equals("Off Line")) {
-								gua.checkFireEvent[i] = false;
-								gua.changeUserStatus(i, Presence.OFFLINE_STATUS);
+								sPresence.checkFireEvent[i] = false;
+								sPresence.changeUserStatus(i, Presence.OFFLINE_STATUS);
 							} else if (sender_state.equals("Fire On")) {
 								android.util.Log.d("SIPDROID", "[PresenceAgent] - onDlgNotify - fire event occurs");
-								gua.checkFireEvent[i] = true;
-								gua.changeUserStatus(i,Presence.FIREON_STATUS);
+								sPresence.checkFireEvent[i] = true;
+								sPresence.changeUserStatus(i,Presence.FIREON_STATUS);
 								if (!Receiver.mSipdroidEngine.isFire()) {
-									mHandler.post(new Runnable() {
-										public void run() {
-											Presence.mIsPttService = true;
-											String ptt = Settings.getPTT_Username(Receiver.mContext)+"@"+ Settings.getPTT_Server(Receiver.mContext);
-											Receiver.mSipdroidEngine.call(ptt, true);
-											Receiver.xmppEngine().startConversation("ptt@conference." + Settings.getXMPP_Service(Receiver.mContext), XMPPEngine.CONFERENCE);
-										}
-									});
-									
+									//mHandler.post(new Runnable() {
+										//public void run() {
+									Presence.mIsPttService = true;
+									String ptt = Settings.getPTT_Username(Receiver.mContext)+"@"+ Settings.getPTT_Server(Receiver.mContext);
+									Receiver.mSipdroidEngine.call(ptt, true);
+										//Receiver.xmppEngine().startConversation("ptt@conference." + Settings.getXMPP_Service(Receiver.mContext), XMPPEngine.CONFERENCE);
 								}
+								//});
 							} else if (sender_state.equals("Fire Off")) {
-								gua.checkFireEvent[i] = false;
-								gua.changeUserStatus(i, Presence.FIREOFF_STATUS);
+								sPresence.checkFireEvent[i] = false;
+								sPresence.changeUserStatus(i, Presence.FIREOFF_STATUS);
 							} else if (sender_state.equals("Camera On")) {
-								gua.checkFireEvent[i] = false;
-								gua.changeUserStatus(i,Presence.CAMERAON_STATUS);
+								sPresence.checkFireEvent[i] = false;
+								sPresence.changeUserStatus(i,Presence.CAMERAON_STATUS);
 //								if (Receiver.mSipdroidEngine.isFire()) {
 //									gua.presence_panel
 //											.changejComboBox_stateList(3);
 //								}
 							} else if (sender_state.equals("Camera Off")) {
-								gua.checkFireEvent[i] = false;
-								gua.changeUserStatus(i, Presence.CAMERAOFF_STATUS);
+								sPresence.checkFireEvent[i] = false;
+								sPresence.changeUserStatus(i, Presence.CAMERAOFF_STATUS);
 							} else {
-								System.out.println("�´°� ����");
+								System.out.println("Unidentified Status");
 							}
 							break;
 						}
@@ -406,11 +393,137 @@ public class PresenceAgent implements
 	/** When an incoming SUBSCRIBE is received. */
 	public void onDlgSubscribe(NotifierDialog dialog, NameAddress target,
 			NameAddress subscriber, String event, String id, Message msg) {
-		printLog("onDlgSubscribe()", LogLevel.MEDIUM);
-		notifier_dialog.pending();
+		// ==> jinsub for presence server
+		String body = null;
+		if (notifier_dialog.getEvent().endsWith("presence.winfo")) {
+			(new TransactionServer(sip_provider, msg, null)).respondWith(BaseMessageFactory
+					.createResponse(msg, 200, SipResponses.reasonOf(200), null));
+		} else if (notifier_dialog.getEvent().endsWith("presence")) {
+			(new TransactionServer(sip_provider, msg, null)).respondWith(BaseMessageFactory
+					.createResponse(msg, 202, SipResponses.reasonOf(202), null));
+		}
+		// ==> jinsub for presence server
+		String localtag = null;
+		if (msg.getToHeader().getTag() == null) { // ù ��° Subscribe �޽���
+			localtag = SipProvider.pickTag(msg);
+			sPresence.addSubscribe();
+			for (int i = 0; i < sip_provider.lstPublishMsg.size(); i++) {
+				if (sip_provider.lstPublishMsg.elementAt(i) != null) {
+					if (sip_provider.lstPublishMsg.elementAt(i).getToHeader().getNameAddress()
+							.toString().contains(msg.getToHeader().getNameAddress().toString())) {
+						if (sip_provider.lstPublishMsg.elementAt(i).hasBody()) {
+							body = sip_provider.lstPublishMsg.elementAt(i).getBody();
+							notifier_dialog.setLocalTag(localtag);
+							notifier_dialog.update(1, msg);
+							if (notifier_dialog.getDialogID() != null) {
+								if (!sip_provider.vector_key.contains(notifier_dialog.getDialogID())) {
+									// reach here to add  vector_key
+									sip_provider.vector_key.addElement(notifier_dialog.getDialogID());
+								}
+							}
+							notifier_dialog.activate(sip_provider.lstPublishMsg.elementAt(i)
+									.getContentTypeHeader().getContentType(), body);
+							listener.onPaSubscriptionRequest(this, target, subscriber);
+							return;
+						}
+					}
+				}
+			}
+		} else {
+			localtag = msg.getToHeader().getTag();
+		}
+		notifier_dialog.setLocalTag(localtag);
+		notifier_dialog.update(1, msg);
+
+		if (!sip_provider.vector_key.contains(notifier_dialog.getDialogID())) {
+			if (notifier_dialog.getDialogID() != null) {
+				// reach here to add  vector_key
+				sip_provider.vector_key.addElement(notifier_dialog.getDialogID());
+			}
+		}
+		notifier_dialog.activate();
+		//
+
+		//notifier_dialog.pending();
 		listener.onPaSubscriptionRequest(this, target, subscriber);
 	}
 
+	
+	// ==> jinsub for presence server
+	@Override
+	public void onDlgPublish(NotifierDialog dialog, NameAddress target, NameAddress publisher,
+			String event, String id, Message msg) {
+		printLog("onDlgPublish()", LogLevel.MEDIUM);
+
+		String body = null;
+		(new TransactionServer(sip_provider, msg, null)).respondWith(BaseMessageFactory
+				.createResponse(msg, 200, SipResponses.reasonOf(200), null));
+		if (msg.hasBody())
+			body = msg.getBody();
+
+		notifier_dialog.activate(msg.getContentTypeHeader().getContentType(), body);
+
+		if (msg.getContentTypeHeader() != null) {
+			if (msg.getContentTypeHeader().toString().contains("application/pidf+xml")) {
+				if (body.contains("<dm:note>")) {
+					int s = body.lastIndexOf("<dm:note>");
+					int e = body.lastIndexOf("</dm:note>");
+					sender_state = body.substring(s + 9, e);
+				} else {
+					sender_state = "";
+					System.out.println("***Notify without xml***");
+					return;
+				}
+				String notifier_URI = publisher.toString();
+				int s2 = notifier_URI.indexOf(":");
+				int e2 = notifier_URI.indexOf("@");
+
+				String get_notifier_URI = notifier_URI.substring(s2 + 1, e2);
+			
+				
+				for (int i = 0; i < Presence.mContactList.size(); i++) {
+					if (Presence.mContactList.get(i).mUsername.equals(get_notifier_URI)) {
+
+						if (sender_state.equals("Busy")) {
+							sPresence.checkFireEvent[i] = false;
+							sPresence.changeUserStatus(i, Presence.BUSY_STATUS);
+						} else if (sender_state.equals("On Line")) {
+							sPresence.checkFireEvent[i] = false;
+							sPresence.changeUserStatus(i, Presence.ONLINE_STATUS);
+						} else if (sender_state.equals("Off Line")) {
+							sPresence.checkFireEvent[i] = false;
+							sPresence.changeUserStatus(i, Presence.OFFLINE_STATUS);
+						} else if (sender_state.equals("Fire On")) {
+							sPresence.checkFireEvent[i] = true;
+							sPresence.changeUserStatus(i, Presence.FIREON_STATUS);
+							if (!Receiver.mSipdroidEngine.isFire() && !Receiver.mSipdroidEngine.isCamera()) {
+								
+								Presence.mIsPttService = true;
+								String ptt = Settings.getPTT_Username(Receiver.mContext)+"@"+ Settings.getPTT_Server(Receiver.mContext);
+								Receiver.mSipdroidEngine.call(ptt, true);
+								
+							}
+						} else if (sender_state.equals("Fire Off")) {
+							sPresence.checkFireEvent[i] = false;
+							sPresence.changeUserStatus(i, Presence.FIREOFF_STATUS);
+						} else if (sender_state.equals("Camera On")) {
+							sPresence.checkFireEvent[i] = false;
+							sPresence.changeUserStatus(i, Presence.CAMERAON_STATUS);
+
+						} else if (sender_state.equals("Camera Off")) {
+							sPresence.checkFireEvent[i] = false;
+							sPresence.changeUserStatus(i, Presence.CAMERAOFF_STATUS);
+						} else {
+							System.out.println("Unidentified Status");
+						}
+						break;
+					}
+				}
+			}
+
+		}
+	}
+	
 	/** When NOTIFY transaction expires without a final response. */
 	public void onDlgNotifyTimeout(NotifierDialog dialog) {
 		printLog("onDlgNotifyTimeout()", LogLevel.MEDIUM);
@@ -461,6 +574,12 @@ public class PresenceAgent implements
 	void printException(Exception e, int level) {
 		if (log != null)
 			log.printException(e, level + SipStack.LOG_LEVEL_UA);
+	}
+
+	@Override
+	public void onDlgPublish(PublisherDialog dialog, NameAddress target,
+			NameAddress subscriber, String event, String id, Message msg) {
+		
 	}
 
 }

@@ -24,7 +24,6 @@ package org.sipdroid.sipua;
 import java.io.IOException;
 import java.util.Vector;
 
-import org.sipdroid.sipua.ui.LoopAlarm;
 import org.sipdroid.sipua.ui.Receiver;
 import org.sipdroid.sipua.ui.Settings;
 import org.sipdroid.sipua.ui.Sipdroid;
@@ -193,26 +192,20 @@ public class RegisterAgent implements TransactionClientListener, SubscriberDialo
 		boolean rs = false;
 		try {
 			CurrentState = REGISTERING;
-			rs = TomP2PFunctions.register(target.getAddress().getHost().toString());
+//			android.util.Log.d("HAO_TEST", "[username]" +username);
+//			android.util.Log.d("HAO_TEST", "[realm]" +realm);
+//			android.util.Log.d("HAO_TEST", "[target.getAddress()]" +target.getAddress().toString());
+			rs = TomP2PFunctions.register(target.getAddress().toString());
 			if (rs){
 				//HAO copy tam -->
-				if (CurrentState == REGISTERING)
-				{
+				if (CurrentState == REGISTERING) {
 					CurrentState = REGISTERED;
-					if (listener != null)
-					{
+					if (listener != null) {
 						listener.onUaRegistrationSuccess(this, target, contact, "");
 						Receiver.reRegister(0);
 					}
 				}
-				else
-				{
-					CurrentState = UNREGISTERED;
-					if (listener != null)
-					{
-						listener.onUaRegistrationSuccess(this, target, contact, "");
-					}
-				}
+				android.util.Log.d("HAO_TEST", "[CurrentState]" + CurrentState);
 				//HAO copy tam <--
 			}
 		} catch (IOException e) {

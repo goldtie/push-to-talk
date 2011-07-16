@@ -66,7 +66,7 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.RemoteViews;
 
-import org.jivesoftware.smack.Roster;
+//import org.jivesoftware.smack.Roster;
 import org.sipdroid.media.Bluetooth;
 import org.sipdroid.media.RtpStreamReceiver;
 import org.sipdroid.media.RtpStreamSender;
@@ -110,7 +110,7 @@ import org.zoolu.sip.provider.SipProvider;
 		public static int docked = -1,headset = -1,bluetooth = -1;
 		
 		public static SipdroidEngine mSipdroidEngine;
-		public static XMPPEngine mXMPPEngine = null;
+		//public static XMPPEngine mXMPPEngine = null;
 
 	// for P2P -->
 	public static TomP2PFunctions mTomP2PEngine = null;
@@ -143,29 +143,6 @@ import org.zoolu.sip.provider.SipProvider;
 		return mSipdroidEngine;
 	}
 
-	public static synchronized XMPPEngine xmppEngine() {
-		if (mXMPPEngine == null) {
-			try {
-				mXMPPEngine = new XMPPEngine(org.sipdroid.sipua.ui.Settings
-						.getXMPP_Server(mContext), Integer
-						.parseInt(org.sipdroid.sipua.ui.Settings
-								.getXMPP_Port(mContext)),
-						org.sipdroid.sipua.ui.Settings
-								.getXMPP_Service(mContext));
-			} catch (Exception ec) {
-				ec.printStackTrace();
-			}
-			mXMPPEngine.connect();
-
-			// should implement Login Service for XMPP but not have time
-			// mXMPPEngine.login(org.sipdroid.sipua.ui.Settings.getAccountUserName(mContext)
-			// + "@" +
-			// org.sipdroid.sipua.ui.Settings.getXMPP_Service(mContext),
-			// org.sipdroid.sipua.ui.Settings.getAccountUserName(mContext));
-		}
-		return mXMPPEngine;
-	}
-
 	// for P2P -->
 	public static synchronized TomP2PFunctions tomP2PEngine() {
 		if (mTomP2PEngine == null) {
@@ -184,13 +161,13 @@ import org.zoolu.sip.provider.SipProvider;
 
 		public static void onMsgStatus(int state, String content) {
 			//not good, should find a better solution later
-			if(state == XMPPEngine.XMPP_STATE_OUTCOMING_MSG) {
-				mXMPPEngine.sendMessage(content);
-			}
-			ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext,
-					R.layout.multi_line_list_item,
-					mXMPPEngine.getChatLog());
-			PTTCallScreen.updateListContent(adapter);
+//			if(state == XMPPEngine.XMPP_STATE_OUTCOMING_MSG) {
+//				mXMPPEngine.sendMessage(content);
+//			}
+//			ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext,
+//					R.layout.multi_line_list_item,
+//					new String[]);
+//			PTTCallScreen.updateListContent(adapter);
 		}
 		public static Ringtone oRingtone;
 		static PowerManager.WakeLock wl;

@@ -21,19 +21,15 @@
 
 package org.sipdroid.sipua.ui;
 
-import net.tomp2p.p2p.Peer;
-import net.tomp2p.peers.Number160;
-
 import org.sipdroid.sipua.R;
-import org.sipdroid.sipua.SipdroidEngine;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
@@ -41,8 +37,8 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.ImageButton;
 
 /////////////////////////////////////////////////////////////////////
@@ -56,8 +52,6 @@ public class Sipdroid extends Activity implements OnDismissListener {
 	public static final boolean market = false;
 
 	public static String ptt_address = "";
-
-	private Peer peer;
 
 	Intent intent;
 
@@ -94,112 +88,112 @@ public class Sipdroid extends Activity implements OnDismissListener {
 			}
 		});
 
-		final Context mContext = this;
+//		final Context mContext = this;
 
-		if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
-				Settings.PREF_NOPORT, Settings.DEFAULT_NOPORT)) {
-			boolean ask = false;
-			for (int i = 0; i < SipdroidEngine.LINES; i++) {
-				String j = (i != 0 ? "" + i : "");
-				if (PreferenceManager.getDefaultSharedPreferences(this)
-						.getString(Settings.PREF_USERNAME + j,
-								Settings.DEFAULT_USERNAME).length() != 0
-						&& PreferenceManager.getDefaultSharedPreferences(this)
-								.getString(Settings.PREF_PORT + j,
-										Settings.DEFAULT_PORT).equals(
-										Settings.DEFAULT_PORT))
-					ask = true;
-			}
-			if (ask)
-				new AlertDialog.Builder(this).setMessage(R.string.dialog_port)
-						.setPositiveButton(R.string.yes,
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int whichButton) {
-										Editor edit = PreferenceManager
-												.getDefaultSharedPreferences(
-														mContext).edit();
-										for (int i = 0; i < SipdroidEngine.LINES; i++) {
-											String j = (i != 0 ? "" + i : "");
-											if (PreferenceManager
-													.getDefaultSharedPreferences(
-															mContext)
-													.getString(
-															Settings.PREF_USERNAME
-																	+ j,
-															Settings.DEFAULT_USERNAME)
-													.length() != 0
-													&& PreferenceManager
-															.getDefaultSharedPreferences(
-																	mContext)
-															.getString(
-																	Settings.PREF_PORT
-																			+ j,
-																	Settings.DEFAULT_PORT)
-															.equals(
-																	Settings.DEFAULT_PORT))
-												edit.putString(
-														Settings.PREF_PORT + j,
-														"5061");
-										}
-										edit.commit();
-										Receiver.engine(mContext).halt();
-										Receiver.engine(mContext).StartEngine();
-									}
-								}).setNeutralButton(R.string.no,
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int whichButton) {
-
-									}
-								}).setNegativeButton(R.string.dontask,
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int whichButton) {
-										Editor edit = PreferenceManager
-												.getDefaultSharedPreferences(
-														mContext).edit();
-										edit.putBoolean(Settings.PREF_NOPORT,
-												true);
-										edit.commit();
-									}
-								}).show();
-		} else if (PreferenceManager.getDefaultSharedPreferences(this)
-				.getString(Settings.PREF_PREF, Settings.DEFAULT_PREF).equals(
-						Settings.VAL_PREF_PSTN)
-				&& !PreferenceManager.getDefaultSharedPreferences(this)
-						.getBoolean(Settings.PREF_NODEFAULT,
-								Settings.DEFAULT_NODEFAULT))
-			new AlertDialog.Builder(this).setMessage(R.string.dialog_default)
-					.setPositiveButton(R.string.yes,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									Editor edit = PreferenceManager
-											.getDefaultSharedPreferences(
-													mContext).edit();
-									edit.putString(Settings.PREF_PREF,
-											Settings.VAL_PREF_SIP);
-									edit.commit();
-								}
-							}).setNeutralButton(R.string.no,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-
-								}
-							}).setNegativeButton(R.string.dontask,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									Editor edit = PreferenceManager
-											.getDefaultSharedPreferences(
-													mContext).edit();
-									edit.putBoolean(Settings.PREF_NODEFAULT,
-											true);
-									edit.commit();
-								}
-							}).show();
+//		if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
+//				Settings.PREF_NOPORT, Settings.DEFAULT_NOPORT)) {
+//			boolean ask = false;
+//			for (int i = 0; i < SipdroidEngine.LINES; i++) {
+//				String j = (i != 0 ? "" + i : "");
+//				if (PreferenceManager.getDefaultSharedPreferences(this)
+//						.getString(Settings.PREF_USERNAME + j,
+//								Settings.DEFAULT_USERNAME).length() != 0
+//						&& PreferenceManager.getDefaultSharedPreferences(this)
+//								.getString(Settings.PREF_PORT + j,
+//										Settings.DEFAULT_PORT).equals(
+//										Settings.DEFAULT_PORT))
+//					ask = true;
+//			}
+//			if (ask)
+//				new AlertDialog.Builder(this).setMessage(R.string.dialog_port)
+//						.setPositiveButton(R.string.yes,
+//								new DialogInterface.OnClickListener() {
+//									public void onClick(DialogInterface dialog,
+//											int whichButton) {
+//										Editor edit = PreferenceManager
+//												.getDefaultSharedPreferences(
+//														mContext).edit();
+//										for (int i = 0; i < SipdroidEngine.LINES; i++) {
+//											String j = (i != 0 ? "" + i : "");
+//											if (PreferenceManager
+//													.getDefaultSharedPreferences(
+//															mContext)
+//													.getString(
+//															Settings.PREF_USERNAME
+//																	+ j,
+//															Settings.DEFAULT_USERNAME)
+//													.length() != 0
+//													&& PreferenceManager
+//															.getDefaultSharedPreferences(
+//																	mContext)
+//															.getString(
+//																	Settings.PREF_PORT
+//																			+ j,
+//																	Settings.DEFAULT_PORT)
+//															.equals(
+//																	Settings.DEFAULT_PORT))
+//												edit.putString(
+//														Settings.PREF_PORT + j,
+//														"5061");
+//										}
+//										edit.commit();
+//										Receiver.engine(mContext).halt();
+//										Receiver.engine(mContext).StartEngine();
+//									}
+//								}).setNeutralButton(R.string.no,
+//								new DialogInterface.OnClickListener() {
+//									public void onClick(DialogInterface dialog,
+//											int whichButton) {
+//
+//									}
+//								}).setNegativeButton(R.string.dontask,
+//								new DialogInterface.OnClickListener() {
+//									public void onClick(DialogInterface dialog,
+//											int whichButton) {
+//										Editor edit = PreferenceManager
+//												.getDefaultSharedPreferences(
+//														mContext).edit();
+//										edit.putBoolean(Settings.PREF_NOPORT,
+//												true);
+//										edit.commit();
+//									}
+//								}).show();
+//		} else if (PreferenceManager.getDefaultSharedPreferences(this)
+//				.getString(Settings.PREF_PREF, Settings.DEFAULT_PREF).equals(
+//						Settings.VAL_PREF_PSTN)
+//				&& !PreferenceManager.getDefaultSharedPreferences(this)
+//						.getBoolean(Settings.PREF_NODEFAULT,
+//								Settings.DEFAULT_NODEFAULT))
+//			new AlertDialog.Builder(this).setMessage(R.string.dialog_default)
+//					.setPositiveButton(R.string.yes,
+//							new DialogInterface.OnClickListener() {
+//								public void onClick(DialogInterface dialog,
+//										int whichButton) {
+//									Editor edit = PreferenceManager
+//											.getDefaultSharedPreferences(
+//													mContext).edit();
+//									edit.putString(Settings.PREF_PREF,
+//											Settings.VAL_PREF_SIP);
+//									edit.commit();
+//								}
+//							}).setNeutralButton(R.string.no,
+//							new DialogInterface.OnClickListener() {
+//								public void onClick(DialogInterface dialog,
+//										int whichButton) {
+//
+//								}
+//							}).setNegativeButton(R.string.dontask,
+//							new DialogInterface.OnClickListener() {
+//								public void onClick(DialogInterface dialog,
+//										int whichButton) {
+//									Editor edit = PreferenceManager
+//											.getDefaultSharedPreferences(
+//													mContext).edit();
+//									edit.putBoolean(Settings.PREF_NODEFAULT,
+//											true);
+//									edit.commit();
+//								}
+//							}).show();
 
 		ptt_address = Settings.getPTT_Server(getBaseContext());
 
@@ -261,10 +255,10 @@ public class Sipdroid extends Activity implements OnDismissListener {
 			on(this, false);
 			Receiver.pos(true);
 			Receiver.engine(this).halt();
-			if (Receiver.mXMPPEngine != null) {
-				Receiver.xmppEngine().disconect();
-				Receiver.mXMPPEngine = null;
-			}
+//			if (Receiver.mXMPPEngine != null) {
+//				Receiver.xmppEngine().disconect();
+//				Receiver.mXMPPEngine = null;
+//			}
 			Receiver.mSipdroidEngine = null;
 			Receiver.reRegister(0);
 			stopService(new Intent(this, RegisterService.class));
@@ -320,33 +314,23 @@ public class Sipdroid extends Activity implements OnDismissListener {
 					org.sipdroid.sipua.ui.Settings.class);
 			startActivity(intent);
 		} else {
-			if (PreferenceManager
-					.getDefaultSharedPreferences(Receiver.mContext).getBoolean(
-							Settings.PREF_P2P, Settings.DEFAULT_P2P)) {
-				// here means using P2P
-
-				intent = new Intent(getBaseContext(),
-						org.sipdroid.sipua.ui.Settings.class);
-				startActivity(intent);
-
-				// Receiver.tomP2PEngine().start();
-
-			} else {
-				// here means using Client-Server
-				Receiver.xmppEngine().login(
-						org.sipdroid.sipua.ui.Settings
-								.getAccountUserName(getBaseContext())
-								+ "@"
-								+ org.sipdroid.sipua.ui.Settings
-										.getXMPP_Service(getBaseContext()),
-						org.sipdroid.sipua.ui.Settings
-								.getAccountUserName(getBaseContext()));
-			}
+//			if (!PreferenceManager
+//					.getDefaultSharedPreferences(Receiver.mContext).getBoolean(
+//							Settings.PREF_P2P, Settings.DEFAULT_P2P)) {
+//				// here means using Client-Server
+//				Receiver.xmppEngine().login(
+//						org.sipdroid.sipua.ui.Settings
+//								.getAccountUserName(getBaseContext())
+//								+ "@"
+//								+ org.sipdroid.sipua.ui.Settings
+//										.getXMPP_Service(getBaseContext()),
+//						org.sipdroid.sipua.ui.Settings
+//								.getAccountUserName(getBaseContext()));			
+//			}
 			intent = new Intent(getBaseContext(),
 					org.sipdroid.sipua.ui.MainUIActivity.class);
 			startActivity(intent);
 			finish();
 		}
-
 	}
 }

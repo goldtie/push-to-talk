@@ -21,7 +21,7 @@
 		<CheckBoxPreference android:key="p2p"
 			android:title="@string/settings_p2p1" android:summary="@string/settings_p2p2"/>
 		<ListPreference android:title="@string/settings_p2p_mode"
-			android:key="p2p_mode" android:defaultValue="1" android:entries="@array/listModes"
+			android:key="p2p_mode" android:entries="@array/listModes" android:defaultValue="0"
 			android:entryValues="@array/listValues" />
 		<EditTextPreference android:key="p2p_ip_bootstrap"
 			android:title="@string/settings_bootstrap_ip_address"
