@@ -26,10 +26,12 @@
 package org.zoolu.sip.provider;
 
 import org.sipdroid.sipua.ui.Receiver;
+import org.sipdroid.sipua.ui.Settings;
 import org.sipdroid.sipua.ui.Sipdroid;
 import org.zoolu.net.*;
 import org.zoolu.sip.header.*;
 import org.zoolu.sip.message.Message;
+import org.zoolu.sip.message.SipMethods;
 import org.zoolu.sip.address.*;
 import org.zoolu.tools.Configure;
 import org.zoolu.tools.Configurable;
@@ -48,9 +50,11 @@ import org.zoolu.tools.Iterator;
 
 import android.content.Context;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 
 import java.util.Enumeration;
 import java.util.Date;
+import java.util.Vector;
 
 /**
  * SipProvider implements the SIP transport layer, that is the layer responsable
@@ -143,7 +147,7 @@ public class SipProvider implements Configurable, TransportListener,
 
 	/** Local SIP port */
 	int host_port = 0;
-
+	
 	/**
 	 * Network interface (IP address) used by SIP. Use 'ALL-INTERFACES' for
 	 * binding SIP to all interfaces (or let it undefined).
@@ -219,6 +223,12 @@ public class SipProvider implements Configurable, TransportListener,
 	/** Connections */
 	Hashtable<ConnectionIdentifier, ConnectedTransport> connections = null;
 
+	
+	// ==> jinsub for presence server
+	public Vector<Identifier> vector_key = new Vector<Identifier>();
+	public Vector<Message> lstPublishMsg = new Vector<Message>();
+	// <==
+	
 	// *************************** Costructors ***************************
 
 	/** Creates a void SipProvider. */
@@ -316,6 +326,10 @@ public class SipProvider implements Configurable, TransportListener,
 		listeners = new Hashtable<Identifier, SipProviderListener>(10);
 
 		connections = new Hashtable<ConnectionIdentifier, ConnectedTransport>(10);
+		
+		// ==> jinsub for presence server
+		lstPublishMsg.addElement(null);
+		//<==
 	}
 
 	/** Inits logs. */
@@ -662,15 +676,15 @@ public class SipProvider implements Configurable, TransportListener,
 			ret = true;
 		}
 
-		/*
-		if (listeners != null) {
-			String list = "";
-			for (Enumeration<Identifier> e = listeners.keys(); e
-					.hasMoreElements();)
-				list += e.nextElement() + ", ";
-			printLog(listeners.size() + " listeners: " + list, LogLevel.LOW);
-		}
-		*/
+		
+//		if (listeners != null) {
+//			String list = "";
+//			for (Enumeration<Identifier> e = listeners.keys(); e
+//					.hasMoreElements();)
+//				list += e.nextElement() + ", ";
+//			printLog(listeners.size() + " listeners: " + list, LogLevel.LOW);
+//		}
+		
 		return ret;
 	}
 
@@ -894,8 +908,19 @@ public class SipProvider implements Configurable, TransportListener,
 
 		if (!msg.isResponse()) { // modified
 			if (outbound_proxy != null) {
-				dest_addr = outbound_proxy.getAddress().toString();
-				dest_port = outbound_proxy.getPort();
+				// HAO SUA TAM for Presence service: old only has 2 lines ==>
+				//dest_addr = outbound_proxy.getAddress().toString(); 
+				//dest_port = outbound_proxy.getPort();
+				if (PreferenceManager.getDefaultSharedPreferences(
+						Receiver.mContext).getBoolean(Settings.PREF_P2P,
+						Settings.DEFAULT_P2P)){
+					dest_addr = msg.getRequestLine().getAddress().getHost().toString();
+					dest_port = outbound_proxy.getPort();
+				}else {
+					dest_addr = outbound_proxy.getAddress().toString();
+					dest_port = outbound_proxy.getPort();
+				}
+				// <===
 			} else {
 				if (msg.hasRouteHeader()
 						&& msg.getRouteHeader().getNameAddress().getAddress()
@@ -1055,17 +1080,49 @@ public class SipProvider implements Configurable, TransportListener,
 			// this was the promisque listener; now keep on looking for a
 			// tighter listener..
 
+			// ==> jinsub for presence server
+			// try to look for a UAS
+			Identifier key = msg.getMethodId();
+			boolean match = false; //���ο� ���� ��û�ڿ��� ���� ����ڵ��� publsh ������ �Ѱ���
+			if (key.toString().endsWith(SipMethods.PUBLISH)) {
+				android.util.Log.d("HAO_TEST","[PUBLISH of ]"+msg.getToHeader().getNameAddress().toString());
+				for (int i = 0; i < lstPublishMsg.size(); i++) {
+					if (lstPublishMsg.firstElement() == null) {
+						lstPublishMsg.set(0, msg);
+						match = true;
+						break;
+					}
+					if (lstPublishMsg.elementAt(i).getToHeader().getNameAddress().toString()
+							.contains(msg.getToHeader().getNameAddress().toString())) {
+						lstPublishMsg.set(i, msg);
+						match = true;
+						break;
+					}
+				}
+				if (!match)
+					lstPublishMsg.addElement(msg);
+
+				android.util.Log.d("HAO_TEST","[vector_key.SIZE]"+vector_key.size()+"");
+				
+				for (int i = 0; i < vector_key.size(); i++) {
+					if (listeners.containsKey(vector_key.elementAt(i))) {
+						((SipProviderListener) listeners.get(vector_key.elementAt(i)))
+								.onReceivedMessage(this, msg);
+						android.util.Log.d("HAO_TEST","NOOOOOOTTTTTIIIIIIFYYYYYY!");
+					} else {
+						vector_key.remove(i);
+					}
+				}
+			}
+			
 			// try to look for a transaction
-			Identifier key = msg.getTransactionId();
+			key = msg.getTransactionId();
 			printLog("DEBUG: transaction-id: " + key, LogLevel.MEDIUM);
 			if (listeners.containsKey(key)) {
-				printLog("message passed to transaction: " + key,
-						LogLevel.MEDIUM);
+				printLog("message passed to transaction: " + key,LogLevel.MEDIUM);
 				SipProviderListener sip_listener = (SipProviderListener) listeners.get(key);
-				if (sip_listener != null)
-				{
-					sip_listener.onReceivedMessage(
-						this, msg);
+				if (sip_listener != null){
+					sip_listener.onReceivedMessage(	this, msg);
 				}
 				return;
 			}

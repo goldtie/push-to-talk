@@ -5,11 +5,6 @@ import java.net.InetAddress;
 import java.util.Random;
 import java.util.Vector;
 
-import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.XMPPConnection;
-
-import android.R.bool;
-
 import net.tomp2p.connection.Bindings;
 import net.tomp2p.connection.Bindings.Protocol;
 import net.tomp2p.futures.FutureBootstrap;
@@ -20,6 +15,7 @@ import net.tomp2p.p2p.Peer;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.storage.Data;
+import android.util.Log;
 
 public class TomP2PFunctions {
 
@@ -27,7 +23,7 @@ public class TomP2PFunctions {
 	final int DEFAULT_PORTTCP = 4003;
 	final int DEFAULT_PORTUDP = 4002;
 	static Peer peer;
-	static String ownIP = Settings.getLocalIpAddress();
+	public static String ownIP = Settings.getLocalIpAddress();
 	String ipBootstrap;
 	static Number160 peerId;
 
@@ -45,6 +41,7 @@ public class TomP2PFunctions {
 			try {
 				if (isBootstrap) {
 					initNetwork(DEFAULT_PORTTCP, DEFAULT_PORTUDP);
+					Log.d("HAO_TEST","==> initNetwork TRUUUUUEE");
 					rs = true;
 				} else {
 					rs = joinNetwork(ipBootstrap, DEFAULT_PORTTCP,
@@ -55,6 +52,7 @@ public class TomP2PFunctions {
 				rs = false;
 			}
 			isStarted = rs;
+				
 			return rs;
 		}
 		return true;
@@ -122,10 +120,10 @@ public class TomP2PFunctions {
 		}
 
 		if (!failed) {
-			System.out.println("==> Join the P2P overlay successfully.");
+			Log.d("HAO_TEST","==> Join the P2P overlay successfully.");
 			return true;
 		} else {
-			System.out.println("==> Fail to join the P2P overlay");
+			Log.d("HAO_TEST","==> Fail to join the P2P overlay");
 			return false;
 		}
 
@@ -140,12 +138,12 @@ public class TomP2PFunctions {
 
 		FutureDHT futureDHT = peer.put(Number160.createHash(key), data);
 		futureDHT.awaitUninterruptibly();
-
+		
 		if (futureDHT.isSuccess()) {
-			System.out.println("   => IP:" + value + " is mapped to " + key);
+			Log.d("HAO_TEST","   => IP:" + value + " is mapped to " + key);
 			return true;
 		} else {
-			System.err.println("==> Fail to map IP:" + value + " to " + key);
+			Log.d("HAO_TEST","==> Fail to map IP:" + value + " to " + key);
 			return false;
 		}
 	}
@@ -154,10 +152,10 @@ public class TomP2PFunctions {
 		FutureDHT futureDHT = peer.remove(Number160.createHash(key));
 		futureDHT.awaitUninterruptibly();
 		if (futureDHT.isSuccess()) {
-			System.out.println("==> UnRegister URL:" + key + " successfully.");
+			Log.d("HAO_TEST","==> UnRegister URL:" + key + " successfully.");
 			return true;
 		} else {
-			System.out.println("==> Failure to UnRegister URL:" + key);
+			Log.d("HAO_TEST","==> Failure to UnRegister URL:" + key);
 			return false;
 		}
 	}

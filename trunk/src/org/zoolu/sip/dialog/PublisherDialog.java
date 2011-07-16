@@ -1,25 +1,23 @@
-package org.zoolu.sip.dialog;
 /* Modified by:
  * 2009.08.16. LHK
- * 
- * Sipdroid Version 
- * Modified by HAO 2011.04.21
  */
 
-//import local.ua.GraphicalUA;
-//import local.ua.presenceService;
+package org.zoolu.sip.dialog;
 
 import org.sipdroid.sipua.ui.Presence;
+import org.sipdroid.sipua.ui.TomP2PFunctions;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.address.SipURL;
 import org.zoolu.sip.header.CSeqHeader;
 import org.zoolu.sip.header.ContentTypeHeader;
+import org.zoolu.sip.header.EventHeader;
 import org.zoolu.sip.header.ExpiresHeader;
 import org.zoolu.sip.header.StatusLine;
 import org.zoolu.sip.message.Message;
 import org.zoolu.sip.message.MessageFactory;
 import org.zoolu.sip.message.SipMethods;
 import org.zoolu.sip.message.SipResponses;
+import org.zoolu.sip.provider.MethodIdentifier;
 import org.zoolu.sip.provider.SipProvider;
 import org.zoolu.sip.provider.SipStack;
 import org.zoolu.sip.transaction.TransactionClient;
@@ -39,17 +37,16 @@ public class PublisherDialog extends Dialog implements
 	/** String "terminated" */
 	protected static final String TERMINATED = "terminated";
 
-	/** The current publish method */
-	// Message publish=null;
-
-	/** The publish transaction */
-	TransactionClient publish_transaction;
-
-	/** The notify transaction */
-	// TransactionServer notify_transaction=null;
-
 	/** The PublisherDialog listener */
 	PublisherDialogListener listener;
+
+	/** The current publish method */
+	Message publish_req;
+
+	/** The notify transaction */
+	TransactionServer notify_transaction=null;
+	/** The publish transaction */
+	TransactionClient publish_transaction;
 
 	/** The event package name */
 	String event;
@@ -136,25 +133,64 @@ public class PublisherDialog extends Dialog implements
 	}
 
 	// **************************** Costructors ****************************
+	/** Creates a new NotifierDialog. */
+	public PublisherDialog(SipProvider sip_provider, PublisherDialogListener listener) {
+		super(sip_provider);
+		init(listener);
+	}
 
-	/** Creates a new PublisherDialog. */
-	public PublisherDialog(SipProvider sip_provider, /*
-													 * String publisher, String
-													 * contact,
-													 */String event, String id,
+
+	public PublisherDialog(SipProvider sip_provider, Message publish,
 			PublisherDialogListener listener) {
 		super(sip_provider);
+		init(listener);
+
+		changeStatus(D_ACCEPTED);
+		publish_req = publish;
+		notify_transaction = new TransactionServer(sip_provider, publish, null);
+		update(Dialog.UAS, publish);
+		EventHeader eh = publish.getEventHeader();
+		if (eh != null) {
+			event = eh.getEvent();
+			id = eh.getId();
+		}
+	}
+
+/** Inits the NotifierDialog. */
+	private void init(PublisherDialogListener listener) {
 		this.listener = listener;
+		this.notify_transaction = null;
 		this.publish_transaction = null;
-		// this.from_url=new NameAddress(subscriber);
-		// if (contact!=null) this.contact_url=new NameAddress(contact);
-		// else this.contact_url=from_url;
-		this.event = event;
+		this.publish_req = null;
+		this.event = null;
 		this.id = null;
 		changeStatus(D_INIT);
 	}
 
+
+	/** Creates a new PublisherDialog. */
+	public PublisherDialog(SipProvider sip_provider, /*String publisher, String contact, */
+	String event, String id, PublisherDialogListener listener) {
+		super(sip_provider);
+		init(listener);
+		this.event = event;
+		this.id = id;
+	}
+
 	// *************************** Public methods **************************
+
+	/** Listen for the first subscription request. */
+	public void listen() {
+		printLog("inside method listen()", LogLevel.MEDIUM);
+		if (!statusIs(D_INIT)) {
+			printLog("first subscription already received", LogLevel.MEDIUM);
+			return;
+		}
+		// else
+		changeStatus(D_PUBLISHING);
+		// listen for the first PUBLISH request
+		sip_provider.addSipProviderListener(new MethodIdentifier(SipMethods.PUBLISH), this);
+	}
 
 	/**
 	 * Sends a new PUBLISH request (starts a new publication). It also
@@ -226,6 +262,20 @@ public class PublisherDialog extends Dialog implements
 		if (statusIs(D_INIT)) {
 			changeStatus(D_PUBLISHING);
 		}
+		
+		// ==> jinsub for presence server
+		try {
+
+			if (req.getContactHeader().toString().contains(TomP2PFunctions.ownIP)) {
+				publish_transaction = new TransactionClient(sip_provider, req, this);
+				publish_transaction.request(true);
+				return;
+			}
+		} catch (Exception e) {
+			System.err.println("PublisherDialog : " + e);
+		}
+		//
+
 		update(UAC, req);
 		// start client transaction
 		publish_transaction = new TransactionClient(sip_provider, req, this);
@@ -255,18 +305,17 @@ public class PublisherDialog extends Dialog implements
 	// ************** Inherited from TransactionClientListener **************
 
 	/**
-	 * When the TransactionClient is (or goes) in "Proceeding" state and
-	 * receives a new 1xx provisional response
+	 * When the TransactionClient is (or goes) in "Proceeding" state and receives a new 1xx
+	 * provisional response
 	 */
+	@Override
 	public void onTransProvisionalResponse(TransactionClient tc, Message resp) {
 		printLog("onTransProvisionalResponse()", LogLevel.MEDIUM);
 		// do nothing.
 	}
 
-	/**
-	 * When the TransactionClient goes into the "Completed" state receiving a
-	 * 2xx response
-	 */
+	/** When the TransactionClient goes into the "Completed" state receiving a 2xx response */
+	@Override
 	public void onTransSuccessResponse(TransactionClient tc, Message resp) {
 		printLog("onTransSuccessResponse()", LogLevel.MEDIUM);
 		if (!statusIs(D_ACTIVE)) {
@@ -284,10 +333,8 @@ public class PublisherDialog extends Dialog implements
 		}
 	}
 
-	/**
-	 * When the TransactionClient goes into the "Completed" state receiving a
-	 * 300-699 response
-	 */
+	/** When the TransactionClient goes into the "Completed" state receiving a 300-699 response */
+	@Override
 	public void onTransFailureResponse(TransactionClient tc, Message resp) {
 		printLog("onTransFailureResponse()", LogLevel.MEDIUM);
 		changeStatus(D_TERMINATED);
@@ -297,10 +344,8 @@ public class PublisherDialog extends Dialog implements
 					status_line.getReason(), resp);
 	}
 
-	/**
-	 * When the TransactionClient goes into the "Terminated" state, caused by
-	 * transaction timeout
-	 */
+	/** When the TransactionClient goes into the "Terminated" state, caused by transaction timeout */
+	@Override
 	public void onTransTimeout(TransactionClient tc) {
 		printLog("onTransTimeout()", LogLevel.MEDIUM);
 		changeStatus(D_TERMINATED);
@@ -311,6 +356,7 @@ public class PublisherDialog extends Dialog implements
 	// ***************** Inherited from SipProviderListener *****************
 
 	/** When a new Message is received by the SipProvider. */
+	@Override
 	public void onReceivedMessage(SipProvider sip_provider, Message msg) {
 		printLog("onReceivedMessage()", LogLevel.MEDIUM);
 		if (statusIs(D_TERMINATED)) {
@@ -360,11 +406,35 @@ public class PublisherDialog extends Dialog implements
 			printLog("message is not a NOTIFY: message discarded",
 					LogLevel.HIGH);
 		}
+		
+		if (msg.isRequest() && msg.isPublish()) {
+
+			if (statusIs(PublisherDialog.D_PUBLISHING)) { // the first SUBSCRIBE request
+				changeStatus(D_ACCEPTED);
+				sip_provider.removeSipProviderListener(new MethodIdentifier(SipMethods.PUBLISH));
+			}
+			publish_req = msg;
+			NameAddress target = msg.getToHeader().getNameAddress();
+			NameAddress publisher = msg.getFromHeader().getNameAddress();
+			EventHeader eh = msg.getEventHeader();
+			if (eh != null) {
+				event = eh.getEvent();
+				id = eh.getId();
+			}
+			update(UAS, msg);
+			notify_transaction = new TransactionServer(sip_provider, msg, null);
+			if (listener != null)
+				listener.onDlgPublish(this, target, publisher, event, id, msg);
+
+		} else {
+			printLog("message is not a SUBSCRIBE: message discarded", LogLevel.HIGH);
+		}
 	}
 
 	// **************************** Logs ****************************/
 
 	/** Adds a new string to the default Log */
+	@Override
 	protected void printLog(String str, int level) {
 		if (log != null)
 			log.println("PublisherDialog#" + dialog_sqn + ": " + str, level

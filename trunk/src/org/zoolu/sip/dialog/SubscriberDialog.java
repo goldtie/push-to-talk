@@ -47,6 +47,12 @@ public class SubscriberDialog extends Dialog implements
 	/** String "terminated" */
 	protected static final String TERMINATED = "terminated";
 
+	// HAO EDIT --->
+	Message resp = null;
+	Message req = null;
+
+	// <---- END
+	
 	/** The current subscribe method */
 	// Message subscribe=null;
 	/** The subscribe transaction */

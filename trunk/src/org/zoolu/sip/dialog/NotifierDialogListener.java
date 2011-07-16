@@ -52,4 +52,8 @@ public interface NotifierDialogListener {
 	public void onDlgNotificationSuccess(NotifierDialog dialog, int code,
 			String reason, Message msg);
 
+	// ==> jinsub for presence server
+		public void onDlgPublish(NotifierDialog notifierDialog, NameAddress target,
+				NameAddress publisher, String event, String id, Message msg);
+
 }

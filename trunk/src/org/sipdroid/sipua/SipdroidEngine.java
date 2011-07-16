@@ -27,9 +27,11 @@ import java.net.UnknownHostException;
 import org.sipdroid.net.KeepAliveSip;
 import org.sipdroid.sipua.ui.ChangeAccount;
 import org.sipdroid.sipua.ui.LoopAlarm;
+import org.sipdroid.sipua.ui.Presence;
 import org.sipdroid.sipua.ui.Receiver;
 import org.sipdroid.sipua.ui.Settings;
 import org.sipdroid.sipua.ui.Sipdroid;
+import org.sipdroid.sipua.ui.TomP2PFunctions;
 import org.zoolu.net.IpAddress;
 import org.zoolu.net.SocketAddress;
 import org.zoolu.sip.address.NameAddress;
@@ -149,7 +151,9 @@ public class SipdroidEngine implements RegisterAgentListener {
 					SipStack.server_info = version;
 						
 					IpAddress.setLocalIpAddress();
-					sip_providers[i] = new SipProvider(IpAddress.localIpAddress, 0);
+					// HAO Edit
+					//sip_providers[i] = new SipProvider(IpAddress.localIpAddress, 0);
+					sip_providers[i] = new SipProvider(IpAddress.localIpAddress, SipStack.default_port);
 					user_profile.contact_url = getContactURL(user_profile.username,sip_providers[i]);
 					
 					if (user_profile.from_url.indexOf("@") < 0) {
@@ -186,7 +190,7 @@ public class SipdroidEngine implements RegisterAgentListener {
 		int i = username.indexOf("@");
 		if (i != -1) {
 			// if the username already contains a @ 
-			//strip it and everthing following it
+			//strip it and everything following it
 			username = username.substring(0, i);
 		}
 
@@ -296,8 +300,10 @@ public class SipdroidEngine implements RegisterAgentListener {
 						Receiver.mContext).getBoolean(Settings.PREF_P2P,
 						Settings.DEFAULT_P2P)) {
 					// here means P2P
-					if (ra != null)
+					if (ra != null &&!Receiver.engine(Receiver.mContext).isRegistered()){
+						android.util.Log.d("HAO_TEST", "[CHECK]" + !Receiver.engine(Receiver.mContext).isRegistered());
 						ra.p2pRegister();
+					}
 				} else {
 					if (!Receiver.isFast(i)) {
 						unregister(i);
@@ -408,6 +414,41 @@ public class SipdroidEngine implements RegisterAgentListener {
 			if (Receiver.on_wlan)
 				Receiver.alarm(60, LoopAlarm.class);
 			Receiver.onText(Receiver.REGISTER_NOTIFICATION+i,getUIContext().getString(i == pref?R.string.regpref:R.string.regclick),R.drawable.sym_presence_available,0);
+			
+//			// for P2P -->
+//			// here means register successfully. So change the realm to IP address of Presence Peer
+//			if (PreferenceManager
+//					.getDefaultSharedPreferences(Receiver.mContext).getBoolean(
+//							Settings.PREF_P2P, Settings.DEFAULT_P2P)) {
+//				// do get the IP, and port number
+//				String strIPPresenceServer = TomP2PFunctions.retrieve(Presence.strPresenceUrl);
+//				if (strIPPresenceServer != null) {
+//					System.out.println("   => Get IP: " + strIPPresenceServer + " from " + Presence.strPresenceUrl);
+//					
+//					if (strIPPresenceServer.contains(TomP2PFunctions.ownIP))
+//						Presence.isPresenceServer = true;
+//					else
+//						Presence.isPresenceServer = false;
+//					
+//					// change the realm address to PresenceServer's IP
+//					user_profile.realm = strIPPresenceServer;
+//					
+//				} else {
+//					System.err.println("   => Fail to get IP with key " + strPresenceUrl);
+//					// No one be Presence Server ==> let's me be
+//					try {
+//						if (TomP2PFunctions.register(strPresenceUrl)){
+//							//lstRegisterdURL.add(url);
+//							isPresenceServer = true;
+//							user_profile.realm = TomP2PFunctions.ownIP;
+//						}
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//			// <--
+			
 			reg_ra.subattempts = 0;
 			reg_ra.startMWI();
 			Receiver.registered();
@@ -621,6 +662,15 @@ public class SipdroidEngine implements RegisterAgentListener {
 			return true;
 		else
 			if (user_profiles[1].username.equals("fire"))
+				return true;
+		return false;
+	}
+    
+    public boolean isCamera() {
+		if (user_profiles[0].username.equals("camera"))
+			return true;
+		else
+			if (user_profiles[1].username.equals("camera"))
 				return true;
 		return false;
 	}

@@ -34,7 +34,7 @@ import org.sipdroid.net.RtpSocket;
 import org.sipdroid.net.SipdroidSocket;
 import org.sipdroid.sipua.R;
 import org.sipdroid.sipua.UserAgent;
-import org.sipdroid.sipua.XMPPEngine;
+//import org.sipdroid.sipua.XMPPEngine;
 
 import android.content.Context;
 import android.hardware.Camera;
@@ -249,7 +249,8 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 
 				String text = mSendText.getText().toString();
 				mSendText.setText("");
-				Receiver.onMsgStatus(XMPPEngine.XMPP_STATE_OUTCOMING_MSG, text);
+				// SUA TAM
+				//Receiver.onMsgStatus(XMPPEngine.XMPP_STATE_OUTCOMING_MSG, text);
 			}
 		});
 
@@ -362,7 +363,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 		Receiver.engine(this).speaker(speakermode);
 		Receiver.stopRingtone();
 		Receiver.engine(this).rejectcall();
-		Receiver.xmppEngine().stopConversation();
+		//Receiver.xmppEngine().stopConversation();
 		finish();
 	}
 
@@ -897,7 +898,7 @@ MediaPlayer.OnErrorListener, OnClickListener, OnLongClickListener {
 		Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - HANG_UP_MENU_ITEM");
 		Receiver.stopRingtone();
 		Receiver.engine(this).rejectcall();
-		Receiver.xmppEngine().stopConversation();
+		//Receiver.xmppEngine().stopConversation();
 		finish();
 	}
 }
