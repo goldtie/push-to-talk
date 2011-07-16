@@ -172,8 +172,11 @@ public class ChatArchiveContentActivity extends Activity{
 		super.onCreate(icicle);
 
 		// setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
-		requestWindowFeature(Window.FEATURE_PROGRESS);
-		setContentView(R.layout.chat_archive_content_screen);
+		 requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+		 setContentView(R.layout.chat_archive_content_screen);
+	        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_window_title);
+		
+		
 
 		// don't set mSurfaceHolder here. We have it set ONLY within
 		// surfaceCreated / surfaceDestroyed, other parts of the code
@@ -191,7 +194,16 @@ public class ChatArchiveContentActivity extends Activity{
 		
 		TextView datetimeHeader = (TextView) this.findViewById(R.id.datetime_header);
 		datetimeHeader.setText(HistoryListActivity.mDateTime);
+		
 		mTargetAvatar = BitmapFactory.decodeFile(HistoryListActivity.mTarget.mImagePath);
+		TextView tvTarget = (TextView) findViewById(R.id.window_title);
+		Contact c = new ContactManagement().getContact(HistoryListActivity.mTarget.mUserName);
+		tvTarget.setText(c == null ? "Conference" : c.mDisplayName);
+		
+		ImageView ivTarget = (ImageView) findViewById(R.id.window_icon);
+		ivTarget.setImageBitmap(mTargetAvatar == null ? 
+				BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_conference) 
+				: mTargetAvatar);
 		
 	}
 

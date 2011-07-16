@@ -68,21 +68,24 @@ public class Sipdroid extends Activity implements OnDismissListener, Runnable{
 	public static final int ABOUT_MENU_ITEM = FIRST_MENU_ID + 2;
 	public static final int EXIT_MENU_ITEM = FIRST_MENU_ID + 3;
 
-	private static AlertDialog m_AlertDlg;
-	
 	@Override
 	public void onStart() {
 		super.onStart();
 		Receiver.engine(this).registerMore();
 	}
 	
-	
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.sipdroid);
+		
+		pd = ProgressDialog.show(this, "SIPDROID", "Waiting...", true,
+                false);
+
+		Thread thread = new Thread(this);
+		thread.start();
+		
 		on(this,true);
 		
 //		ImageButton loginBtn = (ImageButton) this.findViewById(R.id.btnLogin);
@@ -114,11 +117,7 @@ public class Sipdroid extends Activity implements OnDismissListener, Runnable{
 	public void onResume() {
 		super.onResume();
 		
-		pd = ProgressDialog.show(this, "SIPDROID", "Waiting...", true,
-                false);
-
-		Thread thread = new Thread(this);
-		thread.start();
+		
 
 	}
 
