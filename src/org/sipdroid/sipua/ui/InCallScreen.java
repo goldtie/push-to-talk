@@ -181,7 +181,7 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
 				mDialerDrawer.close();
 				mDialerDrawer.setVisibility(View.GONE);
 			} else
-				mDialerDrawer.setVisibility(View.VISIBLE);
+				mDialerDrawer.setVisibility(View.GONE);
 			if (Receiver.docked <= 0)
 				screenOff(true);
 			break;
@@ -428,7 +428,7 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
 				mDialerDrawer.close();
 				mDialerDrawer.setVisibility(View.GONE);
 			} else {
-				mDialerDrawer.setVisibility(View.VISIBLE);
+				mDialerDrawer.setVisibility(View.GONE);
 			}
 	        if (mSlidingCardManager != null)
 	        	mSlidingCardManager.showPopup();
