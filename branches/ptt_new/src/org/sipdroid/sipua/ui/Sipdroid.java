@@ -80,11 +80,7 @@ public class Sipdroid extends Activity implements OnDismissListener, Runnable{
 		
 		setContentView(R.layout.sipdroid);
 		
-		pd = ProgressDialog.show(this, "SIPDROID", "Waiting...", true,
-                false);
-
-		Thread thread = new Thread(this);
-		thread.start();
+		
 		
 		on(this,true);
 		
@@ -116,7 +112,11 @@ public class Sipdroid extends Activity implements OnDismissListener, Runnable{
 	@Override
 	public void onResume() {
 		super.onResume();
-		
+		pd = ProgressDialog.show(this, "DCNTalk", "Waiting...", true,
+                false);
+
+		Thread thread = new Thread(this);
+		thread.start();
 		
 
 	}

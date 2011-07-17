@@ -24,6 +24,7 @@ public class Contact implements Serializable {
 		this.mUserName = username;
 		this.mDisplayName = displayname;
 		this.mStatus = status;
+		
 		this.mImagePath = imagePath;
 		mPresence = Presence.OFFLINE_STATUS;
 //		this.mEmail = email;

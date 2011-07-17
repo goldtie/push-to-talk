@@ -204,6 +204,9 @@ public class ChatArchiveContentActivity extends Activity{
 		ivTarget.setImageBitmap(mTargetAvatar == null ? 
 				BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_conference) 
 				: mTargetAvatar);
+		Contact myProfile = new ContactManagement().getContact(org.sipdroid.sipua.ui.Settings.getAccountUserName(getBaseContext()));
+        TextView appTarget = (TextView) findViewById(R.id.appName);
+		appTarget.setText("DCNTalk - " + myProfile.mDisplayName);
 		
 	}
 

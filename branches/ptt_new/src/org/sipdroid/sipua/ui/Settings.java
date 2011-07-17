@@ -159,7 +159,7 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 	// Default values of the preferences
 	public static final String	DEFAULT_USERNAME = "";
 	public static final String	DEFAULT_PASSWORD = "";
-	public static final String	DEFAULT_SERVER = "220.149.84.7";
+	public static final String	DEFAULT_SERVER = "220.70.2.108";
 	public static final String	DEFAULT_DOMAIN = "";
 	public static final String	DEFAULT_FROMUSER = "";
 	public static final String	DEFAULT_PORT = "" + SipStack.default_port;
@@ -679,6 +679,12 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
     }
 
 	public void updateSummaries() {
+		
+		getPreferenceScreen().findPreference(PREF_USERNAME).setSummary(settings.getString(PREF_USERNAME, DEFAULT_USERNAME));
+		getPreferenceScreen().findPreference(PREF_SERVER).setSummary(settings.getString(PREF_SERVER, DEFAULT_SERVER));
+		getPreferenceScreen().findPreference(PREF_PTT_USERNAME).setSummary(settings.getString(PREF_PTT_USERNAME, ""));
+		getPreferenceScreen().findPreference(PREF_XMPP_SERVICE).setSummary(settings.getString(PREF_XMPP_SERVICE, ""));
+		
     	getPreferenceScreen().findPreference(PREF_STUN_SERVER).setSummary(settings.getString(PREF_STUN_SERVER, DEFAULT_STUN_SERVER));
     	getPreferenceScreen().findPreference(PREF_STUN_SERVER_PORT).setSummary(settings.getString(PREF_STUN_SERVER_PORT, DEFAULT_STUN_SERVER_PORT));
 
@@ -688,8 +694,7 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
        	for (int i = 0; i < SipdroidEngine.LINES; i++) {
        		String j = (i!=0?""+i:"");
        		
-	    	//getPreferenceScreen().findPreference(PREF_USERNAME+j).setSummary(username); 
-	    	//getPreferenceScreen().findPreference(PREF_SERVER+j).setSummary(server);
+
 	    	if (settings.getString(PREF_DOMAIN+j, DEFAULT_DOMAIN).length() == 0) {
 	    		getPreferenceScreen().findPreference(PREF_DOMAIN+j).setSummary(getString(R.string.settings_domain2));
 	    	} else {
