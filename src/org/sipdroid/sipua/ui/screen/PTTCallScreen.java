@@ -40,11 +40,13 @@ import org.sipdroid.sipua.component.ContactManagement;
 import org.sipdroid.sipua.ui.AudioMBCPProcess;
 import org.sipdroid.sipua.ui.CallScreen;
 import org.sipdroid.sipua.ui.Receiver;
+import org.sipdroid.sipua.ui.RegisterService;
 import org.sipdroid.sipua.ui.Settings;
 import org.sipdroid.sipua.ui.Sipdroid;
 import org.sipdroid.sipua.ui.SipdroidListener;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.LocationManager;
@@ -60,6 +62,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -69,6 +72,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
@@ -206,12 +211,6 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 	
 	private Handler mHandler = new MainHandler();
 
-	public static final int FIRST_MENU_ID = Menu.FIRST;
-	public static final int AUDIO_REQUEST_MENU_ITEM = FIRST_MENU_ID + 1;
-	public static final int AUDIO_RELEASE_MENU_ITEM = FIRST_MENU_ID + 2;
-	public static final int SPEAKER_MENU_ITEM = FIRST_MENU_ID + 5;
-	public static final int HANG_UP_MENU_ITEM = FIRST_MENU_ID + 6;
-
 	public static boolean isAudioSending = false;
 
 	public AudioMBCPProcess audio_mbcp_process = null;
@@ -256,6 +255,7 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 		}
 	};
 
+	ToggleButton audio;
 	private String mDateTime;
 	
 	/** Called with the activity is first created. */
@@ -311,6 +311,30 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 			}
 		});
 
+		
+		audio = (ToggleButton)this.findViewById(R.id.btnSendAudio);
+			audio.setChecked(false);
+		audio.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(AudioMBCPProcess.Status.equals("Receiving")) {
+					audio.setChecked(false);
+					Toast.makeText(mContext, "The token has not released yet. Wait a second", Toast.LENGTH_SHORT).show();
+					return;
+				}
+				// TODO Auto-generated method stub
+				if(audio.isChecked()){
+					//Toast.makeText(mContext, "up", Toast.LENGTH_SHORT).show();
+					audio_mbcp_process.RequestMSG();
+				} else {
+					//Toast.makeText(mContext, "down", Toast.LENGTH_SHORT).show();
+					audio_mbcp_process.ReleaseMSG();
+					
+				}
+			}
+		});
+		
 		String userName = EMPTY;
 		if(Presence.mTarget == null) {
 			//conference
@@ -327,6 +351,10 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 		
 		ImageView ivTarget = (ImageView) findViewById(R.id.window_icon);
 		ivTarget.setImageBitmap(mTargetAvatar);
+		
+        Contact c = new ContactManagement().getContact(org.sipdroid.sipua.ui.Settings.getAccountUserName(getBaseContext()));
+        TextView appTarget = (TextView) findViewById(R.id.appName);
+		appTarget.setText("DCNTalk - " + c.mDisplayName);
 	}
 
 	public static void updateListContent(MessageListAdapter adapter){
@@ -352,9 +380,31 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 	}
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		return true;
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		return true;
+	}
+	@Override
 	public void onPause() {
 		Log.d("SIPDROID", "[PTTCallScreen] - onPause");
 		super.onPause();
+		hangup();
+		//Presence.pa.publish(Receiver.mSipdroidEngine.user_profiles[0].username + "@" + Receiver.mSipdroidEngine.user_profiles[0].realm, 0, "Off Line", "Off-Line");
+
+		//Receiver.xmppEngine().disconect();
+		//Receiver.mXMPPEngine = null;
+		
+		//Sipdroid.on(this,false);
+		//Receiver.pos(true);
+		//Receiver.engine(this).halt();
+		
+		//Receiver.mSipdroidEngine = null;
+		//Receiver.reRegister(0);
+		//stopService(new Intent(this,RegisterService.class));
 	}
 
 	/*
@@ -364,11 +414,11 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		Log.d("HAO", "PTTCallScreen_onKeyDown");
 		switch (keyCode) {
-		// finish for these events
+		
 		case KeyEvent.KEYCODE_CALL:
 			Receiver.engine(this).togglehold();
 		case KeyEvent.KEYCODE_BACK:
-			//finish();
+			hangup();
 			return true;
 
 		case KeyEvent.KEYCODE_CAMERA:
@@ -391,15 +441,6 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 		Log.d("SIPDROID", "[PTTCallScreen] - void onError");
 		if (what == MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN) {
 			finish();
-		}
-	}
-
-	private void setScreenOnFlag() {
-		Log.d("HAO", "PTTCallScreen_setScreenOnFlag");
-		Window w = getWindow();
-		final int keepScreenOnFlag = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
-		if ((w.getAttributes().flags & keepScreenOnFlag) == 0) {
-			w.addFlags(keepScreenOnFlag);
 		}
 	}
 
@@ -442,66 +483,6 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 		return true;
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-
-		MenuItem m = menu.add(0, AUDIO_REQUEST_MENU_ITEM, 0, R.string.menu_audiosend);
-		m.setIcon(android.R.drawable.ic_menu_call);
-
-		m = menu.add(0, AUDIO_RELEASE_MENU_ITEM, 0, R.string.menu_audiorelease);
-		m.setIcon(android.R.drawable.ic_menu_call);
-
-		m = menu.add(0, SPEAKER_MENU_ITEM, 0, R.string.menu_speaker);
-		m.setIcon(android.R.drawable.stat_sys_speakerphone);
-
-		m = menu.add(0, HANG_UP_MENU_ITEM, 0, R.string.menu_endCall);
-		m.setIcon(R.drawable.ic_menu_end_call);
-
-		return true;
-	}
-
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		Log.d("HAO", "PTTCallScreen_onPrepareOptionsMenu");
-
-		if (Receiver.mSipdroidEngine != null
-				&& Receiver.mSipdroidEngine.ua != null
-				&& UserAgent.audio_app != null) {
-			menu.findItem(AUDIO_REQUEST_MENU_ITEM).setVisible(!isAudioSending && !AudioMBCPProcess.Status.equals("Receiving"));
-			menu.findItem(HANG_UP_MENU_ITEM).setVisible(true);
-		} 
-
-		menu.findItem(SPEAKER_MENU_ITEM).setVisible(!isAudioSending &&!(Receiver.headset > 0 || Receiver.docked > 0 || Receiver.bluetooth > 0));
-		menu.findItem(AUDIO_RELEASE_MENU_ITEM).setVisible(isAudioSending && AudioMBCPProcess.Status.equals("Sending"));
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected");
-
-		switch (item.getItemId()) {
-		case SPEAKER_MENU_ITEM:
-			Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - SPEAKER_MENU_ITEM");
-			Receiver.engine(this).speaker(AudioManager.MODE_IN_CALL);
-			break;
-
-		case AUDIO_REQUEST_MENU_ITEM:
-			Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - AUDIO_REQUEST_MENU_ITEM");
-			audio_mbcp_process.RequestMSG();
-			break;
-
-		case AUDIO_RELEASE_MENU_ITEM:
-			Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - AUDIO_RELEASE_MENU_ITEM");
-			audio_mbcp_process.ReleaseMSG();
-			break;
-
-		case HANG_UP_MENU_ITEM:
-			hangup();
-			break;
-		}
-		return true;
-	}
 	
 	private void hangup() {
 		if(mMessagesList.size() > 0) {
@@ -522,6 +503,7 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 		}
 		
 		Log.d("SIPDROID", "[PTTCallScreen] - onOptionsItemSelected - HANG_UP_MENU_ITEM");
+		audio_mbcp_process.ReleaseMSG();
 		Receiver.stopRingtone();
 		Receiver.engine(this).rejectcall();
 		Receiver.xmppEngine().stopConversation();

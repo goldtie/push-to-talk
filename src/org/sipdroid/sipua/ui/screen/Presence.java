@@ -126,7 +126,7 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 
 	// pa_presence is used for presence.info ~ winfo.
 	PresenceAgent pa_presence;
-	PresenceAgent pa;
+	public static PresenceAgent pa;
 
 	SipProvider sip_provider;
 	UserAgentProfile user_profile;
@@ -151,6 +151,8 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 		private LayoutInflater mInflater;
 		private Bitmap mIconOffLine;
 		private Bitmap mIconBusy;
+		private Bitmap mIconFireOnLine;
+		private Bitmap mIconCameraOnLine;
 		private Bitmap mIconFireOn;
 		private Bitmap mIconFireOff;
 		private Bitmap mIconCameraOn;
@@ -160,8 +162,10 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 			mInflater = LayoutInflater.from(context);
 			mIconOffLine = BitmapFactory.decodeResource(context.getResources(), R.drawable.pre_offline);
 			mIconBusy = BitmapFactory.decodeResource(context.getResources(), 	R.drawable.pre_busy);
+			mIconFireOnLine = BitmapFactory.decodeResource(context.getResources(), 	R.drawable.pre_fire_online);
 			mIconFireOn = BitmapFactory.decodeResource(context.getResources(), 	R.drawable.pre_fireon);
 			mIconFireOff = BitmapFactory.decodeResource(context.getResources(), R.drawable.pre_fireoff);
+			mIconCameraOnLine = BitmapFactory.decodeResource(context.getResources(),R.drawable.pre_camera_online);
 			mIconCameraOn = BitmapFactory.decodeResource(context.getResources(),R.drawable.pre_cameraon);
 			mIconCameraOff = BitmapFactory.decodeResource(context.getResources(), R.drawable.pre_cameraoff);
 		}
@@ -201,9 +205,18 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 			
 			switch (contact.mPresence) {
 			case ONLINE_STATUS:
-				if(contact.mAvatar == null)
+				
+				if(contact.mAvatar == null) {
 					contact.mAvatar = BitmapFactory.decodeFile(contact.mImagePath);
-				holder.avatar.setImageBitmap(contact.mAvatar);
+				}
+				if(contact.mUserName.equals(FIRE)) {
+					holder.avatar.setImageBitmap(mIconFireOnLine);
+				} else if(contact.mUserName.equals(CAMERA)) {
+					holder.avatar.setImageBitmap(mIconCameraOnLine);
+				} else {
+					holder.avatar.setImageBitmap(contact.mAvatar);
+				}
+				
 				break;
 			case OFFLINE_STATUS: 
 				if(contact.mUserName.equals(FIRE)) {
@@ -241,8 +254,11 @@ public class Presence extends ListActivity implements PresenceAgentListener, Dia
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
 
-		menu.add(0, CONFERENCE_MENU_ITEM, 0, R.string.menu_conference);
-		menu.add(0, SIGNOUT_MENU_ITEM, 0, R.string.menu_sign_out);
+		MenuItem m = menu.add(0, CONFERENCE_MENU_ITEM, 0, R.string.menu_conference);
+		m.setIcon(R.drawable.icon_menu_conference);
+		
+		m = menu.add(0, SIGNOUT_MENU_ITEM, 0, R.string.menu_sign_out);
+		m.setIcon(R.drawable.icon_sign_out);
 		return result;
 	}
 

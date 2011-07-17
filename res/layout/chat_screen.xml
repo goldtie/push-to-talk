@@ -17,7 +17,8 @@
     <Button
         android:id="@+id/btnSend"
         android:text="Send"
-        android:layout_width="wrap_content"
+        android:textStyle="bold"
+        android:layout_width="65dip"
         android:layout_height="55dip"
         android:layout_alignParentRight="true"
         />
@@ -27,14 +28,16 @@
         android:layout_width="fill_parent"
         android:layout_height="55dip"
         android:hint="type something to send"
-        android:layout_marginLeft="55dip"
+        android:layout_marginLeft="65dip"
         android:inputType="text"
         android:maxLines="1"
         />
-        <Button
+    <ToggleButton
         android:id="@+id/btnSendAudio"
-        android:text="Audio"
-        android:layout_width="wrap_content"
+        android:textOn="Stop"
+        android:textStyle="bold"
+        android:textOff="Audio"
+        android:layout_width="65dip"
         android:layout_height="55dip"
         android:layout_alignParentLeft="true"
         

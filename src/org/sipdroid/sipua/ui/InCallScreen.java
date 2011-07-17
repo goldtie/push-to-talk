@@ -386,7 +386,8 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.incall);
-		
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
 		initInCallScreen();
 		
 		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);

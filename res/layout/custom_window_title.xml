@@ -9,6 +9,7 @@
 	android:background="#323331">
 
 	<TextView
+	android:id="@+id/appName"
 		android:text="@string/app_name"
 		android:textStyle="bold"
 		android:textSize="13dip"
