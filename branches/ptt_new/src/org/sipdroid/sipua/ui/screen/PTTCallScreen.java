@@ -39,6 +39,7 @@ import org.sipdroid.sipua.component.Contact;
 import org.sipdroid.sipua.component.ContactManagement;
 import org.sipdroid.sipua.ui.AudioMBCPProcess;
 import org.sipdroid.sipua.ui.CallScreen;
+import org.sipdroid.sipua.ui.MainUIActivity;
 import org.sipdroid.sipua.ui.Receiver;
 import org.sipdroid.sipua.ui.RegisterService;
 import org.sipdroid.sipua.ui.Settings;
@@ -85,8 +86,6 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 	
 	public final static String STORAGE_CHAT_HISTORY = "mnt/sdcard/download/chatlog/";
 
-	public Bitmap mTargetAvatar = null;
-	
 	public class MessageListAdapter extends BaseAdapter {
 		private LayoutInflater mInflater;
 		
@@ -159,9 +158,8 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 				lp6.addRule(RelativeLayout.RIGHT_OF, holder.mAvatar.getId());
 				holder.mFriendName.setLayoutParams(lp6);
 				
-				Contact c = new ContactManagement().getContact(mess.mMessageSender);
-				holder.mAvatar.setImageBitmap(BitmapFactory.decodeFile(c.mImagePath));
-				holder.mFriendName.setText(c.mDisplayName);
+				holder.mAvatar.setImageBitmap(MainUIActivity.mContactManagement.getAvatar(mess.mMessageSender));
+				holder.mFriendName.setText(MainUIActivity.mContactManagement.getDisplayName(mess.mMessageSender));
 				holder.mAvatar.setVisibility(View.VISIBLE);
 				holder.mFriendName.setVisibility(View.VISIBLE);
 				
@@ -335,26 +333,14 @@ public class PTTCallScreen extends CallScreen implements SipdroidListener {
 			}
 		});
 		
-		String userName = EMPTY;
-		if(Presence.mTarget == null) {
-			//conference
-			mTargetAvatar = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_conference);
-			userName = "Conference";
-		} else {
-			mTargetAvatar = BitmapFactory.decodeFile(Presence.mTarget.mImagePath);
-			Contact c = new ContactManagement().getContact(Presence.mTarget.mUserName);
-			userName = c.mDisplayName;
-		}
-			
 		TextView tvTarget = (TextView) findViewById(R.id.window_title);
-		tvTarget.setText(userName);
+		tvTarget.setText(MainUIActivity.mContactManagement.getDisplayName(Presence.mTarget.mUserName));
 		
 		ImageView ivTarget = (ImageView) findViewById(R.id.window_icon);
-		ivTarget.setImageBitmap(mTargetAvatar);
+		ivTarget.setImageBitmap(MainUIActivity.mContactManagement.getAvatar(Presence.mTarget.mUserName));
 		
-        Contact c = new ContactManagement().getContact(org.sipdroid.sipua.ui.Settings.getAccountUserName(getBaseContext()));
         TextView appTarget = (TextView) findViewById(R.id.appName);
-		appTarget.setText("DCNTalk - " + c.mDisplayName);
+		appTarget.setText("DCNTalk - " + MainUIActivity.mContactManagement.getDisplayName(Settings.getAccountUserName(this)));
 	}
 
 	public static void updateListContent(MessageListAdapter adapter){

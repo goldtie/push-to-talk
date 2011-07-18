@@ -22,6 +22,7 @@ import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.sipdroid.sipua.component.ContactManagement;
+import org.sipdroid.sipua.ui.MainUIActivity;
 import org.sipdroid.sipua.ui.Receiver;
 import org.sipdroid.sipua.ui.Settings;
 
@@ -98,7 +99,7 @@ public class XMPPEngine {
 				}
 				Log.i("XMPPEngine", "Got text [" + message.getBody() + "] from [" + fromName + "]");
 				MessageStruct m = new MessageStruct();
-				m.mMessageSender = fromName.substring(0, fromName.indexOf("@"));
+				m.mMessageSender = fromName.indexOf("@") == -1 ? fromName : fromName.substring(0, fromName.indexOf("@"));
 				m.mMessageContent = message.getBody();
 				messages.add(m);
 				
@@ -144,7 +145,7 @@ public class XMPPEngine {
             						String fromName = StringUtils.parseBareAddress(message.getFrom());
             						// TODO Auto-generated method stub
             						Toast.makeText(mContext, 
-            								org.sipdroid.sipua.ui.screen.Presence.mContactManagement.getDisplayName(fromName.substring(0, fromName.indexOf("@"))) + " wants to talk something with you!", Toast.LENGTH_SHORT).show();
+            								MainUIActivity.mContactManagement.getDisplayName(fromName.substring(0, fromName.indexOf("@"))) + " wants to talk something with you!", Toast.LENGTH_SHORT).show();
             					}
             				});
 
@@ -197,7 +198,7 @@ public class XMPPEngine {
                 						String fromName = StringUtils.parseBareAddress(message.getFrom());
                 						// TODO Auto-generated method stub
                 						Toast.makeText(mContext, 
-                								org.sipdroid.sipua.ui.screen.Presence.mContactManagement.getDisplayName(fromName.substring(0, fromName.indexOf("@"))) + " wants to talk something with you!", Toast.LENGTH_SHORT).show();
+                								MainUIActivity.mContactManagement.getDisplayName(fromName.substring(0, fromName.indexOf("@"))) + " wants to talk something with you!", Toast.LENGTH_SHORT).show();
                 					}
                 				});
             				} else {
