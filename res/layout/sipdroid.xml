@@ -13,24 +13,7 @@
 	// these are the main definitions of Sipdroid // for modifying them additional 
 	terms according to section 7, GPL apply // see ADDITIONAL_TERMS.txt ///////////////////////////////////////////////////////////////////// -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent" android:background="#000000">
-    
 
-	<org.sipdroid.sipua.ui.GiftView
-		android:id="@+id/giftViewCtrl" android:layout_width="240dip"
-		android:layout_height="320dip" android:layout_gravity="center_horizontal" 
-		android:layout_marginTop="0dip" android:layout_marginBottom="0dip"/>
-
-	<ImageButton android:layout_width="wrap_content"
-	android:id="@+id/btnLogin" android:layout_height="wrap_content"
-	android:layout_gravity="center_horizontal"
-	android:src="@drawable/login_button"
-	android:background="@null"
-	
-	></ImageButton>
-
-		
-	
-</LinearLayout>
+	<org.sipdroid.sipua.ui.GiftView xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/giftViewCtrl" android:layout_width="320px"
+		android:layout_height="240px" android:layout_marginTop="0dip" android:layout_marginBottom="0dip" android:layout_gravity="center" android:scaleType="centerInside"/>

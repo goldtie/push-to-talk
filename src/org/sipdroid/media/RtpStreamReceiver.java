@@ -30,9 +30,9 @@ import org.sipdroid.net.SipdroidSocket;
 import org.sipdroid.sipua.R;
 import org.sipdroid.sipua.UserAgent;
 import org.sipdroid.sipua.ui.InCallScreen;
-import org.sipdroid.sipua.ui.Presence;
 import org.sipdroid.sipua.ui.Receiver;
 import org.sipdroid.sipua.ui.Sipdroid;
+import org.sipdroid.sipua.ui.screen.Presence;
 import org.sipdroid.codecs.Codecs;
 
 import android.content.ContentResolver;

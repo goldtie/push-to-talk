@@ -27,18 +27,15 @@ import java.net.UnknownHostException;
 import org.sipdroid.net.KeepAliveSip;
 import org.sipdroid.sipua.ui.ChangeAccount;
 import org.sipdroid.sipua.ui.LoopAlarm;
-import org.sipdroid.sipua.ui.Presence;
 import org.sipdroid.sipua.ui.Receiver;
 import org.sipdroid.sipua.ui.Settings;
 import org.sipdroid.sipua.ui.Sipdroid;
-import org.sipdroid.sipua.ui.TomP2PFunctions;
 import org.zoolu.net.IpAddress;
 import org.zoolu.net.SocketAddress;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.provider.SipProvider;
 import org.zoolu.sip.provider.SipStack;
 
-import android.R.bool;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
@@ -190,7 +187,7 @@ public class SipdroidEngine implements RegisterAgentListener {
 		int i = username.indexOf("@");
 		if (i != -1) {
 			// if the username already contains a @ 
-			//strip it and everything following it
+			//strip it and everthing following it
 			username = username.substring(0, i);
 		}
 
@@ -287,14 +284,12 @@ public class SipdroidEngine implements RegisterAgentListener {
 		int i = 0;
 		for (RegisterAgent ra : ras) {
 			try {
-				if (user_profiles[i] == null
-						|| user_profiles[i].username.equals("")
-						|| user_profiles[i].realm.equals("")) {
+				if (user_profiles[i] == null || user_profiles[i].username.equals("") ||
+						user_profiles[i].realm.equals("")) {
 					i++;
 					continue;
 				}
-				user_profiles[i].contact_url = getContactURL(
-						user_profiles[i].from_url, sip_providers[i]);
+				user_profiles[i].contact_url = getContactURL(user_profiles[i].from_url,sip_providers[i]);
 				// for P2P -->
 				if (PreferenceManager.getDefaultSharedPreferences(
 						Receiver.mContext).getBoolean(Settings.PREF_P2P,
@@ -308,11 +303,9 @@ public class SipdroidEngine implements RegisterAgentListener {
 					if (!Receiver.isFast(i)) {
 						unregister(i);
 					} else {
-						if (ra != null && ra.register()) {
-							Receiver.onText(Receiver.REGISTER_NOTIFICATION + i,
-									getUIContext().getString(R.string.reg),
-									R.drawable.sym_presence_idle, 0);
-							wl[i].acquire();
+					if (ra != null && ra.register()) {
+						Receiver.onText(Receiver.REGISTER_NOTIFICATION+i,getUIContext().getString(R.string.reg),R.drawable.sym_presence_idle,0);
+						wl[i].acquire();
 						}
 					}
 				}

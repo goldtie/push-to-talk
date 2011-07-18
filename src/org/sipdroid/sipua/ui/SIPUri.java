@@ -29,6 +29,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -64,7 +65,11 @@ public class SIPUri extends Activity {
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-		Sipdroid.on(this,true);
+		Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
+		edit.putBoolean(Settings.PREF_ON, true);
+		edit.commit();
+        if (true) Receiver.engine(this).isRegistered();
+        
 		Uri uri = getIntent().getData();
 		String target;
 		if (uri.getScheme().equals("sip") || uri.getScheme().equals("sipdroid"))

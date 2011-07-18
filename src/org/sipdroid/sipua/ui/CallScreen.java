@@ -10,6 +10,7 @@ import org.sipdroid.net.SipdroidSocket;
 import org.sipdroid.sipua.R;
 import org.sipdroid.sipua.UserAgent;
 import org.sipdroid.sipua.ui.InstantAutoCompleteTextView;
+import org.sipdroid.sipua.ui.screen.Presence;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -174,7 +175,7 @@ public class CallScreen extends Activity implements DialogInterface.OnClickListe
 			try {
 				if(Presence.mIsPttService){
 					Log.d("HAO", "VIDEO_MENU_ITEM_PTTCallScreen.class");
-					intent = new Intent(this, org.sipdroid.sipua.ui.PTTCallScreen.class);
+					intent = new Intent(this, org.sipdroid.sipua.ui.screen.PTTCallScreen.class);
 					startActivity(intent);
 					finish();
 				}else{
@@ -223,7 +224,7 @@ public class CallScreen extends Activity implements DialogInterface.OnClickListe
 
 	SipdroidSocket socket;
 	RtpSocket rtp_socket;
-	Context mContext = this;
+	protected Context mContext = this;
 	Intent intent;
 	
 	@Override
@@ -275,7 +276,7 @@ public class CallScreen extends Activity implements DialogInterface.OnClickListe
 							} else {
 								if(Presence.mIsPttService){
 									Log.d("HAO", "CallScreen_OnResume_PTTCallScreen.class");
-									Intent i = new Intent(mContext, org.sipdroid.sipua.ui.PTTCallScreen.class);
+									Intent i = new Intent(mContext, org.sipdroid.sipua.ui.screen.PTTCallScreen.class);
 									i.putExtra("justplay",true);
 									startActivity(i);
 								}else{

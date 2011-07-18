@@ -21,9 +21,10 @@
 
 package org.sipdroid.sipua;
 
-import org.sipdroid.sipua.ui.Presence;
 import org.sipdroid.sipua.ui.Receiver;
 import org.sipdroid.sipua.ui.Settings;
+import org.sipdroid.sipua.ui.Sipdroid;
+import org.sipdroid.sipua.ui.screen.Presence;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.dialog.NotifierDialog;
 import org.zoolu.sip.dialog.NotifierDialogListener;
@@ -40,6 +41,7 @@ import org.zoolu.sip.transaction.TransactionServer;
 import org.zoolu.tools.Log;
 import org.zoolu.tools.LogLevel;
 
+import android.content.Intent;
 import android.os.Handler;
 
 /**
@@ -150,6 +152,7 @@ public class PresenceAgent implements
 		subscriber_dialog.reSubscribe(presentity, user_profile.from_url,
 				user_profile.contact_url, expires);
 	}
+
 	// <---
 
 	// ///////////////////09.08.20 add by LHK /////////////////////
@@ -341,8 +344,8 @@ public class PresenceAgent implements
 					String get_notifier_URI = notifier_URI
 							.substring(s2 + 1, e2);
 
-					for (i = 0; i < Presence.mContactList.size(); i++) {
-						if (Presence.mContactList.get(i).mUsername
+					for (i = 0; i < sPresence.mContactManagement.mContactList.size(); i++) {
+						if (sPresence.mContactManagement.mContactList.get(i).mUserName
 								.equals(get_notifier_URI)) {
 							if (sender_state.equals("Busy")) {
 								sPresence.checkFireEvent[i] = false;
@@ -360,9 +363,9 @@ public class PresenceAgent implements
 								if (!Receiver.mSipdroidEngine.isFire()) {
 									//mHandler.post(new Runnable() {
 										//public void run() {
-									Presence.mIsPttService = true;
-									String ptt = Settings.getPTT_Username(Receiver.mContext)+"@"+ Settings.getPTT_Server(Receiver.mContext);
-									Receiver.mSipdroidEngine.call(ptt, true);
+									//Presence.mIsPttService = true;
+									//String ptt = Settings.getPTT_Username(Receiver.mContext)+"@"+ Settings.getPTT_Server(Receiver.mContext);
+									//Receiver.mSipdroidEngine.call(ptt, true);
 										//Receiver.xmppEngine().startConversation("ptt@conference." + Settings.getXMPP_Service(Receiver.mContext), XMPPEngine.CONFERENCE);
 								}
 								//});
@@ -481,8 +484,8 @@ public class PresenceAgent implements
 				String get_notifier_URI = notifier_URI.substring(s2 + 1, e2);
 			
 				
-				for (int i = 0; i < Presence.mContactList.size(); i++) {
-					if (Presence.mContactList.get(i).mUsername.equals(get_notifier_URI)) {
+				for (int i = 0; i < Presence.mContactManagement.mContactList.size(); i++) {
+					if (Presence.mContactManagement.mContactList.get(i).mUserName.equals(get_notifier_URI)) {
 
 						if (sender_state.equals("Busy")) {
 							sPresence.checkFireEvent[i] = false;
