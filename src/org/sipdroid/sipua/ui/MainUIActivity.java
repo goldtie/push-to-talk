@@ -9,8 +9,6 @@ import org.sipdroid.sipua.ui.screen.Presence;
 
 import android.app.TabActivity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -44,7 +42,7 @@ public class MainUIActivity extends TabActivity {
         tabHost.addTab(chatTab);
         tabHost.addTab(settingTab);
         
-        Contact c = new ContactManagement().getContact(org.sipdroid.sipua.ui.Settings.getAccountUserName(getBaseContext()));
+        mContactManagement = new ContactManagement(this);
         
 		TextView tvTarget = (TextView) findViewById(R.id.window_title);
 		tvTarget.setVisibility(ViewGroup.GONE);
@@ -53,7 +51,8 @@ public class MainUIActivity extends TabActivity {
 		ivTarget.setVisibility(ViewGroup.GONE);
         
 		TextView appTarget = (TextView) findViewById(R.id.appName);
-		appTarget.setText("DCNTalk - " + c.mDisplayName);
+		appTarget.setText("DCNTalk - " + mContactManagement.getDisplayName(Settings.getAccountUserName(this)));
         
     }
+    public static ContactManagement mContactManagement = null;
 }

@@ -27,6 +27,7 @@ import org.sipdroid.sipua.MessageStruct;
 import org.sipdroid.sipua.R;
 import org.sipdroid.sipua.component.Contact;
 import org.sipdroid.sipua.component.ContactManagement;
+import org.sipdroid.sipua.ui.MainUIActivity;
 import org.sipdroid.sipua.ui.Settings;
 
 import android.app.Activity;
@@ -123,10 +124,9 @@ public class ChatArchiveContentActivity extends Activity{
 				lp6.addRule(RelativeLayout.RIGHT_OF, holder.mAvatar.getId());
 				holder.mFriendName.setLayoutParams(lp6);
 				
-				Contact c = new ContactManagement().getContact(mess.mMessageSender);
-				holder.mAvatar.setImageBitmap(BitmapFactory.decodeFile(c.mImagePath));
+				holder.mAvatar.setImageBitmap(MainUIActivity.mContactManagement.getAvatar(mess.mMessageSender));
 				holder.mAvatar.setVisibility(View.VISIBLE);
-				holder.mFriendName.setText(c.mDisplayName);
+				holder.mFriendName.setText(MainUIActivity.mContactManagement.getDisplayName(mess.mMessageSender));
 				holder.mFriendName.setVisibility(View.VISIBLE);
 				
 				RelativeLayout.LayoutParams lp3 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -197,16 +197,14 @@ public class ChatArchiveContentActivity extends Activity{
 		
 		mTargetAvatar = BitmapFactory.decodeFile(HistoryListActivity.mTarget.mImagePath);
 		TextView tvTarget = (TextView) findViewById(R.id.window_title);
-		Contact c = new ContactManagement().getContact(HistoryListActivity.mTarget.mUserName);
-		tvTarget.setText(c == null ? "Conference" : c.mDisplayName);
+		
+		tvTarget.setText(MainUIActivity.mContactManagement.getDisplayName(HistoryListActivity.mTarget.mUserName));
 		
 		ImageView ivTarget = (ImageView) findViewById(R.id.window_icon);
 		ivTarget.setImageBitmap(mTargetAvatar == null ? 
-				BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_conference) 
-				: mTargetAvatar);
-		Contact myProfile = new ContactManagement().getContact(org.sipdroid.sipua.ui.Settings.getAccountUserName(getBaseContext()));
+				BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_conference) : mTargetAvatar);
         TextView appTarget = (TextView) findViewById(R.id.appName);
-		appTarget.setText("DCNTalk - " + myProfile.mDisplayName);
+		appTarget.setText("DCNTalk - " + MainUIActivity.mContactManagement.getDisplayName(Settings.getAccountUserName(getBaseContext())));
 		
 	}
 
