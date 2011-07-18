@@ -31,7 +31,6 @@ import org.sipdroid.sipua.phone.CallCard;
 import org.sipdroid.sipua.phone.Phone;
 import org.sipdroid.sipua.phone.SlidingCardManager;
 
-import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -150,7 +149,7 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
 			// after an outgoing call don't fall back to the contact
 			// or call log because it is too easy to dial accidentally from there
 	        //startActivity(Receiver.createHomeIntent());
-			intent = new Intent(getBaseContext(), org.sipdroid.sipua.ui.Presence.class);
+			intent = new Intent(getBaseContext(), org.sipdroid.sipua.ui.MainUIActivity.class);
 			startActivity(intent);
 			
 		}
@@ -182,7 +181,7 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
 				mDialerDrawer.close();
 				mDialerDrawer.setVisibility(View.GONE);
 			} else
-				mDialerDrawer.setVisibility(View.VISIBLE);
+				mDialerDrawer.setVisibility(View.GONE);
 			if (Receiver.docked <= 0)
 				screenOff(true);
 			break;
@@ -387,7 +386,8 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.incall);
-		
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
 		initInCallScreen();
 		
 		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -429,7 +429,7 @@ public class InCallScreen extends CallScreen implements View.OnClickListener, Se
 				mDialerDrawer.close();
 				mDialerDrawer.setVisibility(View.GONE);
 			} else {
-				mDialerDrawer.setVisibility(View.VISIBLE);
+				mDialerDrawer.setVisibility(View.GONE);
 			}
 	        if (mSlidingCardManager != null)
 	        	mSlidingCardManager.showPopup();

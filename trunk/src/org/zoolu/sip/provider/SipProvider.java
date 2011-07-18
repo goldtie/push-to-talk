@@ -676,15 +676,15 @@ public class SipProvider implements Configurable, TransportListener,
 			ret = true;
 		}
 
-		
-//		if (listeners != null) {
-//			String list = "";
-//			for (Enumeration<Identifier> e = listeners.keys(); e
-//					.hasMoreElements();)
-//				list += e.nextElement() + ", ";
-//			printLog(listeners.size() + " listeners: " + list, LogLevel.LOW);
-//		}
-		
+		/*
+		if (listeners != null) {
+			String list = "";
+			for (Enumeration<Identifier> e = listeners.keys(); e
+					.hasMoreElements();)
+				list += e.nextElement() + ", ";
+			printLog(listeners.size() + " listeners: " + list, LogLevel.LOW);
+		}
+		*/
 		return ret;
 	}
 
@@ -1262,7 +1262,7 @@ public class SipProvider implements Configurable, TransportListener,
 			ConnectionIdentifier conn_id = new ConnectionIdentifier(
 					(ConnectedTransport) transport);
 			removeConnection(conn_id);
-			if (Sipdroid.on(Receiver.mContext))
+			if (PreferenceManager.getDefaultSharedPreferences(Receiver.mContext).getBoolean(Settings.PREF_ON, Settings.DEFAULT_ON))
 				Receiver.engine(Receiver.mContext).register(); // modified
 		}
 		if (error != null)

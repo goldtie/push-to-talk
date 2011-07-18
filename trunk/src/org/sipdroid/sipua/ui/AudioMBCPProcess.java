@@ -10,8 +10,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Random;
 
-import org.sipdroid.media.MediaLauncher;
 import org.sipdroid.sipua.UserAgent;
+import org.sipdroid.sipua.ui.screen.PTTCallScreen;
 
 import android.util.Log;
 
@@ -141,7 +141,7 @@ public class AudioMBCPProcess {
 	}	
 
 	// ����
-	AudioMBCPProcess(PTTCallScreen pttCallScreen) {
+	public AudioMBCPProcess(PTTCallScreen pttCallScreen) {
 		gua = pttCallScreen;
 		try {
 			socket = new DatagramSocket();

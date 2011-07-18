@@ -4,7 +4,7 @@
 
 package org.zoolu.sip.dialog;
 
-import org.sipdroid.sipua.ui.Presence;
+import org.sipdroid.sipua.ui.screen.Presence;
 import org.sipdroid.sipua.ui.TomP2PFunctions;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.address.SipURL;

@@ -24,8 +24,7 @@ package org.sipdroid.sipua.ui;
 import org.sipdroid.sipua.R;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
@@ -33,270 +32,91 @@ import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
-import android.widget.ImageButton;
 
 /////////////////////////////////////////////////////////////////////
 // this the main activity of Sipdroid
 // for modifying it additional terms according to section 7, GPL apply
 // see ADDITIONAL_TERMS.txt
 /////////////////////////////////////////////////////////////////////
-public class Sipdroid extends Activity implements OnDismissListener {
+public class Sipdroid extends Activity implements OnDismissListener, Runnable{
 
 	public static final boolean release = true;
 	public static final boolean market = false;
-
+	
 	public static String ptt_address = "";
-
+	
 	Intent intent;
-
+	
 	/* Following the menu item constants which will be used for menu creation */
 	public static final int FIRST_MENU_ID = Menu.FIRST;
 	public static final int CONFIGURE_MENU_ITEM = FIRST_MENU_ID + 1;
 	public static final int ABOUT_MENU_ITEM = FIRST_MENU_ID + 2;
 	public static final int EXIT_MENU_ITEM = FIRST_MENU_ID + 3;
 
-	private static AlertDialog m_AlertDlg;
-
 	@Override
 	public void onStart() {
 		super.onStart();
 		Receiver.engine(this).registerMore();
 	}
-
+	
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-
+		
 		setContentView(R.layout.sipdroid);
-
-		on(this, true);
-
-		ImageButton loginBtn = (ImageButton) this.findViewById(R.id.btnLogin);
-		loginBtn.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View paramView) {
-				login();
-			}
-		});
-
-//		final Context mContext = this;
-
-//		if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
-//				Settings.PREF_NOPORT, Settings.DEFAULT_NOPORT)) {
-//			boolean ask = false;
-//			for (int i = 0; i < SipdroidEngine.LINES; i++) {
-//				String j = (i != 0 ? "" + i : "");
-//				if (PreferenceManager.getDefaultSharedPreferences(this)
-//						.getString(Settings.PREF_USERNAME + j,
-//								Settings.DEFAULT_USERNAME).length() != 0
-//						&& PreferenceManager.getDefaultSharedPreferences(this)
-//								.getString(Settings.PREF_PORT + j,
-//										Settings.DEFAULT_PORT).equals(
-//										Settings.DEFAULT_PORT))
-//					ask = true;
-//			}
-//			if (ask)
-//				new AlertDialog.Builder(this).setMessage(R.string.dialog_port)
-//						.setPositiveButton(R.string.yes,
-//								new DialogInterface.OnClickListener() {
-//									public void onClick(DialogInterface dialog,
-//											int whichButton) {
-//										Editor edit = PreferenceManager
-//												.getDefaultSharedPreferences(
-//														mContext).edit();
-//										for (int i = 0; i < SipdroidEngine.LINES; i++) {
-//											String j = (i != 0 ? "" + i : "");
-//											if (PreferenceManager
-//													.getDefaultSharedPreferences(
-//															mContext)
-//													.getString(
-//															Settings.PREF_USERNAME
-//																	+ j,
-//															Settings.DEFAULT_USERNAME)
-//													.length() != 0
-//													&& PreferenceManager
-//															.getDefaultSharedPreferences(
-//																	mContext)
-//															.getString(
-//																	Settings.PREF_PORT
-//																			+ j,
-//																	Settings.DEFAULT_PORT)
-//															.equals(
-//																	Settings.DEFAULT_PORT))
-//												edit.putString(
-//														Settings.PREF_PORT + j,
-//														"5061");
-//										}
-//										edit.commit();
-//										Receiver.engine(mContext).halt();
-//										Receiver.engine(mContext).StartEngine();
-//									}
-//								}).setNeutralButton(R.string.no,
-//								new DialogInterface.OnClickListener() {
-//									public void onClick(DialogInterface dialog,
-//											int whichButton) {
-//
-//									}
-//								}).setNegativeButton(R.string.dontask,
-//								new DialogInterface.OnClickListener() {
-//									public void onClick(DialogInterface dialog,
-//											int whichButton) {
-//										Editor edit = PreferenceManager
-//												.getDefaultSharedPreferences(
-//														mContext).edit();
-//										edit.putBoolean(Settings.PREF_NOPORT,
-//												true);
-//										edit.commit();
-//									}
-//								}).show();
-//		} else if (PreferenceManager.getDefaultSharedPreferences(this)
-//				.getString(Settings.PREF_PREF, Settings.DEFAULT_PREF).equals(
-//						Settings.VAL_PREF_PSTN)
-//				&& !PreferenceManager.getDefaultSharedPreferences(this)
-//						.getBoolean(Settings.PREF_NODEFAULT,
-//								Settings.DEFAULT_NODEFAULT))
-//			new AlertDialog.Builder(this).setMessage(R.string.dialog_default)
-//					.setPositiveButton(R.string.yes,
-//							new DialogInterface.OnClickListener() {
-//								public void onClick(DialogInterface dialog,
-//										int whichButton) {
-//									Editor edit = PreferenceManager
-//											.getDefaultSharedPreferences(
-//													mContext).edit();
-//									edit.putString(Settings.PREF_PREF,
-//											Settings.VAL_PREF_SIP);
-//									edit.commit();
-//								}
-//							}).setNeutralButton(R.string.no,
-//							new DialogInterface.OnClickListener() {
-//								public void onClick(DialogInterface dialog,
-//										int whichButton) {
-//
-//								}
-//							}).setNegativeButton(R.string.dontask,
-//							new DialogInterface.OnClickListener() {
-//								public void onClick(DialogInterface dialog,
-//										int whichButton) {
-//									Editor edit = PreferenceManager
-//											.getDefaultSharedPreferences(
-//													mContext).edit();
-//									edit.putBoolean(Settings.PREF_NODEFAULT,
-//											true);
-//									edit.commit();
-//								}
-//							}).show();
-
+		
+		on(this,true);
+		
 		ptt_address = Settings.getPTT_Server(getBaseContext());
-
 	}
 
 	public static boolean on(Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context)
-				.getBoolean(Settings.PREF_ON, Settings.DEFAULT_ON);
+		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Settings.PREF_ON, Settings.DEFAULT_ON);
 	}
 
-	public static void on(Context context, boolean on) {
-		Editor edit = PreferenceManager.getDefaultSharedPreferences(context)
-				.edit();
+	public static void on(Context context,boolean on) {
+		Editor edit = PreferenceManager.getDefaultSharedPreferences(context).edit();
 		edit.putBoolean(Settings.PREF_ON, on);
 		edit.commit();
-		if (on)
-			Receiver.engine(context).isRegistered();
+        if (on) Receiver.engine(context).isRegistered();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		// if (Receiver.call_state != UserAgent.UA_STATE_IDLE)
-		// Receiver.moveTop();
-	}
+		pd = ProgressDialog.show(this, "DCNTalk", "Waiting...", true,
+                false);
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		boolean result = super.onCreateOptionsMenu(menu);
+		Thread thread = new Thread(this);
+		thread.start();
+		
 
-		MenuItem m = menu.add(0, ABOUT_MENU_ITEM, 0, R.string.menu_about);
-		m.setIcon(android.R.drawable.ic_menu_info_details);
-		m = menu.add(0, EXIT_MENU_ITEM, 0, R.string.menu_exit);
-		m.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
-		m = menu.add(0, CONFIGURE_MENU_ITEM, 0, R.string.menu_settings);
-		m.setIcon(android.R.drawable.ic_menu_preferences);
-
-		return result;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		boolean result = super.onOptionsItemSelected(item);
-		Intent intent = null;
-
-		switch (item.getItemId()) {
-		case ABOUT_MENU_ITEM:
-			if (m_AlertDlg != null) {
-				m_AlertDlg.cancel();
-			}
-			m_AlertDlg = new AlertDialog.Builder(this).setMessage(
-					getString(R.string.about).replace("\\n", "\n").replace(
-							"${VERSION}", getVersion(this))).setTitle(
-					getString(R.string.menu_about)).setIcon(R.drawable.icon22)
-					.setCancelable(true).show();
-			break;
-
-		case EXIT_MENU_ITEM:
-			on(this, false);
-			Receiver.pos(true);
-			Receiver.engine(this).halt();
-//			if (Receiver.mXMPPEngine != null) {
-//				Receiver.xmppEngine().disconect();
-//				Receiver.mXMPPEngine = null;
-//			}
-			Receiver.mSipdroidEngine = null;
-			Receiver.reRegister(0);
-			stopService(new Intent(this, RegisterService.class));
-			finish();
-			break;
-
-		case CONFIGURE_MENU_ITEM: {
-			try {
-				intent = new Intent(this, org.sipdroid.sipua.ui.Settings.class);
-				startActivity(intent);
-			} catch (ActivityNotFoundException e) {
-			}
-		}
-			break;
-		}
-		return result;
 	}
 
 	public static String getVersion() {
 		return getVersion(Receiver.mContext);
 	}
-
+	
 	public static String getVersion(Context context) {
 		final String unknown = "Unknown";
-
+		
 		if (context == null) {
 			return unknown;
 		}
-
+		
 		try {
-			String ret = context.getPackageManager().getPackageInfo(
-					context.getPackageName(), 0).versionName;
-			if (ret.contains(" + "))
-				ret = ret.substring(0, ret.indexOf(" + ")) + "b";
-			return ret;
-		} catch (NameNotFoundException ex) {
-		}
-
+	    	String ret = context.getPackageManager()
+			   .getPackageInfo(context.getPackageName(), 0)
+			   .versionName;
+	    	if (ret.contains(" + "))
+	    		ret = ret.substring(0,ret.indexOf(" + "))+"b";
+	    	return ret;
+		} catch(NameNotFoundException ex) {}
+		
 		return unknown;
 	}
 
@@ -304,14 +124,11 @@ public class Sipdroid extends Activity implements OnDismissListener {
 	public void onDismiss(DialogInterface dialog) {
 		onResume();
 	}
-
+	
 	public void login() {
-		if (!Receiver.engine(this).isRegistered()) {
-			// Toast.makeText(this,
-			// "No suitable network connection available. Please check your configuration!",
-			// Toast.LENGTH_LONG).show();
-			intent = new Intent(getBaseContext(),
-					org.sipdroid.sipua.ui.Settings.class);
+		if(!Receiver.engine(this).isRegistered()) {
+			//Toast.makeText(this, "No suitable network connection available. Please check your configuration!", Toast.LENGTH_LONG).show();
+			intent = new Intent(getBaseContext(), org.sipdroid.sipua.ui.Settings.class);
 			startActivity(intent);
 		} else {
 //			if (!PreferenceManager
@@ -327,10 +144,32 @@ public class Sipdroid extends Activity implements OnDismissListener {
 //						org.sipdroid.sipua.ui.Settings
 //								.getAccountUserName(getBaseContext()));			
 //			}
-			intent = new Intent(getBaseContext(),
-					org.sipdroid.sipua.ui.MainUIActivity.class);
+			intent = new Intent(getBaseContext(), org.sipdroid.sipua.ui.MainUIActivity.class);
 			startActivity(intent);
 			finish();
+			
 		}
 	}
+	// <--
+
+	private ProgressDialog pd;
+	
+	@Override
+	public void run() {
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		handler.sendEmptyMessage(0);
+	}
+	private Handler handler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			login();
+			pd.dismiss();
+			
+		}
+	};
 }

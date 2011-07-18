@@ -27,7 +27,7 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-<string name="app_name">Sipdroid</string>
+<string name="app_name">DCNTalk</string>
 <string name="pstn_name">Phone Call</string>
 <string name="sip_name">Sipdroid Call, when available</string>
 
@@ -90,7 +90,6 @@
     <string name="change_status">Status</string>
     
 	<string name="menu_conference">Conference</string>
-	<string name="menu_mystatus">My Status</string>
 	<string name="menu_preference">Preference</string>
 	<string name="menu_sign_out">Sign Out</string>
 
@@ -443,5 +442,6 @@
  <string name="search_bar_hint">Search contacts</string>
  
 <string name="spinner_prompt">Change my status</string>
+ <string name="chat_archive_empty">No Content</string>
  
 </resources>
