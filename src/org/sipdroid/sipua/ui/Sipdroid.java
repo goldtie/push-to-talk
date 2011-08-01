@@ -21,14 +21,20 @@
 
 package org.sipdroid.sipua.ui;
 
+
+import net.tomp2p.p2p.Peer;
+
 import org.sipdroid.sipua.R;
+import org.sipdroid.sipua.SipdroidEngine;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
@@ -36,6 +42,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
 
 /////////////////////////////////////////////////////////////////////
 // this the main activity of Sipdroid
@@ -69,7 +80,20 @@ public class Sipdroid extends Activity implements OnDismissListener, Runnable{
 		
 		setContentView(R.layout.sipdroid);
 		
+		
+		
 		on(this,true);
+		
+//		ImageButton loginBtn = (ImageButton) this.findViewById(R.id.btnLogin);
+//		loginBtn.setOnClickListener(new OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View paramView) {
+//				// TODO Auto-generated method stub
+//				login();
+//				
+//			}
+//		});
 		
 		ptt_address = Settings.getPTT_Server(getBaseContext());
 	}
@@ -131,19 +155,10 @@ public class Sipdroid extends Activity implements OnDismissListener, Runnable{
 			intent = new Intent(getBaseContext(), org.sipdroid.sipua.ui.Settings.class);
 			startActivity(intent);
 		} else {
-//			if (!PreferenceManager
-//					.getDefaultSharedPreferences(Receiver.mContext).getBoolean(
-//							Settings.PREF_P2P, Settings.DEFAULT_P2P)) {
-//				// here means using Client-Server
-//				Receiver.xmppEngine().login(
-//						org.sipdroid.sipua.ui.Settings
-//								.getAccountUserName(getBaseContext())
-//								+ "@"
-//								+ org.sipdroid.sipua.ui.Settings
-//										.getXMPP_Service(getBaseContext()),
-//						org.sipdroid.sipua.ui.Settings
-//								.getAccountUserName(getBaseContext()));			
-//			}
+			Receiver.xmppEngine().login(org.sipdroid.sipua.ui.Settings.getAccountUserName(getBaseContext()) + "@" +  
+					org.sipdroid.sipua.ui.Settings.getXMPP_Service(getBaseContext()), 
+					org.sipdroid.sipua.ui.Settings.getAccountUserName(getBaseContext()));
+			
 			intent = new Intent(getBaseContext(), org.sipdroid.sipua.ui.MainUIActivity.class);
 			startActivity(intent);
 			finish();
@@ -156,9 +171,11 @@ public class Sipdroid extends Activity implements OnDismissListener, Runnable{
 	
 	@Override
 	public void run() {
+		// TODO Auto-generated method stub
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

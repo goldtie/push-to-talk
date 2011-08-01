@@ -110,11 +110,8 @@ import org.zoolu.sip.provider.SipProvider;
 		public static int docked = -1,headset = -1,bluetooth = -1;
 		
 		public static SipdroidEngine mSipdroidEngine;
-		//public static XMPPEngine mXMPPEngine = null;
-
-	// for P2P -->
-	public static TomP2PFunctions mTomP2PEngine = null;
-	// <--
+		public static XMPPEngine mXMPPEngine = null;
+		
 		public static Context mContext;
 		public static SipdroidListener listener_video;
 		public static Call ccCall;
@@ -140,34 +137,38 @@ import org.zoolu.sip.provider.SipProvider;
         	context.startService(new Intent(context,RegisterService.class));
         	
 
-		return mSipdroidEngine;
-	}
-
-	// for P2P -->
-	public static synchronized TomP2PFunctions tomP2PEngine() {
-		if (mTomP2PEngine == null) {
-			try {
-				mTomP2PEngine = new TomP2PFunctions(org.sipdroid.sipua.ui.Settings
-						.getP2P_Mode(mContext).equals("0"),
-						org.sipdroid.sipua.ui.Settings.getP2P_IP_Bootstrap(mContext));
-			} catch (Exception ec) {
-				ec.printStackTrace();
-			}
+			return mSipdroidEngine;
 		}
-		return mTomP2PEngine;
-	}
+		
+		public static synchronized XMPPEngine xmppEngine()
+		{
+			if(mXMPPEngine == null) {
+				try
+				{
+				mXMPPEngine = new XMPPEngine(org.sipdroid.sipua.ui.Settings.getXMPP_Server(mContext), 
+						Integer.parseInt(org.sipdroid.sipua.ui.Settings.getXMPP_Port(mContext)), 
+						org.sipdroid.sipua.ui.Settings.getXMPP_Service(mContext));
+				} catch(Exception ec)
+				{
+					ec.printStackTrace();
+				}
+				mXMPPEngine.connect();
 
-	// <---
-
+				//should implement Login Service for XMPP but not have time
+//				mXMPPEngine.login(org.sipdroid.sipua.ui.Settings.getAccountUserName(mContext) + "@" +  
+//						org.sipdroid.sipua.ui.Settings.getXMPP_Service(mContext), 
+//						org.sipdroid.sipua.ui.Settings.getAccountUserName(mContext));
+			}
+			return mXMPPEngine;
+		}
+		
 		public static void onMsgStatus(int state, String content) {
 			//not good, should find a better solution later
-//			if(state == XMPPEngine.XMPP_STATE_OUTCOMING_MSG) {
-//				mXMPPEngine.sendMessage(content);
-//			}
-//			ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext,
-//					R.layout.multi_line_list_item,
-//					new String[]);
-//			PTTCallScreen.updateListContent(adapter);
+			if(state == XMPPEngine.XMPP_STATE_OUTCOMING_MSG) {
+				mXMPPEngine.sendMessage(content);
+			}
+			
+			PTTCallScreen.mMessageListAdapter.addMessage(mXMPPEngine.getLastMessage());
 		}
 		public static Ringtone oRingtone;
 		static PowerManager.WakeLock wl;
@@ -744,7 +745,7 @@ import org.zoolu.sip.provider.SipProvider;
 	    @Override
 		public void onReceive(Context context, Intent intent) {
 	        String intentAction = intent.getAction();
-	        if (!Sipdroid.on(context)) return;
+	        if (!PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(org.sipdroid.sipua.ui.Settings.PREF_ON, org.sipdroid.sipua.ui.Settings.DEFAULT_ON)) return;
         	if (!Sipdroid.release) Log.i("SipUA:",intentAction);
         	if (mContext == null) mContext = context;
 	        if (intentAction.equals(Intent.ACTION_BOOT_COMPLETED)){

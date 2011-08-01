@@ -21,13 +21,11 @@
 
 package org.sipdroid.sipua;
 
-import java.io.IOException;
 import java.util.Vector;
 
 import org.sipdroid.sipua.ui.Receiver;
 import org.sipdroid.sipua.ui.Settings;
 import org.sipdroid.sipua.ui.Sipdroid;
-import org.sipdroid.sipua.ui.TomP2PFunctions;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.authentication.DigestAuthentication;
 import org.zoolu.sip.dialog.SubscriberDialog;
@@ -181,40 +179,6 @@ public class RegisterAgent implements TransactionClientListener, SubscriberDialo
 	public boolean isRegistered() {
 		return (CurrentState == REGISTERED || CurrentState == REGISTERING);
 	}
-	
-	
-	/**
-	 * This function will register the URL to the P2P Overlay
-	 * 
-	 * @param url
-	 */
-	public boolean p2pRegister() {
-		boolean rs = false;
-		try {
-			CurrentState = REGISTERING;
-//			android.util.Log.d("HAO_TEST", "[username]" +username);
-//			android.util.Log.d("HAO_TEST", "[realm]" +realm);
-//			android.util.Log.d("HAO_TEST", "[target.getAddress()]" +target.getAddress().toString());
-			rs = TomP2PFunctions.register(target.getAddress().toString());
-			if (rs){
-				//HAO copy tam -->
-				if (CurrentState == REGISTERING) {
-					CurrentState = REGISTERED;
-					if (listener != null) {
-						listener.onUaRegistrationSuccess(this, target, contact, "");
-						Receiver.reRegister(0);
-					}
-				}
-				android.util.Log.d("HAO_TEST", "[CurrentState]" + CurrentState);
-				//HAO copy tam <--
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			rs = false;
-		}
-		return rs;
-	}
-	
 	
 	/** Registers with the registrar server. */
 	public boolean register() {

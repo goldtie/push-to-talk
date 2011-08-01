@@ -84,8 +84,8 @@ public class TransactionClient extends Transaction {
 		transaction_to = new Timer(SipStack.transaction_timeout, "Transaction",
 				this);
 		clearing_to = new Timer(SipStack.clearing_timeout, "Clearing", this);
-		//printLog("id: " + String.valueOf(transaction_id), LogLevel.HIGH);
-		//printLog("created", LogLevel.HIGH);
+		printLog("id: " + String.valueOf(transaction_id), LogLevel.HIGH);
+		printLog("created", LogLevel.HIGH);
 	}
 
 	/** Starts the TransactionClient and sends the transaction request. */
@@ -99,12 +99,6 @@ public class TransactionClient extends Transaction {
 		connection_id = sip_provider.sendMessage(request);
 	}
 
-	
-	// ==> jinsub for presence server
-	public void request(boolean nolistener) {
-		connection_id = sip_provider.sendMessage(request);
-	}
-		
 	/**
 	 * Method derived from interface SipListener. It's fired from the
 	 * SipProvider when a new message is received for to the present

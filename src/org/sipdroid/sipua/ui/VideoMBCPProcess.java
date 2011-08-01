@@ -129,7 +129,6 @@ public class VideoMBCPProcess{
 							//gua.panel_ptt.jButton_PttVideo_Release.setVisible(true);
 							
 							// Start SENDing VIDEO STREAM
-							//PTTCallScreen.isVideoSending = true;
 							
 							
 							//gua.panel_ptt.jPanel_Video.removeAll();
@@ -149,7 +148,6 @@ public class VideoMBCPProcess{
 							
 							// Stop Sending VIDEO STREAM
 							//VideoRTPManager.getSendStream().stop();
-							//PTTCallScreen.isVideoSending =false;
 							//gua.panel_ptt.jPanel_Video.removeAll();
 							//gua.panel_ptt.jPanel_Video.add(gua.player_panel);
 							//gua.panel_ptt.jPanel_Video.revalidate();
@@ -168,7 +166,6 @@ public class VideoMBCPProcess{
 							
 							// Stop Sending VIDEO STREAM
 							//VideoRTPManager.getSendStream().stop();
-							//PTTCallScreen.isVideoSending =false;
 							//gua.panel_ptt.jPanel_Video.removeAll();
 							//gua.panel_ptt.jPanel_Video.add(gua.panel_ptt.jSoongmain);
 							//gua.panel_ptt.jPanel_Video.revalidate();
@@ -187,7 +184,6 @@ public class VideoMBCPProcess{
 							
 							// Stop Sending VIDEO STREAM
 							//VideoRTPManager.getSendStream().stop();
-							//PTTCallScreen.isVideoSending =false;
 						} catch (Exception ex) {
 							System.out.println("mbcp send Stream stop fail : "
 									+ ex);

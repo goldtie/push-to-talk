@@ -68,11 +68,6 @@ public class NotifierDialog extends Dialog implements TransactionClientListener/
 	/** The subscription id */
 	String id;
 
-	// ==> jinsub for presence server
-	String notifyEvent = null;
-	/** The current publish transaction */
-	//TransactionServer publish_transaction;
-	//
 	/** Internal state D_INIT (the starting point) */
 	protected static final int D_INIT = 0;
 	/** Internal state D_WAITING (listening for the first subscription request) */
@@ -258,11 +253,6 @@ public class NotifierDialog extends Dialog implements TransactionClientListener/
 		activate(SipStack.default_expires);
 	}
 
-	// ==> jinsub for presence server
-	public void activate(String content_type, String body) {
-		notify(ACTIVE, SipStack.default_expires, content_type, body);
-	}
-		
 	/** Activates the subscription (subscription goes into 'active' state). */
 	public void activate(int expires) {
 		notify(ACTIVE, expires, null, null);
@@ -379,7 +369,7 @@ public class NotifierDialog extends Dialog implements TransactionClientListener/
 
 	/** When a new Message is received by the SipProvider. */
 	public void onReceivedMessage(SipProvider provider, Message msg) {
-		//printLog("onReceivedMessage()", LogLevel.MEDIUM);
+		printLog("onReceivedMessage()", LogLevel.MEDIUM);
 		if (statusIs(D_TERMINATED)) {
 			printLog("subscription already terminated: message discarded",
 					LogLevel.MEDIUM);
@@ -401,30 +391,12 @@ public class NotifierDialog extends Dialog implements TransactionClientListener/
 				event = eh.getEvent();
 				id = eh.getId();
 			}
-			// ==> jinsub for presence server
-			if (event.endsWith("presence")) {
-				notifyEvent = target.toString();
-			}
-			//
 			update(UAS, msg);
-			//System.out.println("����� ��¿��?");
-			//subscribe_transaction = new TransactionServer(sip_provider, msg, null);
+			subscribe_transaction = new TransactionServer(sip_provider, msg,
+					null);
 			if (listener != null)
-				// Here is going to add vector_key
-				listener.onDlgSubscribe(this, target, subscriber, event, id, msg);
-
-		} else if (msg.isRequest() && msg.isPublish()) {
-			// ==> jinsub for presence server
-			NameAddress target = msg.getToHeader().getNameAddress();
-			NameAddress publisher = msg.getFromHeader().getNameAddress();
-			EventHeader eh = msg.getEventHeader();
-			if (eh.getEvent().endsWith(event) && target.toString().endsWith(notifyEvent)) {
-				//System.out.println("����� ��¿��2?");
-				//publish_transaction = new TransactionServer(sip_provider, msg, null);
-				if (listener != null)
-					listener.onDlgPublish(this, target, publisher, event, id, msg);
-			}
-			//
+				listener.onDlgSubscribe(this, target, subscriber, event, id,
+						msg);
 		} else {
 			printLog("message is not a SUBSCRIBE: message discarded",
 					LogLevel.HIGH);

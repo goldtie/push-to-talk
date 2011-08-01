@@ -36,6 +36,7 @@ import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.provider.SipProvider;
 import org.zoolu.sip.provider.SipStack;
 
+import android.R.bool;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
@@ -48,7 +49,7 @@ import android.util.Log;
 
 public class SipdroidEngine implements RegisterAgentListener {
 
-	public static final int LINES = 1;
+	public static final int LINES = 2;
 	public int pref;
 	
 	public static final int UNINITIALIZED = 0x0;
@@ -148,9 +149,7 @@ public class SipdroidEngine implements RegisterAgentListener {
 					SipStack.server_info = version;
 						
 					IpAddress.setLocalIpAddress();
-					// HAO Edit
-					//sip_providers[i] = new SipProvider(IpAddress.localIpAddress, 0);
-					sip_providers[i] = new SipProvider(IpAddress.localIpAddress, SipStack.default_port);
+					sip_providers[i] = new SipProvider(IpAddress.localIpAddress, 0);
 					user_profile.contact_url = getContactURL(user_profile.username,sip_providers[i]);
 					
 					if (user_profile.from_url.indexOf("@") < 0) {
@@ -290,23 +289,13 @@ public class SipdroidEngine implements RegisterAgentListener {
 					continue;
 				}
 				user_profiles[i].contact_url = getContactURL(user_profiles[i].from_url,sip_providers[i]);
-				// for P2P -->
-				if (PreferenceManager.getDefaultSharedPreferences(
-						Receiver.mContext).getBoolean(Settings.PREF_P2P,
-						Settings.DEFAULT_P2P)) {
-					// here means P2P
-					if (ra != null &&!Receiver.engine(Receiver.mContext).isRegistered()){
-						android.util.Log.d("HAO_TEST", "[CHECK]" + !Receiver.engine(Receiver.mContext).isRegistered());
-						ra.p2pRegister();
-					}
+		
+				if (!Receiver.isFast(i)) {
+					unregister(i);
 				} else {
-					if (!Receiver.isFast(i)) {
-						unregister(i);
-					} else {
 					if (ra != null && ra.register()) {
 						Receiver.onText(Receiver.REGISTER_NOTIFICATION+i,getUIContext().getString(R.string.reg),R.drawable.sym_presence_idle,0);
 						wl[i].acquire();
-						}
 					}
 				}
 			} catch (Exception ex) {
@@ -407,41 +396,6 @@ public class SipdroidEngine implements RegisterAgentListener {
 			if (Receiver.on_wlan)
 				Receiver.alarm(60, LoopAlarm.class);
 			Receiver.onText(Receiver.REGISTER_NOTIFICATION+i,getUIContext().getString(i == pref?R.string.regpref:R.string.regclick),R.drawable.sym_presence_available,0);
-			
-//			// for P2P -->
-//			// here means register successfully. So change the realm to IP address of Presence Peer
-//			if (PreferenceManager
-//					.getDefaultSharedPreferences(Receiver.mContext).getBoolean(
-//							Settings.PREF_P2P, Settings.DEFAULT_P2P)) {
-//				// do get the IP, and port number
-//				String strIPPresenceServer = TomP2PFunctions.retrieve(Presence.strPresenceUrl);
-//				if (strIPPresenceServer != null) {
-//					System.out.println("   => Get IP: " + strIPPresenceServer + " from " + Presence.strPresenceUrl);
-//					
-//					if (strIPPresenceServer.contains(TomP2PFunctions.ownIP))
-//						Presence.isPresenceServer = true;
-//					else
-//						Presence.isPresenceServer = false;
-//					
-//					// change the realm address to PresenceServer's IP
-//					user_profile.realm = strIPPresenceServer;
-//					
-//				} else {
-//					System.err.println("   => Fail to get IP with key " + strPresenceUrl);
-//					// No one be Presence Server ==> let's me be
-//					try {
-//						if (TomP2PFunctions.register(strPresenceUrl)){
-//							//lstRegisterdURL.add(url);
-//							isPresenceServer = true;
-//							user_profile.realm = TomP2PFunctions.ownIP;
-//						}
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-//				}
-//			}
-//			// <--
-			
 			reg_ra.subattempts = 0;
 			reg_ra.startMWI();
 			Receiver.registered();
@@ -655,15 +609,6 @@ public class SipdroidEngine implements RegisterAgentListener {
 			return true;
 		else
 			if (user_profiles[1].username.equals("fire"))
-				return true;
-		return false;
-	}
-    
-    public boolean isCamera() {
-		if (user_profiles[0].username.equals("camera"))
-			return true;
-		else
-			if (user_profiles[1].username.equals("camera"))
 				return true;
 		return false;
 	}

@@ -97,25 +97,6 @@
 	<!--  for Presence  end -->
 
 
-	<!--  for P2P  start -->
-	<string name="settings_p2p">P2P Setting</string>
-	<string name="settings_p2p1">Use P2P Overlay</string>
-	<string name="settings_p2p2">Check if use P2P overlay</string>
-	<string name="settings_p2p_mode">"P2P Mode"</string>
-	<string name="settings_bootstrap_ip_address">IP Bootstrap Node</string>
-
-
-	<string-array name="listModes">
-		<item>Be Bootstrap Node</item>
-		<item>Join P2P Overlay</item>
-	</string-array>
-
-	<string-array name="listValues">
-		<item>0</item>
-		<item>1</item>
-	</string-array>
-	<!--  for P2P  end -->
-
 <string name="settings_line">Line</string>
 <string name="settings_username">Authorization Username</string>
 <string name="settings_password">Password</string>

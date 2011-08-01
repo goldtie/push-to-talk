@@ -14,8 +14,8 @@
 
 	</LinearLayout>
 
-	<LinearLayout android:id="@+id/content"
-		android:orientation="horizontal" android:background="@drawable/center"
+	<RelativeLayout android:id="@+id/content"
+		android:background="@drawable/center"
 		android:layout_width="fill_parent" android:gravity="center_vertical"
 		 android:layout_height="80dip">
 		
@@ -24,7 +24,7 @@
 			 android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:src="@drawable/icon" />
 
-		<LinearLayout android:orientation="vertical" android:layout_width="wrap_content"
+		<LinearLayout android:layout_toRightOf="@+id/avatar" android:orientation="vertical" android:layout_width="wrap_content"
 			android:layout_height="wrap_content">
 
 			<TextView style="@style/DialogText" android:id="@+id/message"
@@ -35,7 +35,16 @@
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:textColor="#0099CC" />
 		</LinearLayout>
-	</LinearLayout>
+		
+		<ImageButton android:id="@+id/btnEmoticon"
+        android:layout_width="65dip"
+        android:layout_height="65dip"
+        android:layout_alignParentRight="true"
+         android:src="@drawable/sendfile"
+        
+        />
+        
+	</RelativeLayout>
 
 	<LinearLayout android:orientation="horizontal"
 		android:background="@drawable/footer" android:layout_width="fill_parent"
