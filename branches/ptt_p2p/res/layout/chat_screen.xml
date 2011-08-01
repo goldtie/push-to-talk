@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="fill_parent"
+	android:layout_height="fill_parent" android:orientation="vertical"
+	android:background="@drawable/background_chat_screen"
+	xmlns:android="http://schemas.android.com/apk/res/android">
+
+	
+		
+	<RelativeLayout
+    android:id="@+id/chatInputPanel"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="3dip"
+    android:background="#c2c2c2"
+    android:layout_alignParentBottom="true"
+    >
+    <Button
+        android:id="@+id/btnSend"
+        android:text="Send"
+        android:textStyle="bold"
+        android:layout_width="65dip"
+        android:layout_height="55dip"
+        android:layout_alignParentRight="true"
+        />
+    <EditText
+        android:id="@+id/txtInputChat"
+        android:layout_toLeftOf="@+id/btnSend"
+        android:layout_width="fill_parent"
+        android:layout_height="55dip"
+        android:hint="type something to send"
+        android:layout_marginLeft="130dip"
+        android:inputType="text"
+        android:maxLines="1"
+        />
+    
+     <ImageButton android:id="@+id/btnEmoticon"
+        android:layout_marginLeft="65dip"
+        android:layout_width="65dip"
+        android:layout_height="55dip"
+         android:src="@drawable/emoticon"
+        />
+    <ToggleButton
+        android:id="@+id/btnSendAudio"
+        android:textOn="Stop"
+        android:textStyle="bold"
+        android:textOff="Audio"
+        android:layout_width="65dip"
+        android:layout_height="55dip"
+        android:layout_alignParentLeft="true"
+        
+        />
+        
+       
+</RelativeLayout>
+
+
+	<ListView android:id="@+id/listMessages"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:layout_marginBottom="10dip"
+			android:paddingTop="10dip"
+			android:divider="@null"
+			android:layout_above="@id/chatInputPanel"
+			android:layout_below="@id/datetime_header"
+			android:scrollbars="horizontal" 
+			android:cacheColorHint="#00000000"/>
+	
+	<TextView
+	android:id="@+id/datetime_header"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:layout_marginLeft="10dip"
+	android:layout_marginRight="10dip"
+	android:layout_marginTop="10dip"
+	android:paddingTop="5dip"
+	android:paddingBottom="5dip"
+	android:textColor="#ffffff"
+	android:gravity="center"
+	android:background="@drawable/message_header_border"/> 
+	
+	<!--</LinearLayout> -->
+</RelativeLayout>

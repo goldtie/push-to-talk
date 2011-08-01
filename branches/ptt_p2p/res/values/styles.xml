@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+	<style name="MyListView">
+		<item name="android:listDivider">@color/divider</item>
+		<item name="android:textColorPrimary">@android:color/black</item>
+		<item name="android:windowBackground">@color/settings_bg</item>
+		<item name="android:colorBackgroundCacheHint">@null</item>
+		<item name="android:windowIsTranslucent">true</item>
+		<item name="android:windowAnimationStyle">@android:style/Animation</item>
+	</style>
+
+   <style name="DialogText">
+        <item name="android:textColor">#FF000000</item>
+        <item name="android:textSize">23px</item>
+    </style>
+
+    <style name="DialogText.Title">
+        <item name="android:textSize">23px</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <style name="CustomWindowTitleBackground">
+        <item name="android:background">#323331</item>
+    </style>
+ 
+    <style name="CustomTheme" parent="android:Theme">
+        <item name="android:windowTitleSize">35dip</item>
+        <item name="android:windowTitleBackgroundStyle">@style/CustomWindowTitleBackground</item>
+    </style>
+    
+</resources>
